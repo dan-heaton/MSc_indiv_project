@@ -117,6 +117,6 @@ pend_file_path = "..\\RepoIMU\\RepoIMU\\Pendulum"
 #'pend_data' is in dimensions 'num types (accel, gyro, magnet)' x 'num samples' x 'num dimensions (x, y, z)'
 pend_data = extract_data(pend_file_path, n_samples=10000)
 
-#plot_data(pend_data)
-#cluster_analysis(data[3], n_clusters=4, c_choice="agc")
+plot_data(pend_data)
+cluster_analysis(pend_data[3], n_clusters=4, c_choice="agc")
 supervised_analysis(pend_data, r_choice="all")
