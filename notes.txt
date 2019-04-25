@@ -1,0 +1,3 @@
+check if Wj is supposed to be Wij instead?
+
+see how many paramters there are in the average CRF (i.e. i x j?)

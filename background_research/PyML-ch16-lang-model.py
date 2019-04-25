@@ -141,7 +141,7 @@ batch_size = 64
 num_steps = 100
 train_x, train_y = reshape_data(text_ints, batch_size, num_steps)
 rnn = CharRNN(num_classes=len(chars), batch_size=batch_size)
-rnn.train(train_x, train_y, num_epochs=50)
+rnn.train(train_x, train_y, num_epochs=5)
 
 del rnn
 
