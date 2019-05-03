@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="6269803a-5c93-4fe7-8214-f3bd850e9b27" name="Default Changelist" comment="Added program on using CRF for sequence labelling, and reorganized directory structure.">
+      <change afterPath="$PROJECT_DIR$/project_files/matfiles_analysis.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/plans_and_presentations/MSc Project Plan.ods" beforeDir="false" afterPath="$PROJECT_DIR$/plans_and_presentations/MSc Project Plan.ods" afterDir="false" />
     </list>
@@ -15,72 +16,301 @@
     <session id="-1966947946">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="4" />
-          <entry key="project.open.time.0" value="2" />
+          <entry key="project.closed" value="6" />
+          <entry key="project.open.time.0" value="3" />
           <entry key="project.open.time.10" value="1" />
           <entry key="project.open.time.12" value="1" />
           <entry key="project.open.time.18" value="1" />
-          <entry key="project.open.time.3" value="2" />
+          <entry key="project.open.time.3" value="3" />
           <entry key="project.open.time.4" value="6" />
           <entry key="project.open.time.5" value="1" />
           <entry key="project.open.time.6" value="5" />
           <entry key="project.open.time.8" value="1" />
-          <entry key="project.opened" value="20" />
+          <entry key="project.opened" value="22" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
-          <entry key="csv" value="1" />
-          <entry key="py" value="15" />
-          <entry key="txt" value="2" />
+          <entry key="D2_D3_stats_features" value="1" />
+          <entry key="csv" value="30" />
+          <entry key="py" value="19" />
+          <entry key="txt" value="3" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
-          <entry key="PLAIN_TEXT" value="3" />
-          <entry key="Python" value="15" />
+          <entry key="CSV" value="25" />
+          <entry key="PLAIN_TEXT" value="9" />
+          <entry key="Python" value="19" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="py" value="21188" />
-          <entry key="txt" value="302" />
+          <entry key="py" value="40052" />
+          <entry key="txt" value="497" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="PLAIN_TEXT" value="302" />
-          <entry key="Python" value="21188" />
+          <entry key="PLAIN_TEXT" value="497" />
+          <entry key="Python" value="40052" />
         </counts>
       </usages-collector>
     </session>
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/background_research/PyML-ch-16-IMDB-sentiment.py">
-          <provider selected="true" editor-type-id="text-editor" />
-        </entry>
-      </file>
       <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/background_research/PyML-ch16-lang-model.py">
+        <entry file="file://$PROJECT_DIR$/project_files/matfiles_analysis.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="237">
-              <caret line="37" selection-start-line="37" selection-end-line="37" />
+            <state relative-caret-position="4250">
+              <caret line="313" column="1" selection-start-line="313" selection-start-column="1" selection-end-line="313" selection-end-column="1" />
               <folding>
-                <element signature="e#183#201#0" expanded="true" />
+                <element signature="e#0#22#0" expanded="true" />
+                <marker date="1556911366807" expanded="true" signature="3264:16007" ph="..." />
+                <marker date="1556911366807" expanded="true" signature="8403:15834" ph="..." />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/background_research/CRF_seq_labelling.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="119">
-              <caret line="14" selection-start-line="14" selection-end-line="14" />
+        <entry file="file://$PROJECT_DIR$/project_files/output_files/JA_D2_stats_features.csv">
+          <provider selected="true" editor-type-id="csv-table-editor">
+            <state showInfoPanel="true" fixedHeaders="false" rowLines="3">
+              <column index="0" width="100" />
+              <column index="1" width="100" />
+              <column index="2" width="100" />
+              <column index="3" width="100" />
+              <column index="4" width="100" />
+              <column index="5" width="100" />
+              <column index="6" width="100" />
+              <column index="7" width="100" />
+              <column index="8" width="100" />
+              <column index="9" width="100" />
+              <column index="10" width="100" />
+              <column index="11" width="100" />
+              <column index="12" width="100" />
+              <column index="13" width="100" />
+              <column index="14" width="100" />
+              <column index="15" width="100" />
+              <column index="16" width="100" />
+              <column index="17" width="100" />
+              <column index="18" width="100" />
+              <column index="19" width="100" />
+              <column index="20" width="100" />
+              <column index="21" width="100" />
+              <column index="22" width="100" />
+              <column index="23" width="100" />
+              <column index="24" width="100" />
+              <column index="25" width="100" />
+              <column index="26" width="100" />
+              <column index="27" width="100" />
+              <column index="28" width="100" />
+              <column index="29" width="100" />
+              <column index="30" width="100" />
+              <column index="31" width="100" />
+              <column index="32" width="100" />
+              <column index="33" width="100" />
+              <column index="34" width="100" />
+              <column index="35" width="100" />
+              <column index="36" width="100" />
+              <column index="37" width="100" />
+              <column index="38" width="100" />
+              <column index="39" width="100" />
+              <column index="40" width="100" />
+              <column index="41" width="100" />
+              <column index="42" width="100" />
+              <column index="43" width="100" />
+              <column index="44" width="100" />
+              <column index="45" width="100" />
+              <column index="46" width="100" />
+              <column index="47" width="100" />
+              <column index="48" width="100" />
+              <column index="49" width="100" />
+              <column index="50" width="100" />
+              <column index="51" width="100" />
+              <column index="52" width="100" />
+              <column index="53" width="100" />
+              <column index="54" width="100" />
+              <column index="55" width="100" />
+              <column index="56" width="100" />
+              <column index="57" width="100" />
+              <column index="58" width="100" />
+              <column index="59" width="100" />
+              <column index="60" width="100" />
+              <column index="61" width="100" />
+              <column index="62" width="100" />
+              <column index="63" width="100" />
+              <column index="64" width="100" />
+              <column index="65" width="100" />
+              <column index="66" width="100" />
+              <column index="67" width="100" />
+              <column index="68" width="100" />
+              <column index="69" width="100" />
+              <column index="70" width="100" />
+              <column index="71" width="100" />
+              <column index="72" width="100" />
+              <column index="73" width="100" />
+              <column index="74" width="100" />
+              <column index="75" width="100" />
+              <column index="76" width="100" />
+              <column index="77" width="100" />
+              <column index="78" width="100" />
+              <column index="79" width="100" />
+              <column index="80" width="100" />
+              <column index="81" width="100" />
+              <column index="82" width="100" />
+              <column index="83" width="100" />
+              <column index="84" width="100" />
+              <column index="85" width="100" />
+              <column index="86" width="100" />
+              <column index="87" width="100" />
+              <column index="88" width="100" />
+              <column index="89" width="100" />
+              <column index="90" width="100" />
+              <column index="91" width="100" />
+              <column index="92" width="100" />
+              <column index="93" width="100" />
+              <column index="94" width="100" />
+              <column index="95" width="100" />
+              <column index="96" width="100" />
+              <column index="97" width="100" />
+              <column index="98" width="100" />
+              <column index="99" width="100" />
+              <column index="100" width="100" />
+              <column index="101" width="100" />
+              <column index="102" width="100" />
+              <column index="103" width="100" />
+              <column index="104" width="100" />
+              <column index="105" width="100" />
+              <column index="106" width="100" />
+              <column index="107" width="100" />
+              <column index="108" width="100" />
+              <column index="109" width="100" />
+              <column index="110" width="100" />
+              <column index="111" width="100" />
+              <column index="112" width="100" />
+              <column index="113" width="100" />
+              <column index="114" width="100" />
+              <column index="115" width="100" />
+              <column index="116" width="100" />
+              <column index="117" width="100" />
+              <column index="118" width="100" />
+              <column index="119" width="100" />
+              <column index="120" width="100" />
+              <column index="121" width="100" />
+              <column index="122" width="100" />
+              <column index="123" width="100" />
+              <column index="124" width="100" />
+              <column index="125" width="100" />
+              <column index="126" width="100" />
+              <column index="127" width="100" />
+              <column index="128" width="100" />
+              <column index="129" width="100" />
+              <column index="130" width="100" />
+              <column index="131" width="100" />
+              <column index="132" width="100" />
+              <column index="133" width="100" />
+              <column index="134" width="100" />
+              <column index="135" width="100" />
+              <column index="136" width="100" />
+              <column index="137" width="100" />
+              <column index="138" width="100" />
+              <column index="139" width="100" />
+              <column index="140" width="100" />
+              <column index="141" width="100" />
+              <column index="142" width="100" />
+              <column index="143" width="100" />
+              <column index="144" width="100" />
+              <column index="145" width="100" />
+              <column index="146" width="100" />
+              <column index="147" width="100" />
+              <column index="148" width="100" />
+              <column index="149" width="100" />
+              <column index="150" width="100" />
+              <column index="151" width="100" />
+              <column index="152" width="100" />
+              <column index="153" width="100" />
+              <column index="154" width="100" />
+              <column index="155" width="100" />
+              <column index="156" width="100" />
+              <column index="157" width="100" />
+              <column index="158" width="100" />
+              <column index="159" width="100" />
+              <column index="160" width="100" />
+              <column index="161" width="100" />
+              <column index="162" width="100" />
+              <column index="163" width="100" />
+              <column index="164" width="100" />
+              <column index="165" width="100" />
+              <column index="166" width="100" />
+              <column index="167" width="100" />
+              <column index="168" width="100" />
+              <column index="169" width="100" />
+              <column index="170" width="100" />
+              <column index="171" width="100" />
+              <column index="172" width="100" />
+              <column index="173" width="100" />
+              <column index="174" width="100" />
+              <column index="175" width="100" />
+              <column index="176" width="100" />
+              <column index="177" width="100" />
+              <column index="178" width="100" />
+              <column index="179" width="100" />
+              <column index="180" width="100" />
+              <column index="181" width="100" />
+              <column index="182" width="100" />
+              <column index="183" width="100" />
+              <column index="184" width="100" />
+              <column index="185" width="100" />
+              <column index="186" width="100" />
+              <column index="187" width="100" />
+              <column index="188" width="100" />
+              <column index="189" width="100" />
+              <column index="190" width="100" />
+              <column index="191" width="100" />
+              <column index="192" width="100" />
+              <column index="193" width="100" />
+              <column index="194" width="100" />
+              <column index="195" width="100" />
+              <column index="196" width="100" />
+              <column index="197" width="100" />
+              <column index="198" width="100" />
+              <column index="199" width="100" />
+              <column index="200" width="100" />
+              <column index="201" width="100" />
+              <column index="202" width="100" />
+              <column index="203" width="100" />
+              <column index="204" width="100" />
+              <column index="205" width="100" />
+              <column index="206" width="100" />
+              <column index="207" width="100" />
+              <column index="208" width="100" />
+              <column index="209" width="100" />
+              <column index="210" width="100" />
+              <column index="211" width="100" />
+              <column index="212" width="100" />
+              <column index="213" width="100" />
+              <column index="214" width="100" />
+              <column index="215" width="100" />
+              <column index="216" width="100" />
+              <column index="217" width="100" />
+              <column index="218" width="100" />
+              <column index="219" width="100" />
+              <column index="220" width="100" />
+              <column index="221" width="100" />
+              <column index="222" width="100" />
+              <column index="223" width="100" />
+              <column index="224" width="100" />
+              <column index="225" width="100" />
+              <column index="226" width="100" />
+              <column index="227" width="100" />
+              <column index="228" width="100" />
+              <column index="229" width="100" />
             </state>
           </provider>
+          <provider editor-type-id="csv-text-editor" />
         </entry>
       </file>
     </leaf>
@@ -94,9 +324,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>magnet_data</find>
-      <find>pend_magnet_data</find>
-      <find>n_word</find>
       <find>esti</find>
       <find>latest_</find>
       <find>model</find>
@@ -108,10 +335,31 @@
       <find>y_test</find>
       <find>print</find>
       <find>loglike</find>
+      <find>plt.</find>
+      <find>subject</find>
+      <find>frames</find>
+      <find>tpose-isb</find>
+      <find>tpose</find>
+      <find>6mw</find>
+      <find>orientation</find>
+      <find>orient</find>
+      <find>ori</find>
+      <find>samp_rate</find>
+      <find>display_ad</find>
+      <find>display_diffs_plot</find>
+      <find>ad_display</find>
+      <find>file_info</find>
+      <find>d2</find>
+      <find>index=</find>
+      <find>pause</find>
+      <find>23</find>
+      <find>22</find>
     </findStrings>
     <replaceStrings>
       <replace>pend_magnet_data</replace>
       <replace>magnet_data</replace>
+      <replace>sampling_rate</replace>
+      <replace>ja_display_diffs_plot</replace>
     </replaceStrings>
   </component>
   <component name="Git.Settings">
@@ -127,13 +375,17 @@
         <option value="$PROJECT_DIR$/background_research/CRF_PyTorch.py" />
         <option value="$PROJECT_DIR$/background_research/PyML-ch16-lang-model.py" />
         <option value="$PROJECT_DIR$/background_research/CRF_seq_labelling.py" />
+        <option value="$PROJECT_DIR$/project_files/matfiles_analysis_notes.txt" />
+        <option value="$PROJECT_DIR$/project_files/output_files/D2_D3_stats_features.csv" />
+        <option value="$PROJECT_DIR$/project_files/output_files/JA_D3_stats_features.csv" />
+        <option value="$PROJECT_DIR$/project_files/matfiles_analysis.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="170" />
-    <option name="y" value="50" />
-    <option name="width" value="3500" />
+    <option name="x" value="1035" />
+    <option name="y" value="150" />
+    <option name="width" value="2220" />
     <option name="height" value="1810" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
@@ -160,8 +412,13 @@
             <path>
               <item name="indiv_proj" type="b2602c69:ProjectViewProjectNode" />
               <item name="indiv_proj" type="462c0819:PsiDirectoryNode" />
-              <item name="background_research" type="462c0819:PsiDirectoryNode" />
-              <item name="datasets" type="462c0819:PsiDirectoryNode" />
+              <item name="project_files" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="indiv_proj" type="b2602c69:ProjectViewProjectNode" />
+              <item name="indiv_proj" type="462c0819:PsiDirectoryNode" />
+              <item name="project_files" type="462c0819:PsiDirectoryNode" />
+              <item name="output_files" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -171,6 +428,12 @@
   </component>
   <component name="PropertiesComponent">
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\dheat\Dropbox\Imperial\Individual Project\indiv_proj\project_files" />
+      <recent name="C:\Users\dheat\Dropbox\Imperial\Individual Project\indiv_proj" />
+    </key>
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -184,7 +447,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.CRF_seq_labelling (1)">
+  <component name="RunManager" selected="Python.matfiles_analysis">
     <configuration name="CRF_PyTorch" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="indiv_proj" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -269,7 +532,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="PyML-ch16-lang-model" type="PythonConfigurationType" factoryName="Python" temporary="true">
+    <configuration name="matfiles_analysis" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="indiv_proj" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -277,11 +540,11 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/project_files" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/PyML-ch16-lang-model.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/project_files/matfiles_analysis.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -291,19 +554,19 @@
       <method v="2" />
     </configuration>
     <list>
-      <item itemvalue="Python.PyML-ch16-lang-model" />
       <item itemvalue="Python.CRF_seq_labelling" />
       <item itemvalue="Python.CRF_seq_labelling (1)" />
       <item itemvalue="Python.CRF_PyTorch" />
       <item itemvalue="Python.PyML-ch16-lang-model (1)" />
+      <item itemvalue="Python.matfiles_analysis" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.matfiles_analysis" />
         <item itemvalue="Python.CRF_seq_labelling (1)" />
         <item itemvalue="Python.PyML-ch16-lang-model (1)" />
         <item itemvalue="Python.CRF_PyTorch" />
         <item itemvalue="Python.CRF_seq_labelling" />
-        <item itemvalue="Python.PyML-ch16-lang-model" />
       </list>
     </recent_temporary>
   </component>
@@ -353,12 +616,12 @@
     <frame x="-6" y="-6" width="1549" height="837" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.22457068" />
-      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.49807692" visible="true" weight="0.22457068" />
+      <window_info id="Structure" order="1" sideWeight="0.5019231" side_tool="true" visible="true" weight="0.22457068" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.4993395" visible="true" weight="0.18387553" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.4993395" visible="true" weight="0.26449788" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.39886847" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -403,9 +666,6 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/CRF_seq_labelling.py" />
-    <entry file="file://$PROJECT_DIR$/background_research/imu_dataset.py">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
     <entry file="file://$PROJECT_DIR$/background_research/CRF_PyTorch.py" />
     <entry file="file://$PROJECT_DIR$/background_research/PyML-ch-16-IMDB-sentiment.py">
       <provider selected="true" editor-type-id="text-editor" />
@@ -419,10 +679,1694 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/background_research/PyML-ch16-lang-model.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="237">
+        <state relative-caret-position="629">
           <caret line="37" selection-start-line="37" selection-end-line="37" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/background_research/imu_dataset.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="459">
+          <caret line="40" column="14" selection-start-line="40" selection-start-column="14" selection-end-line="40" selection-end-column="14" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/project_files/output_files/D2_D3_stats_features" />
+    <entry file="file://$PROJECT_DIR$/project_files/matfiles_analysis_notes.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="51">
+          <caret line="3" column="35" selection-start-line="3" selection-start-column="35" selection-end-line="3" selection-end-column="35" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/project_files/output_files/D2_D3_stats_features.csv">
+      <provider selected="true" editor-type-id="csv-table-editor">
+        <state showInfoPanel="true" fixedHeaders="false" rowLines="3">
+          <column index="0" width="100" />
+          <column index="1" width="100" />
+          <column index="2" width="100" />
+          <column index="3" width="100" />
+          <column index="4" width="100" />
+          <column index="5" width="100" />
+          <column index="6" width="100" />
+          <column index="7" width="100" />
+          <column index="8" width="100" />
+          <column index="9" width="100" />
+          <column index="10" width="100" />
+          <column index="11" width="100" />
+          <column index="12" width="100" />
+          <column index="13" width="100" />
+          <column index="14" width="100" />
+          <column index="15" width="100" />
+          <column index="16" width="100" />
+          <column index="17" width="100" />
+          <column index="18" width="100" />
+          <column index="19" width="100" />
+          <column index="20" width="100" />
+          <column index="21" width="100" />
+          <column index="22" width="100" />
+          <column index="23" width="100" />
+          <column index="24" width="100" />
+          <column index="25" width="100" />
+          <column index="26" width="100" />
+          <column index="27" width="100" />
+          <column index="28" width="100" />
+          <column index="29" width="100" />
+          <column index="30" width="100" />
+          <column index="31" width="100" />
+          <column index="32" width="100" />
+          <column index="33" width="100" />
+          <column index="34" width="100" />
+          <column index="35" width="100" />
+          <column index="36" width="100" />
+          <column index="37" width="100" />
+          <column index="38" width="100" />
+          <column index="39" width="100" />
+          <column index="40" width="100" />
+          <column index="41" width="100" />
+          <column index="42" width="100" />
+          <column index="43" width="100" />
+          <column index="44" width="100" />
+          <column index="45" width="100" />
+          <column index="46" width="100" />
+          <column index="47" width="100" />
+          <column index="48" width="100" />
+          <column index="49" width="100" />
+          <column index="50" width="100" />
+          <column index="51" width="100" />
+          <column index="52" width="100" />
+          <column index="53" width="100" />
+          <column index="54" width="100" />
+          <column index="55" width="100" />
+          <column index="56" width="100" />
+          <column index="57" width="100" />
+          <column index="58" width="100" />
+          <column index="59" width="100" />
+          <column index="60" width="100" />
+          <column index="61" width="100" />
+          <column index="62" width="100" />
+          <column index="63" width="100" />
+          <column index="64" width="100" />
+          <column index="65" width="100" />
+          <column index="66" width="100" />
+          <column index="67" width="100" />
+          <column index="68" width="100" />
+          <column index="69" width="100" />
+          <column index="70" width="100" />
+          <column index="71" width="100" />
+          <column index="72" width="100" />
+          <column index="73" width="100" />
+          <column index="74" width="100" />
+          <column index="75" width="100" />
+          <column index="76" width="100" />
+          <column index="77" width="100" />
+          <column index="78" width="100" />
+          <column index="79" width="100" />
+          <column index="80" width="100" />
+          <column index="81" width="100" />
+          <column index="82" width="100" />
+          <column index="83" width="100" />
+          <column index="84" width="100" />
+          <column index="85" width="100" />
+          <column index="86" width="100" />
+          <column index="87" width="100" />
+          <column index="88" width="100" />
+          <column index="89" width="100" />
+          <column index="90" width="100" />
+          <column index="91" width="100" />
+          <column index="92" width="100" />
+          <column index="93" width="100" />
+          <column index="94" width="100" />
+          <column index="95" width="100" />
+          <column index="96" width="100" />
+          <column index="97" width="100" />
+          <column index="98" width="100" />
+          <column index="99" width="100" />
+          <column index="100" width="100" />
+          <column index="101" width="100" />
+          <column index="102" width="100" />
+          <column index="103" width="100" />
+          <column index="104" width="100" />
+          <column index="105" width="100" />
+          <column index="106" width="100" />
+          <column index="107" width="100" />
+          <column index="108" width="100" />
+          <column index="109" width="100" />
+          <column index="110" width="100" />
+          <column index="111" width="100" />
+          <column index="112" width="100" />
+          <column index="113" width="100" />
+          <column index="114" width="100" />
+          <column index="115" width="100" />
+          <column index="116" width="100" />
+          <column index="117" width="100" />
+          <column index="118" width="100" />
+          <column index="119" width="100" />
+          <column index="120" width="100" />
+          <column index="121" width="100" />
+          <column index="122" width="100" />
+          <column index="123" width="100" />
+          <column index="124" width="100" />
+          <column index="125" width="100" />
+          <column index="126" width="100" />
+          <column index="127" width="100" />
+          <column index="128" width="100" />
+          <column index="129" width="100" />
+          <column index="130" width="100" />
+          <column index="131" width="100" />
+          <column index="132" width="100" />
+          <column index="133" width="100" />
+          <column index="134" width="100" />
+          <column index="135" width="100" />
+          <column index="136" width="100" />
+          <column index="137" width="100" />
+          <column index="138" width="100" />
+          <column index="139" width="100" />
+          <column index="140" width="100" />
+          <column index="141" width="100" />
+          <column index="142" width="100" />
+          <column index="143" width="100" />
+          <column index="144" width="100" />
+          <column index="145" width="100" />
+          <column index="146" width="100" />
+          <column index="147" width="100" />
+          <column index="148" width="100" />
+          <column index="149" width="100" />
+          <column index="150" width="100" />
+          <column index="151" width="100" />
+          <column index="152" width="100" />
+          <column index="153" width="100" />
+          <column index="154" width="100" />
+          <column index="155" width="100" />
+          <column index="156" width="100" />
+          <column index="157" width="100" />
+          <column index="158" width="100" />
+          <column index="159" width="100" />
+          <column index="160" width="100" />
+          <column index="161" width="100" />
+          <column index="162" width="100" />
+          <column index="163" width="100" />
+          <column index="164" width="100" />
+          <column index="165" width="100" />
+          <column index="166" width="100" />
+          <column index="167" width="100" />
+          <column index="168" width="100" />
+          <column index="169" width="100" />
+          <column index="170" width="100" />
+          <column index="171" width="100" />
+          <column index="172" width="100" />
+          <column index="173" width="100" />
+          <column index="174" width="100" />
+          <column index="175" width="100" />
+          <column index="176" width="100" />
+          <column index="177" width="100" />
+          <column index="178" width="100" />
+          <column index="179" width="100" />
+          <column index="180" width="100" />
+          <column index="181" width="100" />
+          <column index="182" width="100" />
+          <column index="183" width="100" />
+          <column index="184" width="100" />
+          <column index="185" width="100" />
+          <column index="186" width="100" />
+          <column index="187" width="100" />
+          <column index="188" width="100" />
+          <column index="189" width="100" />
+          <column index="190" width="100" />
+          <column index="191" width="100" />
+          <column index="192" width="100" />
+          <column index="193" width="100" />
+          <column index="194" width="100" />
+          <column index="195" width="100" />
+          <column index="196" width="100" />
+          <column index="197" width="100" />
+          <column index="198" width="100" />
+          <column index="199" width="100" />
+          <column index="200" width="100" />
+          <column index="201" width="100" />
+          <column index="202" width="100" />
+          <column index="203" width="100" />
+          <column index="204" width="100" />
+          <column index="205" width="100" />
+          <column index="206" width="100" />
+          <column index="207" width="100" />
+          <column index="208" width="100" />
+          <column index="209" width="100" />
+          <column index="210" width="100" />
+          <column index="211" width="100" />
+          <column index="212" width="100" />
+          <column index="213" width="100" />
+          <column index="214" width="100" />
+          <column index="215" width="100" />
+          <column index="216" width="100" />
+          <column index="217" width="100" />
+          <column index="218" width="100" />
+          <column index="219" width="100" />
+          <column index="220" width="100" />
+          <column index="221" width="100" />
+          <column index="222" width="100" />
+          <column index="223" width="100" />
+          <column index="224" width="100" />
+          <column index="225" width="100" />
+          <column index="226" width="100" />
+          <column index="227" width="100" />
+          <column index="228" width="100" />
+          <column index="229" width="100" />
+        </state>
+      </provider>
+      <provider editor-type-id="text-editor">
+        <state relative-caret-position="51">
+          <caret line="3" lean-forward="true" selection-start-line="3" selection-end-line="3" />
+        </state>
+      </provider>
+      <provider editor-type-id="csv-text-editor">
+        <state relative-caret-position="51">
+          <caret line="3" lean-forward="true" selection-start-line="3" selection-end-line="3" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/project_files/output_files/D2_D3_D4_HC2_HC5_HC6_stats_features.csv">
+      <provider selected="true" editor-type-id="csv-table-editor">
+        <state showInfoPanel="true" fixedHeaders="false" rowLines="3">
+          <column index="0" width="100" />
+          <column index="1" width="100" />
+          <column index="2" width="100" />
+          <column index="3" width="100" />
+          <column index="4" width="100" />
+          <column index="5" width="100" />
+          <column index="6" width="100" />
+          <column index="7" width="100" />
+          <column index="8" width="100" />
+          <column index="9" width="100" />
+          <column index="10" width="100" />
+          <column index="11" width="100" />
+          <column index="12" width="100" />
+          <column index="13" width="100" />
+          <column index="14" width="100" />
+          <column index="15" width="100" />
+          <column index="16" width="100" />
+          <column index="17" width="100" />
+          <column index="18" width="100" />
+          <column index="19" width="100" />
+          <column index="20" width="100" />
+          <column index="21" width="100" />
+          <column index="22" width="100" />
+          <column index="23" width="100" />
+          <column index="24" width="100" />
+          <column index="25" width="100" />
+          <column index="26" width="100" />
+          <column index="27" width="100" />
+          <column index="28" width="100" />
+          <column index="29" width="100" />
+          <column index="30" width="100" />
+          <column index="31" width="100" />
+          <column index="32" width="100" />
+          <column index="33" width="100" />
+          <column index="34" width="100" />
+          <column index="35" width="100" />
+          <column index="36" width="100" />
+          <column index="37" width="100" />
+          <column index="38" width="100" />
+          <column index="39" width="100" />
+          <column index="40" width="100" />
+          <column index="41" width="100" />
+          <column index="42" width="100" />
+          <column index="43" width="100" />
+          <column index="44" width="100" />
+          <column index="45" width="100" />
+          <column index="46" width="100" />
+          <column index="47" width="100" />
+          <column index="48" width="100" />
+          <column index="49" width="100" />
+          <column index="50" width="100" />
+          <column index="51" width="100" />
+          <column index="52" width="100" />
+          <column index="53" width="100" />
+          <column index="54" width="100" />
+          <column index="55" width="100" />
+          <column index="56" width="100" />
+          <column index="57" width="100" />
+          <column index="58" width="100" />
+          <column index="59" width="100" />
+          <column index="60" width="100" />
+          <column index="61" width="100" />
+          <column index="62" width="100" />
+          <column index="63" width="100" />
+          <column index="64" width="100" />
+          <column index="65" width="100" />
+          <column index="66" width="100" />
+          <column index="67" width="100" />
+          <column index="68" width="100" />
+          <column index="69" width="100" />
+          <column index="70" width="100" />
+          <column index="71" width="100" />
+          <column index="72" width="100" />
+          <column index="73" width="100" />
+          <column index="74" width="100" />
+          <column index="75" width="100" />
+          <column index="76" width="100" />
+          <column index="77" width="100" />
+          <column index="78" width="100" />
+          <column index="79" width="100" />
+          <column index="80" width="100" />
+          <column index="81" width="100" />
+          <column index="82" width="100" />
+          <column index="83" width="100" />
+          <column index="84" width="100" />
+          <column index="85" width="100" />
+          <column index="86" width="100" />
+          <column index="87" width="100" />
+          <column index="88" width="100" />
+          <column index="89" width="100" />
+          <column index="90" width="100" />
+          <column index="91" width="100" />
+          <column index="92" width="100" />
+          <column index="93" width="100" />
+          <column index="94" width="100" />
+          <column index="95" width="100" />
+          <column index="96" width="100" />
+          <column index="97" width="100" />
+          <column index="98" width="100" />
+          <column index="99" width="100" />
+          <column index="100" width="100" />
+          <column index="101" width="100" />
+          <column index="102" width="100" />
+          <column index="103" width="100" />
+          <column index="104" width="100" />
+          <column index="105" width="100" />
+          <column index="106" width="100" />
+          <column index="107" width="100" />
+          <column index="108" width="100" />
+          <column index="109" width="100" />
+          <column index="110" width="100" />
+          <column index="111" width="100" />
+          <column index="112" width="100" />
+          <column index="113" width="100" />
+          <column index="114" width="100" />
+          <column index="115" width="100" />
+          <column index="116" width="100" />
+          <column index="117" width="100" />
+          <column index="118" width="100" />
+          <column index="119" width="100" />
+          <column index="120" width="100" />
+          <column index="121" width="100" />
+          <column index="122" width="100" />
+          <column index="123" width="100" />
+          <column index="124" width="100" />
+          <column index="125" width="100" />
+          <column index="126" width="100" />
+          <column index="127" width="100" />
+          <column index="128" width="100" />
+          <column index="129" width="100" />
+          <column index="130" width="100" />
+          <column index="131" width="100" />
+          <column index="132" width="100" />
+          <column index="133" width="100" />
+          <column index="134" width="100" />
+          <column index="135" width="100" />
+          <column index="136" width="100" />
+          <column index="137" width="100" />
+          <column index="138" width="100" />
+          <column index="139" width="100" />
+          <column index="140" width="100" />
+          <column index="141" width="100" />
+          <column index="142" width="100" />
+          <column index="143" width="100" />
+          <column index="144" width="100" />
+          <column index="145" width="100" />
+          <column index="146" width="100" />
+          <column index="147" width="100" />
+          <column index="148" width="100" />
+          <column index="149" width="100" />
+          <column index="150" width="100" />
+          <column index="151" width="100" />
+          <column index="152" width="100" />
+          <column index="153" width="100" />
+          <column index="154" width="100" />
+          <column index="155" width="100" />
+          <column index="156" width="100" />
+          <column index="157" width="100" />
+          <column index="158" width="100" />
+          <column index="159" width="100" />
+          <column index="160" width="100" />
+          <column index="161" width="100" />
+          <column index="162" width="100" />
+          <column index="163" width="100" />
+          <column index="164" width="100" />
+          <column index="165" width="100" />
+          <column index="166" width="100" />
+          <column index="167" width="100" />
+          <column index="168" width="100" />
+          <column index="169" width="100" />
+          <column index="170" width="100" />
+          <column index="171" width="100" />
+          <column index="172" width="100" />
+          <column index="173" width="100" />
+          <column index="174" width="100" />
+          <column index="175" width="100" />
+          <column index="176" width="100" />
+          <column index="177" width="100" />
+          <column index="178" width="100" />
+          <column index="179" width="100" />
+          <column index="180" width="100" />
+          <column index="181" width="100" />
+          <column index="182" width="100" />
+          <column index="183" width="100" />
+          <column index="184" width="100" />
+          <column index="185" width="100" />
+          <column index="186" width="100" />
+          <column index="187" width="100" />
+          <column index="188" width="100" />
+          <column index="189" width="100" />
+          <column index="190" width="100" />
+          <column index="191" width="100" />
+          <column index="192" width="100" />
+          <column index="193" width="100" />
+          <column index="194" width="100" />
+          <column index="195" width="100" />
+          <column index="196" width="100" />
+          <column index="197" width="100" />
+          <column index="198" width="100" />
+          <column index="199" width="100" />
+          <column index="200" width="100" />
+          <column index="201" width="100" />
+          <column index="202" width="100" />
+          <column index="203" width="100" />
+          <column index="204" width="100" />
+          <column index="205" width="100" />
+          <column index="206" width="100" />
+          <column index="207" width="100" />
+          <column index="208" width="100" />
+          <column index="209" width="100" />
+          <column index="210" width="100" />
+          <column index="211" width="100" />
+          <column index="212" width="100" />
+          <column index="213" width="100" />
+          <column index="214" width="100" />
+          <column index="215" width="100" />
+          <column index="216" width="100" />
+          <column index="217" width="100" />
+          <column index="218" width="100" />
+          <column index="219" width="100" />
+          <column index="220" width="100" />
+          <column index="221" width="100" />
+          <column index="222" width="100" />
+          <column index="223" width="100" />
+          <column index="224" width="100" />
+          <column index="225" width="100" />
+          <column index="226" width="100" />
+          <column index="227" width="100" />
+          <column index="228" width="100" />
+          <column index="229" width="100" />
+        </state>
+      </provider>
+      <provider editor-type-id="text-editor" />
+      <provider editor-type-id="csv-text-editor" />
+    </entry>
+    <entry file="file://$USER_HOME$/AppData/Local/Programs/Python/Python36/Lib/site-packages/pandas/core/frame.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="164">
+          <caret line="347" selection-start-line="347" selection-end-line="347" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/project_files/output_files/JA_all_stats_features.csv">
+      <provider selected="true" editor-type-id="csv-table-editor">
+        <state showInfoPanel="true" fixedHeaders="false" rowLines="3">
+          <column index="0" width="100" />
+          <column index="1" width="100" />
+          <column index="2" width="100" />
+          <column index="3" width="100" />
+          <column index="4" width="100" />
+          <column index="5" width="100" />
+          <column index="6" width="100" />
+          <column index="7" width="100" />
+          <column index="8" width="100" />
+          <column index="9" width="100" />
+          <column index="10" width="100" />
+          <column index="11" width="100" />
+          <column index="12" width="100" />
+          <column index="13" width="100" />
+          <column index="14" width="100" />
+          <column index="15" width="100" />
+          <column index="16" width="100" />
+          <column index="17" width="100" />
+          <column index="18" width="100" />
+          <column index="19" width="100" />
+          <column index="20" width="100" />
+          <column index="21" width="100" />
+          <column index="22" width="100" />
+          <column index="23" width="100" />
+          <column index="24" width="100" />
+          <column index="25" width="100" />
+          <column index="26" width="100" />
+          <column index="27" width="100" />
+          <column index="28" width="100" />
+          <column index="29" width="100" />
+          <column index="30" width="100" />
+          <column index="31" width="100" />
+          <column index="32" width="100" />
+          <column index="33" width="100" />
+          <column index="34" width="100" />
+          <column index="35" width="100" />
+          <column index="36" width="100" />
+          <column index="37" width="100" />
+          <column index="38" width="100" />
+          <column index="39" width="100" />
+          <column index="40" width="100" />
+          <column index="41" width="100" />
+          <column index="42" width="100" />
+          <column index="43" width="100" />
+          <column index="44" width="100" />
+          <column index="45" width="100" />
+          <column index="46" width="100" />
+          <column index="47" width="100" />
+          <column index="48" width="100" />
+          <column index="49" width="100" />
+          <column index="50" width="100" />
+          <column index="51" width="100" />
+          <column index="52" width="100" />
+          <column index="53" width="100" />
+          <column index="54" width="100" />
+          <column index="55" width="100" />
+          <column index="56" width="100" />
+          <column index="57" width="100" />
+          <column index="58" width="100" />
+          <column index="59" width="100" />
+          <column index="60" width="100" />
+          <column index="61" width="100" />
+          <column index="62" width="100" />
+          <column index="63" width="100" />
+          <column index="64" width="100" />
+          <column index="65" width="100" />
+          <column index="66" width="100" />
+          <column index="67" width="100" />
+          <column index="68" width="100" />
+          <column index="69" width="100" />
+          <column index="70" width="100" />
+          <column index="71" width="100" />
+          <column index="72" width="100" />
+          <column index="73" width="100" />
+          <column index="74" width="100" />
+          <column index="75" width="100" />
+          <column index="76" width="100" />
+          <column index="77" width="100" />
+          <column index="78" width="100" />
+          <column index="79" width="100" />
+          <column index="80" width="100" />
+          <column index="81" width="100" />
+          <column index="82" width="100" />
+          <column index="83" width="100" />
+          <column index="84" width="100" />
+          <column index="85" width="100" />
+          <column index="86" width="100" />
+          <column index="87" width="100" />
+          <column index="88" width="100" />
+          <column index="89" width="100" />
+          <column index="90" width="100" />
+          <column index="91" width="100" />
+          <column index="92" width="100" />
+          <column index="93" width="100" />
+          <column index="94" width="100" />
+          <column index="95" width="100" />
+          <column index="96" width="100" />
+          <column index="97" width="100" />
+          <column index="98" width="100" />
+          <column index="99" width="100" />
+          <column index="100" width="100" />
+          <column index="101" width="100" />
+          <column index="102" width="100" />
+          <column index="103" width="100" />
+          <column index="104" width="100" />
+          <column index="105" width="100" />
+          <column index="106" width="100" />
+          <column index="107" width="100" />
+          <column index="108" width="100" />
+          <column index="109" width="100" />
+          <column index="110" width="100" />
+          <column index="111" width="100" />
+          <column index="112" width="100" />
+          <column index="113" width="100" />
+          <column index="114" width="100" />
+          <column index="115" width="100" />
+          <column index="116" width="100" />
+          <column index="117" width="100" />
+          <column index="118" width="100" />
+          <column index="119" width="100" />
+          <column index="120" width="100" />
+          <column index="121" width="100" />
+          <column index="122" width="100" />
+          <column index="123" width="100" />
+          <column index="124" width="100" />
+          <column index="125" width="100" />
+          <column index="126" width="100" />
+          <column index="127" width="100" />
+          <column index="128" width="100" />
+          <column index="129" width="100" />
+          <column index="130" width="100" />
+          <column index="131" width="100" />
+          <column index="132" width="100" />
+          <column index="133" width="100" />
+          <column index="134" width="100" />
+          <column index="135" width="100" />
+          <column index="136" width="100" />
+          <column index="137" width="100" />
+          <column index="138" width="100" />
+          <column index="139" width="100" />
+          <column index="140" width="100" />
+          <column index="141" width="100" />
+          <column index="142" width="100" />
+          <column index="143" width="100" />
+          <column index="144" width="100" />
+          <column index="145" width="100" />
+          <column index="146" width="100" />
+          <column index="147" width="100" />
+          <column index="148" width="100" />
+          <column index="149" width="100" />
+          <column index="150" width="100" />
+          <column index="151" width="100" />
+          <column index="152" width="100" />
+          <column index="153" width="100" />
+          <column index="154" width="100" />
+          <column index="155" width="100" />
+          <column index="156" width="100" />
+          <column index="157" width="100" />
+          <column index="158" width="100" />
+          <column index="159" width="100" />
+          <column index="160" width="100" />
+          <column index="161" width="100" />
+          <column index="162" width="100" />
+          <column index="163" width="100" />
+          <column index="164" width="100" />
+          <column index="165" width="100" />
+          <column index="166" width="100" />
+          <column index="167" width="100" />
+          <column index="168" width="100" />
+          <column index="169" width="100" />
+          <column index="170" width="100" />
+          <column index="171" width="100" />
+          <column index="172" width="100" />
+          <column index="173" width="100" />
+          <column index="174" width="100" />
+          <column index="175" width="100" />
+          <column index="176" width="100" />
+          <column index="177" width="100" />
+          <column index="178" width="100" />
+          <column index="179" width="100" />
+          <column index="180" width="100" />
+          <column index="181" width="100" />
+          <column index="182" width="100" />
+          <column index="183" width="100" />
+          <column index="184" width="100" />
+          <column index="185" width="100" />
+          <column index="186" width="100" />
+          <column index="187" width="100" />
+          <column index="188" width="100" />
+          <column index="189" width="100" />
+          <column index="190" width="100" />
+          <column index="191" width="100" />
+          <column index="192" width="100" />
+          <column index="193" width="100" />
+          <column index="194" width="100" />
+          <column index="195" width="100" />
+          <column index="196" width="100" />
+          <column index="197" width="100" />
+          <column index="198" width="100" />
+          <column index="199" width="100" />
+          <column index="200" width="100" />
+          <column index="201" width="100" />
+          <column index="202" width="100" />
+          <column index="203" width="100" />
+          <column index="204" width="100" />
+          <column index="205" width="100" />
+          <column index="206" width="100" />
+          <column index="207" width="100" />
+          <column index="208" width="100" />
+          <column index="209" width="100" />
+          <column index="210" width="100" />
+          <column index="211" width="100" />
+          <column index="212" width="100" />
+          <column index="213" width="100" />
+          <column index="214" width="100" />
+          <column index="215" width="100" />
+          <column index="216" width="100" />
+          <column index="217" width="100" />
+          <column index="218" width="100" />
+          <column index="219" width="100" />
+          <column index="220" width="100" />
+          <column index="221" width="100" />
+          <column index="222" width="100" />
+          <column index="223" width="100" />
+          <column index="224" width="100" />
+          <column index="225" width="100" />
+          <column index="226" width="100" />
+          <column index="227" width="100" />
+          <column index="228" width="100" />
+          <column index="229" width="100" />
+        </state>
+      </provider>
+      <provider editor-type-id="csv-text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/project_files/output_files/JA_D3_stats_features.csv">
+      <provider selected="true" editor-type-id="csv-table-editor">
+        <state showInfoPanel="true" fixedHeaders="false" rowLines="3">
+          <column index="0" width="100" />
+          <column index="1" width="100" />
+          <column index="2" width="100" />
+          <column index="3" width="100" />
+          <column index="4" width="100" />
+          <column index="5" width="100" />
+          <column index="6" width="100" />
+          <column index="7" width="100" />
+          <column index="8" width="100" />
+          <column index="9" width="100" />
+          <column index="10" width="100" />
+          <column index="11" width="100" />
+          <column index="12" width="100" />
+          <column index="13" width="100" />
+          <column index="14" width="100" />
+          <column index="15" width="100" />
+          <column index="16" width="100" />
+          <column index="17" width="100" />
+          <column index="18" width="100" />
+          <column index="19" width="100" />
+          <column index="20" width="100" />
+          <column index="21" width="100" />
+          <column index="22" width="100" />
+          <column index="23" width="100" />
+          <column index="24" width="100" />
+          <column index="25" width="100" />
+          <column index="26" width="100" />
+          <column index="27" width="100" />
+          <column index="28" width="100" />
+          <column index="29" width="100" />
+          <column index="30" width="100" />
+          <column index="31" width="100" />
+          <column index="32" width="100" />
+          <column index="33" width="100" />
+          <column index="34" width="100" />
+          <column index="35" width="100" />
+          <column index="36" width="100" />
+          <column index="37" width="100" />
+          <column index="38" width="100" />
+          <column index="39" width="100" />
+          <column index="40" width="100" />
+          <column index="41" width="100" />
+          <column index="42" width="100" />
+          <column index="43" width="100" />
+          <column index="44" width="100" />
+          <column index="45" width="100" />
+          <column index="46" width="100" />
+          <column index="47" width="100" />
+          <column index="48" width="100" />
+          <column index="49" width="100" />
+          <column index="50" width="100" />
+          <column index="51" width="100" />
+          <column index="52" width="100" />
+          <column index="53" width="100" />
+          <column index="54" width="100" />
+          <column index="55" width="100" />
+          <column index="56" width="100" />
+          <column index="57" width="100" />
+          <column index="58" width="100" />
+          <column index="59" width="100" />
+          <column index="60" width="100" />
+          <column index="61" width="100" />
+          <column index="62" width="100" />
+          <column index="63" width="100" />
+          <column index="64" width="100" />
+          <column index="65" width="100" />
+          <column index="66" width="100" />
+          <column index="67" width="100" />
+          <column index="68" width="100" />
+          <column index="69" width="100" />
+          <column index="70" width="100" />
+          <column index="71" width="100" />
+          <column index="72" width="100" />
+          <column index="73" width="100" />
+          <column index="74" width="100" />
+          <column index="75" width="100" />
+          <column index="76" width="100" />
+          <column index="77" width="100" />
+          <column index="78" width="100" />
+          <column index="79" width="100" />
+          <column index="80" width="100" />
+          <column index="81" width="100" />
+          <column index="82" width="100" />
+          <column index="83" width="100" />
+          <column index="84" width="100" />
+          <column index="85" width="100" />
+          <column index="86" width="100" />
+          <column index="87" width="100" />
+          <column index="88" width="100" />
+          <column index="89" width="100" />
+          <column index="90" width="100" />
+          <column index="91" width="100" />
+          <column index="92" width="100" />
+          <column index="93" width="100" />
+          <column index="94" width="100" />
+          <column index="95" width="100" />
+          <column index="96" width="100" />
+          <column index="97" width="100" />
+          <column index="98" width="100" />
+          <column index="99" width="100" />
+          <column index="100" width="100" />
+          <column index="101" width="100" />
+          <column index="102" width="100" />
+          <column index="103" width="100" />
+          <column index="104" width="100" />
+          <column index="105" width="100" />
+          <column index="106" width="100" />
+          <column index="107" width="100" />
+          <column index="108" width="100" />
+          <column index="109" width="100" />
+          <column index="110" width="100" />
+          <column index="111" width="100" />
+          <column index="112" width="100" />
+          <column index="113" width="100" />
+          <column index="114" width="100" />
+          <column index="115" width="100" />
+          <column index="116" width="100" />
+          <column index="117" width="100" />
+          <column index="118" width="100" />
+          <column index="119" width="100" />
+          <column index="120" width="100" />
+          <column index="121" width="100" />
+          <column index="122" width="100" />
+          <column index="123" width="100" />
+          <column index="124" width="100" />
+          <column index="125" width="100" />
+          <column index="126" width="100" />
+          <column index="127" width="100" />
+          <column index="128" width="100" />
+          <column index="129" width="100" />
+          <column index="130" width="100" />
+          <column index="131" width="100" />
+          <column index="132" width="100" />
+          <column index="133" width="100" />
+          <column index="134" width="100" />
+          <column index="135" width="100" />
+          <column index="136" width="100" />
+          <column index="137" width="100" />
+          <column index="138" width="100" />
+          <column index="139" width="100" />
+          <column index="140" width="100" />
+          <column index="141" width="100" />
+          <column index="142" width="100" />
+          <column index="143" width="100" />
+          <column index="144" width="100" />
+          <column index="145" width="100" />
+          <column index="146" width="100" />
+          <column index="147" width="100" />
+          <column index="148" width="100" />
+          <column index="149" width="100" />
+          <column index="150" width="100" />
+          <column index="151" width="100" />
+          <column index="152" width="100" />
+          <column index="153" width="100" />
+          <column index="154" width="100" />
+          <column index="155" width="100" />
+          <column index="156" width="100" />
+          <column index="157" width="100" />
+          <column index="158" width="100" />
+          <column index="159" width="100" />
+          <column index="160" width="100" />
+          <column index="161" width="100" />
+          <column index="162" width="100" />
+          <column index="163" width="100" />
+          <column index="164" width="100" />
+          <column index="165" width="100" />
+          <column index="166" width="100" />
+          <column index="167" width="100" />
+          <column index="168" width="100" />
+          <column index="169" width="100" />
+          <column index="170" width="100" />
+          <column index="171" width="100" />
+          <column index="172" width="100" />
+          <column index="173" width="100" />
+          <column index="174" width="100" />
+          <column index="175" width="100" />
+          <column index="176" width="100" />
+          <column index="177" width="100" />
+          <column index="178" width="100" />
+          <column index="179" width="100" />
+          <column index="180" width="100" />
+          <column index="181" width="100" />
+          <column index="182" width="100" />
+          <column index="183" width="100" />
+          <column index="184" width="100" />
+          <column index="185" width="100" />
+          <column index="186" width="100" />
+          <column index="187" width="100" />
+          <column index="188" width="100" />
+          <column index="189" width="100" />
+          <column index="190" width="100" />
+          <column index="191" width="100" />
+          <column index="192" width="100" />
+          <column index="193" width="100" />
+          <column index="194" width="100" />
+          <column index="195" width="100" />
+          <column index="196" width="100" />
+          <column index="197" width="100" />
+          <column index="198" width="100" />
+          <column index="199" width="100" />
+          <column index="200" width="100" />
+          <column index="201" width="100" />
+          <column index="202" width="100" />
+          <column index="203" width="100" />
+          <column index="204" width="100" />
+          <column index="205" width="100" />
+          <column index="206" width="100" />
+          <column index="207" width="100" />
+          <column index="208" width="100" />
+          <column index="209" width="100" />
+          <column index="210" width="100" />
+          <column index="211" width="100" />
+          <column index="212" width="100" />
+          <column index="213" width="100" />
+          <column index="214" width="100" />
+          <column index="215" width="100" />
+          <column index="216" width="100" />
+          <column index="217" width="100" />
+          <column index="218" width="100" />
+          <column index="219" width="100" />
+          <column index="220" width="100" />
+          <column index="221" width="100" />
+          <column index="222" width="100" />
+          <column index="223" width="100" />
+          <column index="224" width="100" />
+          <column index="225" width="100" />
+          <column index="226" width="100" />
+          <column index="227" width="100" />
+          <column index="228" width="100" />
+          <column index="229" width="100" />
+          <column index="230" width="100" />
+          <column index="231" width="100" />
+          <column index="232" width="100" />
+          <column index="233" width="100" />
+          <column index="234" width="100" />
+          <column index="235" width="100" />
+          <column index="236" width="100" />
+          <column index="237" width="100" />
+          <column index="238" width="100" />
+          <column index="239" width="100" />
+          <column index="240" width="100" />
+          <column index="241" width="100" />
+          <column index="242" width="100" />
+          <column index="243" width="100" />
+          <column index="244" width="100" />
+          <column index="245" width="100" />
+          <column index="246" width="100" />
+          <column index="247" width="100" />
+          <column index="248" width="100" />
+          <column index="249" width="100" />
+          <column index="250" width="100" />
+          <column index="251" width="100" />
+          <column index="252" width="100" />
+          <column index="253" width="100" />
+          <column index="254" width="100" />
+          <column index="255" width="100" />
+          <column index="256" width="100" />
+          <column index="257" width="100" />
+          <column index="258" width="100" />
+          <column index="259" width="100" />
+          <column index="260" width="100" />
+          <column index="261" width="100" />
+          <column index="262" width="100" />
+          <column index="263" width="100" />
+          <column index="264" width="100" />
+          <column index="265" width="100" />
+          <column index="266" width="100" />
+          <column index="267" width="100" />
+          <column index="268" width="100" />
+          <column index="269" width="100" />
+          <column index="270" width="100" />
+          <column index="271" width="100" />
+          <column index="272" width="100" />
+          <column index="273" width="100" />
+          <column index="274" width="100" />
+          <column index="275" width="100" />
+          <column index="276" width="100" />
+          <column index="277" width="100" />
+          <column index="278" width="100" />
+          <column index="279" width="100" />
+          <column index="280" width="100" />
+          <column index="281" width="100" />
+          <column index="282" width="100" />
+          <column index="283" width="100" />
+          <column index="284" width="100" />
+          <column index="285" width="100" />
+          <column index="286" width="100" />
+          <column index="287" width="100" />
+          <column index="288" width="100" />
+          <column index="289" width="100" />
+          <column index="290" width="100" />
+          <column index="291" width="100" />
+          <column index="292" width="100" />
+          <column index="293" width="100" />
+          <column index="294" width="100" />
+          <column index="295" width="100" />
+          <column index="296" width="100" />
+          <column index="297" width="100" />
+          <column index="298" width="100" />
+          <column index="299" width="100" />
+          <column index="300" width="100" />
+          <column index="301" width="100" />
+          <column index="302" width="100" />
+          <column index="303" width="100" />
+          <column index="304" width="100" />
+          <column index="305" width="100" />
+          <column index="306" width="100" />
+          <column index="307" width="100" />
+          <column index="308" width="100" />
+          <column index="309" width="100" />
+          <column index="310" width="100" />
+          <column index="311" width="100" />
+          <column index="312" width="100" />
+          <column index="313" width="100" />
+          <column index="314" width="100" />
+          <column index="315" width="100" />
+          <column index="316" width="100" />
+          <column index="317" width="100" />
+          <column index="318" width="100" />
+          <column index="319" width="100" />
+          <column index="320" width="100" />
+          <column index="321" width="100" />
+          <column index="322" width="100" />
+          <column index="323" width="100" />
+          <column index="324" width="100" />
+          <column index="325" width="100" />
+          <column index="326" width="100" />
+          <column index="327" width="100" />
+          <column index="328" width="100" />
+          <column index="329" width="100" />
+          <column index="330" width="100" />
+          <column index="331" width="100" />
+          <column index="332" width="100" />
+          <column index="333" width="100" />
+          <column index="334" width="100" />
+          <column index="335" width="100" />
+          <column index="336" width="100" />
+          <column index="337" width="100" />
+          <column index="338" width="100" />
+          <column index="339" width="100" />
+          <column index="340" width="100" />
+          <column index="341" width="100" />
+          <column index="342" width="100" />
+          <column index="343" width="100" />
+          <column index="344" width="100" />
+          <column index="345" width="100" />
+          <column index="346" width="100" />
+          <column index="347" width="100" />
+          <column index="348" width="100" />
+          <column index="349" width="100" />
+          <column index="350" width="100" />
+          <column index="351" width="100" />
+          <column index="352" width="100" />
+          <column index="353" width="100" />
+          <column index="354" width="100" />
+          <column index="355" width="100" />
+          <column index="356" width="100" />
+          <column index="357" width="100" />
+          <column index="358" width="100" />
+          <column index="359" width="100" />
+          <column index="360" width="100" />
+          <column index="361" width="100" />
+          <column index="362" width="100" />
+          <column index="363" width="100" />
+          <column index="364" width="100" />
+          <column index="365" width="100" />
+          <column index="366" width="100" />
+          <column index="367" width="100" />
+          <column index="368" width="100" />
+          <column index="369" width="100" />
+          <column index="370" width="100" />
+          <column index="371" width="100" />
+          <column index="372" width="100" />
+          <column index="373" width="100" />
+          <column index="374" width="100" />
+          <column index="375" width="100" />
+          <column index="376" width="100" />
+          <column index="377" width="100" />
+          <column index="378" width="100" />
+          <column index="379" width="100" />
+          <column index="380" width="100" />
+          <column index="381" width="100" />
+          <column index="382" width="100" />
+          <column index="383" width="100" />
+          <column index="384" width="100" />
+          <column index="385" width="100" />
+          <column index="386" width="100" />
+          <column index="387" width="100" />
+          <column index="388" width="100" />
+          <column index="389" width="100" />
+          <column index="390" width="100" />
+          <column index="391" width="100" />
+          <column index="392" width="100" />
+          <column index="393" width="100" />
+          <column index="394" width="100" />
+          <column index="395" width="100" />
+          <column index="396" width="100" />
+          <column index="397" width="100" />
+          <column index="398" width="100" />
+          <column index="399" width="100" />
+          <column index="400" width="100" />
+          <column index="401" width="100" />
+          <column index="402" width="100" />
+          <column index="403" width="100" />
+          <column index="404" width="100" />
+          <column index="405" width="100" />
+          <column index="406" width="100" />
+          <column index="407" width="100" />
+          <column index="408" width="100" />
+          <column index="409" width="100" />
+          <column index="410" width="100" />
+          <column index="411" width="100" />
+          <column index="412" width="100" />
+          <column index="413" width="100" />
+          <column index="414" width="100" />
+          <column index="415" width="100" />
+          <column index="416" width="100" />
+          <column index="417" width="100" />
+          <column index="418" width="100" />
+          <column index="419" width="100" />
+          <column index="420" width="100" />
+          <column index="421" width="100" />
+          <column index="422" width="100" />
+          <column index="423" width="100" />
+          <column index="424" width="100" />
+          <column index="425" width="100" />
+          <column index="426" width="100" />
+          <column index="427" width="100" />
+          <column index="428" width="100" />
+          <column index="429" width="100" />
+          <column index="430" width="100" />
+          <column index="431" width="100" />
+          <column index="432" width="100" />
+          <column index="433" width="100" />
+          <column index="434" width="100" />
+          <column index="435" width="100" />
+          <column index="436" width="100" />
+          <column index="437" width="100" />
+          <column index="438" width="100" />
+          <column index="439" width="100" />
+          <column index="440" width="100" />
+          <column index="441" width="100" />
+          <column index="442" width="100" />
+          <column index="443" width="100" />
+          <column index="444" width="100" />
+          <column index="445" width="100" />
+          <column index="446" width="100" />
+          <column index="447" width="100" />
+          <column index="448" width="100" />
+          <column index="449" width="100" />
+          <column index="450" width="100" />
+          <column index="451" width="100" />
+          <column index="452" width="100" />
+          <column index="453" width="100" />
+          <column index="454" width="100" />
+          <column index="455" width="100" />
+          <column index="456" width="100" />
+          <column index="457" width="100" />
+          <column index="458" width="100" />
+          <column index="459" width="100" />
+          <column index="460" width="100" />
+          <column index="461" width="100" />
+          <column index="462" width="100" />
+          <column index="463" width="100" />
+          <column index="464" width="100" />
+          <column index="465" width="100" />
+          <column index="466" width="100" />
+          <column index="467" width="100" />
+          <column index="468" width="100" />
+          <column index="469" width="100" />
+          <column index="470" width="100" />
+          <column index="471" width="100" />
+          <column index="472" width="100" />
+          <column index="473" width="100" />
+          <column index="474" width="100" />
+          <column index="475" width="100" />
+          <column index="476" width="100" />
+          <column index="477" width="100" />
+          <column index="478" width="100" />
+          <column index="479" width="100" />
+          <column index="480" width="100" />
+          <column index="481" width="100" />
+          <column index="482" width="100" />
+          <column index="483" width="100" />
+          <column index="484" width="100" />
+          <column index="485" width="100" />
+          <column index="486" width="100" />
+          <column index="487" width="100" />
+          <column index="488" width="100" />
+          <column index="489" width="100" />
+          <column index="490" width="100" />
+          <column index="491" width="100" />
+          <column index="492" width="100" />
+          <column index="493" width="100" />
+          <column index="494" width="100" />
+          <column index="495" width="100" />
+          <column index="496" width="100" />
+          <column index="497" width="100" />
+          <column index="498" width="100" />
+          <column index="499" width="100" />
+          <column index="500" width="100" />
+          <column index="501" width="100" />
+          <column index="502" width="100" />
+          <column index="503" width="100" />
+          <column index="504" width="100" />
+          <column index="505" width="100" />
+          <column index="506" width="100" />
+          <column index="507" width="100" />
+          <column index="508" width="100" />
+          <column index="509" width="100" />
+          <column index="510" width="100" />
+          <column index="511" width="100" />
+          <column index="512" width="100" />
+          <column index="513" width="100" />
+          <column index="514" width="100" />
+          <column index="515" width="100" />
+          <column index="516" width="100" />
+          <column index="517" width="100" />
+          <column index="518" width="100" />
+          <column index="519" width="100" />
+          <column index="520" width="100" />
+          <column index="521" width="100" />
+          <column index="522" width="100" />
+          <column index="523" width="100" />
+          <column index="524" width="100" />
+          <column index="525" width="100" />
+          <column index="526" width="100" />
+          <column index="527" width="100" />
+          <column index="528" width="100" />
+          <column index="529" width="100" />
+          <column index="530" width="100" />
+          <column index="531" width="100" />
+          <column index="532" width="100" />
+          <column index="533" width="100" />
+          <column index="534" width="100" />
+          <column index="535" width="100" />
+          <column index="536" width="100" />
+          <column index="537" width="100" />
+          <column index="538" width="100" />
+          <column index="539" width="100" />
+          <column index="540" width="100" />
+          <column index="541" width="100" />
+          <column index="542" width="100" />
+          <column index="543" width="100" />
+          <column index="544" width="100" />
+          <column index="545" width="100" />
+          <column index="546" width="100" />
+          <column index="547" width="100" />
+          <column index="548" width="100" />
+          <column index="549" width="100" />
+          <column index="550" width="100" />
+          <column index="551" width="100" />
+          <column index="552" width="100" />
+          <column index="553" width="100" />
+          <column index="554" width="100" />
+          <column index="555" width="100" />
+          <column index="556" width="100" />
+          <column index="557" width="100" />
+          <column index="558" width="100" />
+          <column index="559" width="100" />
+          <column index="560" width="100" />
+          <column index="561" width="100" />
+          <column index="562" width="100" />
+          <column index="563" width="100" />
+          <column index="564" width="100" />
+          <column index="565" width="100" />
+          <column index="566" width="100" />
+          <column index="567" width="100" />
+          <column index="568" width="100" />
+          <column index="569" width="100" />
+          <column index="570" width="100" />
+          <column index="571" width="100" />
+          <column index="572" width="100" />
+          <column index="573" width="100" />
+          <column index="574" width="100" />
+          <column index="575" width="100" />
+          <column index="576" width="100" />
+          <column index="577" width="100" />
+          <column index="578" width="100" />
+          <column index="579" width="100" />
+          <column index="580" width="100" />
+          <column index="581" width="100" />
+          <column index="582" width="100" />
+          <column index="583" width="100" />
+          <column index="584" width="100" />
+          <column index="585" width="100" />
+          <column index="586" width="100" />
+          <column index="587" width="100" />
+          <column index="588" width="100" />
+          <column index="589" width="100" />
+          <column index="590" width="100" />
+          <column index="591" width="100" />
+          <column index="592" width="100" />
+          <column index="593" width="100" />
+          <column index="594" width="100" />
+          <column index="595" width="100" />
+          <column index="596" width="100" />
+          <column index="597" width="100" />
+          <column index="598" width="100" />
+          <column index="599" width="100" />
+          <column index="600" width="100" />
+          <column index="601" width="100" />
+          <column index="602" width="100" />
+          <column index="603" width="100" />
+          <column index="604" width="100" />
+          <column index="605" width="100" />
+          <column index="606" width="100" />
+          <column index="607" width="100" />
+          <column index="608" width="100" />
+          <column index="609" width="100" />
+          <column index="610" width="100" />
+          <column index="611" width="100" />
+          <column index="612" width="100" />
+          <column index="613" width="100" />
+          <column index="614" width="100" />
+          <column index="615" width="100" />
+          <column index="616" width="100" />
+          <column index="617" width="100" />
+          <column index="618" width="100" />
+          <column index="619" width="100" />
+          <column index="620" width="100" />
+          <column index="621" width="100" />
+          <column index="622" width="100" />
+          <column index="623" width="100" />
+          <column index="624" width="100" />
+          <column index="625" width="100" />
+          <column index="626" width="100" />
+          <column index="627" width="100" />
+          <column index="628" width="100" />
+          <column index="629" width="100" />
+          <column index="630" width="100" />
+          <column index="631" width="100" />
+          <column index="632" width="100" />
+          <column index="633" width="100" />
+          <column index="634" width="100" />
+          <column index="635" width="100" />
+          <column index="636" width="100" />
+          <column index="637" width="100" />
+          <column index="638" width="100" />
+          <column index="639" width="100" />
+          <column index="640" width="100" />
+          <column index="641" width="100" />
+          <column index="642" width="100" />
+          <column index="643" width="100" />
+          <column index="644" width="100" />
+          <column index="645" width="100" />
+          <column index="646" width="100" />
+          <column index="647" width="100" />
+          <column index="648" width="100" />
+          <column index="649" width="100" />
+          <column index="650" width="100" />
+          <column index="651" width="100" />
+          <column index="652" width="100" />
+          <column index="653" width="100" />
+          <column index="654" width="100" />
+          <column index="655" width="100" />
+          <column index="656" width="100" />
+          <column index="657" width="100" />
+          <column index="658" width="100" />
+          <column index="659" width="100" />
+          <column index="660" width="100" />
+          <column index="661" width="100" />
+          <column index="662" width="100" />
+          <column index="663" width="100" />
+          <column index="664" width="100" />
+          <column index="665" width="100" />
+          <column index="666" width="100" />
+          <column index="667" width="100" />
+          <column index="668" width="100" />
+          <column index="669" width="100" />
+          <column index="670" width="100" />
+          <column index="671" width="100" />
+          <column index="672" width="100" />
+          <column index="673" width="100" />
+          <column index="674" width="100" />
+          <column index="675" width="100" />
+          <column index="676" width="100" />
+          <column index="677" width="100" />
+          <column index="678" width="100" />
+          <column index="679" width="100" />
+          <column index="680" width="100" />
+          <column index="681" width="100" />
+          <column index="682" width="100" />
+          <column index="683" width="100" />
+          <column index="684" width="100" />
+          <column index="685" width="100" />
+          <column index="686" width="100" />
+          <column index="687" width="100" />
+        </state>
+      </provider>
+      <provider editor-type-id="csv-text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/project_files/output_files/JA_D2_stats_features.csv">
+      <provider selected="true" editor-type-id="csv-table-editor">
+        <state showInfoPanel="true" fixedHeaders="false" rowLines="3">
+          <column index="0" width="100" />
+          <column index="1" width="100" />
+          <column index="2" width="100" />
+          <column index="3" width="100" />
+          <column index="4" width="100" />
+          <column index="5" width="100" />
+          <column index="6" width="100" />
+          <column index="7" width="100" />
+          <column index="8" width="100" />
+          <column index="9" width="100" />
+          <column index="10" width="100" />
+          <column index="11" width="100" />
+          <column index="12" width="100" />
+          <column index="13" width="100" />
+          <column index="14" width="100" />
+          <column index="15" width="100" />
+          <column index="16" width="100" />
+          <column index="17" width="100" />
+          <column index="18" width="100" />
+          <column index="19" width="100" />
+          <column index="20" width="100" />
+          <column index="21" width="100" />
+          <column index="22" width="100" />
+          <column index="23" width="100" />
+          <column index="24" width="100" />
+          <column index="25" width="100" />
+          <column index="26" width="100" />
+          <column index="27" width="100" />
+          <column index="28" width="100" />
+          <column index="29" width="100" />
+          <column index="30" width="100" />
+          <column index="31" width="100" />
+          <column index="32" width="100" />
+          <column index="33" width="100" />
+          <column index="34" width="100" />
+          <column index="35" width="100" />
+          <column index="36" width="100" />
+          <column index="37" width="100" />
+          <column index="38" width="100" />
+          <column index="39" width="100" />
+          <column index="40" width="100" />
+          <column index="41" width="100" />
+          <column index="42" width="100" />
+          <column index="43" width="100" />
+          <column index="44" width="100" />
+          <column index="45" width="100" />
+          <column index="46" width="100" />
+          <column index="47" width="100" />
+          <column index="48" width="100" />
+          <column index="49" width="100" />
+          <column index="50" width="100" />
+          <column index="51" width="100" />
+          <column index="52" width="100" />
+          <column index="53" width="100" />
+          <column index="54" width="100" />
+          <column index="55" width="100" />
+          <column index="56" width="100" />
+          <column index="57" width="100" />
+          <column index="58" width="100" />
+          <column index="59" width="100" />
+          <column index="60" width="100" />
+          <column index="61" width="100" />
+          <column index="62" width="100" />
+          <column index="63" width="100" />
+          <column index="64" width="100" />
+          <column index="65" width="100" />
+          <column index="66" width="100" />
+          <column index="67" width="100" />
+          <column index="68" width="100" />
+          <column index="69" width="100" />
+          <column index="70" width="100" />
+          <column index="71" width="100" />
+          <column index="72" width="100" />
+          <column index="73" width="100" />
+          <column index="74" width="100" />
+          <column index="75" width="100" />
+          <column index="76" width="100" />
+          <column index="77" width="100" />
+          <column index="78" width="100" />
+          <column index="79" width="100" />
+          <column index="80" width="100" />
+          <column index="81" width="100" />
+          <column index="82" width="100" />
+          <column index="83" width="100" />
+          <column index="84" width="100" />
+          <column index="85" width="100" />
+          <column index="86" width="100" />
+          <column index="87" width="100" />
+          <column index="88" width="100" />
+          <column index="89" width="100" />
+          <column index="90" width="100" />
+          <column index="91" width="100" />
+          <column index="92" width="100" />
+          <column index="93" width="100" />
+          <column index="94" width="100" />
+          <column index="95" width="100" />
+          <column index="96" width="100" />
+          <column index="97" width="100" />
+          <column index="98" width="100" />
+          <column index="99" width="100" />
+          <column index="100" width="100" />
+          <column index="101" width="100" />
+          <column index="102" width="100" />
+          <column index="103" width="100" />
+          <column index="104" width="100" />
+          <column index="105" width="100" />
+          <column index="106" width="100" />
+          <column index="107" width="100" />
+          <column index="108" width="100" />
+          <column index="109" width="100" />
+          <column index="110" width="100" />
+          <column index="111" width="100" />
+          <column index="112" width="100" />
+          <column index="113" width="100" />
+          <column index="114" width="100" />
+          <column index="115" width="100" />
+          <column index="116" width="100" />
+          <column index="117" width="100" />
+          <column index="118" width="100" />
+          <column index="119" width="100" />
+          <column index="120" width="100" />
+          <column index="121" width="100" />
+          <column index="122" width="100" />
+          <column index="123" width="100" />
+          <column index="124" width="100" />
+          <column index="125" width="100" />
+          <column index="126" width="100" />
+          <column index="127" width="100" />
+          <column index="128" width="100" />
+          <column index="129" width="100" />
+          <column index="130" width="100" />
+          <column index="131" width="100" />
+          <column index="132" width="100" />
+          <column index="133" width="100" />
+          <column index="134" width="100" />
+          <column index="135" width="100" />
+          <column index="136" width="100" />
+          <column index="137" width="100" />
+          <column index="138" width="100" />
+          <column index="139" width="100" />
+          <column index="140" width="100" />
+          <column index="141" width="100" />
+          <column index="142" width="100" />
+          <column index="143" width="100" />
+          <column index="144" width="100" />
+          <column index="145" width="100" />
+          <column index="146" width="100" />
+          <column index="147" width="100" />
+          <column index="148" width="100" />
+          <column index="149" width="100" />
+          <column index="150" width="100" />
+          <column index="151" width="100" />
+          <column index="152" width="100" />
+          <column index="153" width="100" />
+          <column index="154" width="100" />
+          <column index="155" width="100" />
+          <column index="156" width="100" />
+          <column index="157" width="100" />
+          <column index="158" width="100" />
+          <column index="159" width="100" />
+          <column index="160" width="100" />
+          <column index="161" width="100" />
+          <column index="162" width="100" />
+          <column index="163" width="100" />
+          <column index="164" width="100" />
+          <column index="165" width="100" />
+          <column index="166" width="100" />
+          <column index="167" width="100" />
+          <column index="168" width="100" />
+          <column index="169" width="100" />
+          <column index="170" width="100" />
+          <column index="171" width="100" />
+          <column index="172" width="100" />
+          <column index="173" width="100" />
+          <column index="174" width="100" />
+          <column index="175" width="100" />
+          <column index="176" width="100" />
+          <column index="177" width="100" />
+          <column index="178" width="100" />
+          <column index="179" width="100" />
+          <column index="180" width="100" />
+          <column index="181" width="100" />
+          <column index="182" width="100" />
+          <column index="183" width="100" />
+          <column index="184" width="100" />
+          <column index="185" width="100" />
+          <column index="186" width="100" />
+          <column index="187" width="100" />
+          <column index="188" width="100" />
+          <column index="189" width="100" />
+          <column index="190" width="100" />
+          <column index="191" width="100" />
+          <column index="192" width="100" />
+          <column index="193" width="100" />
+          <column index="194" width="100" />
+          <column index="195" width="100" />
+          <column index="196" width="100" />
+          <column index="197" width="100" />
+          <column index="198" width="100" />
+          <column index="199" width="100" />
+          <column index="200" width="100" />
+          <column index="201" width="100" />
+          <column index="202" width="100" />
+          <column index="203" width="100" />
+          <column index="204" width="100" />
+          <column index="205" width="100" />
+          <column index="206" width="100" />
+          <column index="207" width="100" />
+          <column index="208" width="100" />
+          <column index="209" width="100" />
+          <column index="210" width="100" />
+          <column index="211" width="100" />
+          <column index="212" width="100" />
+          <column index="213" width="100" />
+          <column index="214" width="100" />
+          <column index="215" width="100" />
+          <column index="216" width="100" />
+          <column index="217" width="100" />
+          <column index="218" width="100" />
+          <column index="219" width="100" />
+          <column index="220" width="100" />
+          <column index="221" width="100" />
+          <column index="222" width="100" />
+          <column index="223" width="100" />
+          <column index="224" width="100" />
+          <column index="225" width="100" />
+          <column index="226" width="100" />
+          <column index="227" width="100" />
+          <column index="228" width="100" />
+          <column index="229" width="100" />
+        </state>
+      </provider>
+      <provider editor-type-id="csv-text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/project_files/matfiles_analysis.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="4250">
+          <caret line="313" column="1" selection-start-line="313" selection-start-column="1" selection-end-line="313" selection-end-column="1" />
           <folding>
-            <element signature="e#183#201#0" expanded="true" />
+            <element signature="e#0#22#0" expanded="true" />
+            <marker date="1556911366807" expanded="true" signature="3264:16007" ph="..." />
+            <marker date="1556911366807" expanded="true" signature="8403:15834" ph="..." />
           </folding>
         </state>
       </provider>
