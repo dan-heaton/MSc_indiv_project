@@ -13,21 +13,27 @@ sampling_rate = 60      #In Hz
 source_dir = "C:\\"
 
 ja_dir = source_dir + "6minwalk-matfiles\\joint_angles_only_matfiles\\"
+ja_short_file_names = ["D2", "D3", "D4", "HC2", "HC5", "HC6"]
 ad_dir = source_dir + "6minwalk-matfiles\\all_data_mat_files\\"
-joint_angle_filenames = ["D2", "D3", "D4", "HC2", "HC5", "HC6"]
+#Note: complete file names for 'd5' and 'HC9' have been changed to be the same format as the others;
+#worth doing so for the user to avoid inevitable FileNotFoundErrors that would otherwise appear
+ad_short_file_names = ["D2", "D3", "d4", "d5", "D6", "D7", "HC1", "HC2", "HC3",
+                       "HC4", "HC5", "HC7", "HC8", "HC9", "HC10"]
 axis_labels = ["X", "Y", "Z"]
+
+segment_labels = ["Pelvis", "L5", "L3", "T12", "T8", "Neck", "Head", "RightShoulder", "RightUpperArm",
+                  "RightForeArm", "RightHand", "LeftShoulder", "LeftUpperArm", "LeftForeArm", "LeftHand",
+                  "RightUpperLeg", "RightLowerLeg", "RightFoot", "RightToe", "LeftUpperLeg", "LeftLowerLeg",
+                  "LeftFoot", "LeftToe"]
 
 joint_labels = ["jL5S1", "jL4L3", "jL1T12", "jT9T8", "jT1C7", "jC1Head", "jRightT4Shoulder", "jRightShoulder",
                 "jRightElbow", "jRightWrist", "jLeftT4Shoulder", "jLeftShoulder", "jLeftElbow", "jLeftWrist",
                 "jRightHip", "jRightKnee", "jRightAnkle", "jRightBallFoot", "jLeftHip", "jLeftKnee",
                 "jLeftAnkle", "jLeftBallFoot"]
-segment_labels = ["Pelvis", "L5", "L3", "T12", "T8", "Neck", "Head", "RightShoulder", "RightUpperArm",
-                  "RightForeArm", "RightHand", "LeftShoulder", "LeftUpperArm", "LeftForeArm", "LeftHand",
-                  "RightUpperLeg", "RightLowerLeg", "RightFoot", "RightToe", "LeftUpperLeg", "LeftLowerLeg",
-                  "LeftFoot", "LeftToe"]
+
 sensor_labels = ["Pelvis", "T8", "Head", "RightShoulder", "RightUpperArm", "RightForeArm", "RightHand",
-                 "LeftShoulder", "LeftUpperArm", "LeftForeArm", "LeftHand", "RightUpperLeg", "RightFoot",
-                 "LeftUpperLeg", "LegLowerLeg", "LeftFoot"]
+                 "LeftShoulder", "LeftUpperArm", "LeftForeArm", "LeftHand", "RightUpperLeg", "RightLowerLeg",
+                 "RightFoot", "LeftUpperLeg", "LegLowerLeg", "LeftFoot"]
 
 
 """
@@ -87,7 +93,11 @@ class AllDataFile(object):
         ad_data = sio.loadmat(ad_dir + "All-" + ad_file_name + "-6MinWalk")
         tree = ad_data["tree"]
         # Corresponds to location in matlabfile at: 'tree.subjects.frames.frame'
-        frame_data = tree[0][0][6][0][0][10][0][0][3][0]
+        #Try-except clause here to catch when 'D6' doesn't have a 'sensorCount' category within 'tree.subject.frames'
+        try:
+            frame_data = tree[0][0][6][0][0][10][0][0][3][0]
+        except IndexError:
+            frame_data = tree[0][0][6][0][0][10][0][0][2][0]
         # Gets the types in each column of the matrix (i.e. dtypes of submatrices)
         col_names = frame_data.dtype.names
         # Extract single outer-list wrapping for vectors and double outer-list values for single values
@@ -148,6 +158,58 @@ class AllDataFile(object):
             print(k, ":", (self.df[k]))
 
 
+    def write_statistical_features(self, measurements_to_extract=None, output_name=None):
+        """
+            :param features_to_extract to be an optional list of measurement names from the AD file that we wish to
+            apply statistical analysis (otherwise, defaults to 'measurement_names'), along with 'output_name' that
+            defaults to the short name of the AD file, which writes to an individual file for the object (i.e.
+            a single line .csv for the object); specify shared 'output_name' to instead append to an existing .csv:
+            :return no return, but writes to an output .csv file the some of the statistical features of the certain
+            measurements to an output .csv file
+        """
+        data = {}
+        #Sets the default measurements to extract from the AD file object if none are specified as args
+        measurement_names = measurements_to_extract if measurements_to_extract else [
+            "position", "sensorFreeAcceleration", "sensorMagneticField"]
+        #Disregard first 3 samples (usually types 'identity', 'tpose' or 'tpose-isb')
+        #Note that the somewhat-superfluous 's for s' is needed to force 'extract_data' to interpret data as 3D array
+        #of shape (# measurements)x21810x(3*num_features) rather than 2D array of shape (# measurements)x21810x(unknown)
+        extract_data = [np.asarray([s for s in self.df.loc[3:, feature_name]]) for feature_name in measurement_names]
+        # Extracts values of the various measurements in different layout so 'f_d_s_data' now has shape:
+        # (# measurements (e.g. 3 for position, accel, and megnet field) x # of features (e.g. 23 for segments)
+        # x # of dimensions (e.g. 3 for x,y,z position values) x # of samples (~22K))
+        f_d_s_data = [[[measurement[:, (i*3)+j] for j in range(3)] for i in range(int(len(measurement[0])/3))]
+                      for measurement in extract_data]
+
+        for i, measurement in enumerate(f_d_s_data):        #For each measurement category
+            for j in range(len(f_d_s_data[i])):             #For each feature (e.g. segment, joint, or sensor)
+                for k in range(len(f_d_s_data[i][j])):      #For each x,y,z dimension
+                    data[segment_labels[j] + ": " + axis_labels[k] + "-axis " + measurement_names[i] + " mean"] = \
+                        mean_round(measurement[j][k])
+                    data[segment_labels[j] + ": " + axis_labels[k] + "-axis " + measurement_names[i] + " variance"] = \
+                        variance_round(measurement[j][k])
+                    data[segment_labels[j] + ": " + axis_labels[k] + "-axis " + measurement_names[i] +
+                        " abs mean sample diff"] = mean_diff_round(measurement[j][k])
+
+        # Creates a DataFrame object from a single list version of the dictionary (so it's only 1 row),
+        # and creates either a .csv with the default output_name (w/ .csv name from the AD short file name)
+        # or with a given name and, if the given name already exists, appends it to the end of existing file
+        df = pd.DataFrame([data], columns=data.keys(), index=[self.ad_file_name])
+        if not output_name:
+            output_complete_name = "output_files\\AD_" + self.ad_file_name + "_stats_features.csv"
+            print("Writing AD", self.ad_file_name, "statistial info to", output_complete_name)
+            df.to_csv(path_or_buf=output_complete_name, sep=",", mode="w")
+        else:
+            output_complete_name = "output_files\\AD_" + output_name + "_stats_features.csv"
+            print("Writing AD", self.ad_file_name, "statistial info to", output_complete_name)
+            if isfile(output_complete_name):
+                with open(output_complete_name, 'a') as f:
+                    df.to_csv(f, header=False)
+            else:
+                with open(output_complete_name, 'w') as f:
+                    df.to_csv(f, header=True)
+
+
 
 
 
@@ -158,11 +220,11 @@ class DataCubeFile(object):
             :param dis_data_cube is specified to True if wish to display basic Data Cube info to the screen:
             :return no return, but sets up the Data Cube attribute
         """
-        ja_dir = "6minwalk-matfiles\\joint_angles_only_matfiles\\"
-        self.dc = sio.loadmat(ja_dir + "data_cube_6mw")
+        self.dc = sio.loadmat(ja_dir + "data_cube_6mw", matlab_compatible=True)
 
         if dis_data_cube:
             self.display_info()
+
 
 
     def display_info(self):
@@ -294,26 +356,22 @@ class JointAngleFile(object):
         #or with a given name and, if the given name already exists, appends it to the end of existing file
         df = pd.DataFrame([data], columns=data.keys(), index=[self.ja_file_name])
         if not output_name:
+            output_complete_name = "output_files\\JA_" + self.ja_file_name + "_stats_features.csv"
+            print("Writing JA", self.ja_file_name, "statistial info to", output_complete_name)
             df.to_csv(path_or_buf="output_files\\JA_" + self.ja_file_name + "_stats_features.csv", sep=",", mode="w")
         else:
-            file_loc = "output_files\\JA_" + output_name + "_stats_features.csv"
-            if isfile(file_loc):
-                with open(file_loc, 'a') as f:
+            output_complete_name = "output_files\\JA_" + output_name + "_stats_features.csv"
+            print("Writing JA", self.ja_file_name, "statistial info to", output_complete_name)
+            if isfile(output_complete_name):
+                with open(output_complete_name, 'a') as f:
                     df.to_csv(f, header=False)
             else:
-                with open(file_loc, 'w') as f:
+                with open(output_complete_name, 'w') as f:
                     df.to_csv(f, header=True)
 
 
+for fn in ad_short_file_names:
+    AllDataFile(fn).write_statistical_features(output_name="All")
+for fn in ja_short_file_names:
+    JointAngleFile(fn).write_statistical_features(output_name="All")
 
-
-#ad_d2 = AllDataFile("D2")
-#print(ad_d2.df)
-#ad_d2.display_3d_positions()
-
-#ja_d2 = JointAngleFile("D3")
-#ja_d2.write_statistical_features("D2")
-#ja_d2.display_3d_angles()
-
-#data = ad_extract_frame("D2")
-#ad_display_3d_positions(data)
