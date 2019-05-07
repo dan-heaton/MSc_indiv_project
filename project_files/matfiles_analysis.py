@@ -9,8 +9,9 @@ from os.path import isfile
 
 sampling_rate = 60      #In Hz
 
-#Note: CHANGE THIS to location of '6minwalk-matfiles' directory local to the user
+#Note: CHANGE THESE to location of '6minwalk-matfiles' directory local to the user
 source_dir = "C:\\"
+output_dir = "output_files\\"
 
 ja_dir = source_dir + "6minwalk-matfiles\\joint_angles_only_matfiles\\"
 ja_short_file_names = ["D2", "D3", "D4", "HC2", "HC5", "HC6"]
@@ -78,22 +79,32 @@ def mean_diff_round(nums):
     """
     return round(float(np.mean(np.absolute(compute_diffs(nums)))), 3)
 
+def fft_round(nums, shape):
+    """
+    :param list of 2d values of which we want to find the 2-dimensional FFT:
+    :return result of 2D fft operation with shape given by 'shape' param and values rounded
+    """
+    efeft = np.fft.fft2(nums, s=shape)
+    return [[round(efeft[i][j], 4) for j in range(len(efeft[i]))] for i in range(len(efeft))]
 
 
 
 class AllDataFile(object):
 
-    def __init__(self, ad_file_name):
+    def __init__(self, ad_file_name, fft_shape=(1, 10)):
         """
-            :param string name of the unique identifier of an 'All-' data matlab file (e.g. 'HC3'):
+            :param string name of the unique identifier of an 'All-' data matlab file (e.g. 'HC3'), along with
+            an optionally specified 2D shape to return from the FFT functionality applied to the measurements:
             :return no return, but sets up the DataFrame 'df' attribute from the given matlab file: name
         """
         self.ad_file_name = ad_file_name
+        self.fft_shape = fft_shape
         # Loads the data from the given file name and extracts the root 'tree' from the file
         ad_data = sio.loadmat(ad_dir + "All-" + ad_file_name + "-6MinWalk")
         tree = ad_data["tree"]
         # Corresponds to location in matlabfile at: 'tree.subjects.frames.frame'
         #Try-except clause here to catch when 'D6' doesn't have a 'sensorCount' category within 'tree.subject.frames'
+        print("Extracting data from AD file " + self.ad_file_name + "....")
         try:
             frame_data = tree[0][0][6][0][0][10][0][0][3][0]
         except IndexError:
@@ -170,7 +181,8 @@ class AllDataFile(object):
         data = {}
         #Sets the default measurements to extract from the AD file object if none are specified as args
         measurement_names = measurements_to_extract if measurements_to_extract else [
-            "position", "sensorFreeAcceleration", "sensorMagneticField"]
+            "position", "sensorFreeAcceleration", "sensorMagneticField", "velocity", "angularVelocity",
+            "acceleration", "angularAcceleration"]
         #Disregard first 3 samples (usually types 'identity', 'tpose' or 'tpose-isb')
         #Note that the somewhat-superfluous 's for s' is needed to force 'extract_data' to interpret data as 3D array
         #of shape (# measurements)x21810x(3*num_features) rather than 2D array of shape (# measurements)x21810x(unknown)
@@ -190,17 +202,19 @@ class AllDataFile(object):
                         variance_round(measurement[j][k])
                     data[segment_labels[j] + ": " + axis_labels[k] + "-axis " + measurement_names[i] +
                         " abs mean sample diff"] = mean_diff_round(measurement[j][k])
+                data[segment_labels[j] + ": " + "(x,y,z)" + measurement_names[i] + "2D FFT"] = \
+                    fft_round(measurement[j], shape=self.fft_shape)
 
         # Creates a DataFrame object from a single list version of the dictionary (so it's only 1 row),
         # and creates either a .csv with the default output_name (w/ .csv name from the AD short file name)
         # or with a given name and, if the given name already exists, appends it to the end of existing file
         df = pd.DataFrame([data], columns=data.keys(), index=[self.ad_file_name])
         if not output_name:
-            output_complete_name = "output_files\\AD_" + self.ad_file_name + "_stats_features.csv"
+            output_complete_name = output_dir + "AD_" + self.ad_file_name + "_stats_features.csv"
             print("Writing AD", self.ad_file_name, "statistial info to", output_complete_name)
             df.to_csv(path_or_buf=output_complete_name, sep=",", mode="w")
         else:
-            output_complete_name = "output_files\\AD_" + output_name + "_stats_features.csv"
+            output_complete_name = output_dir + "AD_" + output_name + "_stats_features.csv"
             print("Writing AD", self.ad_file_name, "statistial info to", output_complete_name)
             if isfile(output_complete_name):
                 with open(output_complete_name, 'a') as f:
@@ -218,9 +232,30 @@ class DataCubeFile(object):
     def __init__(self, dis_data_cube=False):
         """
             :param dis_data_cube is specified to True if wish to display basic Data Cube info to the screen:
-            :return no return, but sets up the Data Cube attribute
+            :return no return, but reads in the datacube object from .mat file, the datacube table from the .csv,
+            extracts the names of the joint angle files in the datacube file, and instantiates JointAngleFile objects
+            for each file contained in the datacube .mat file
+
+            IMPORTANT NOTE: as there's no conceivable way currently to read a matlab table into Python (unlike structs),
+            it's required that the matlab table is exported to a .csv before creating DataCubeFileObject. Hence, with
+            the data_cube .mat file open in matlab, run writetable(excel_table, "data_cube_table.csv") in matlab for the
+            following to work
         """
-        self.dc = sio.loadmat(ja_dir + "data_cube_6mw", matlab_compatible=True)
+
+        try:
+            self.dc_table = pd.read_csv(ja_dir + "data_cube_table.csv")
+            self.dc_short_file_names = self.dc_table.values[:, 1]
+        except FileNotFoundError:
+            print("Couldn't find the 'data_cube_table.csv file. Make sure to run the "
+                  "'writetable(excel_table, \"data_cube_table.csv\") in matlab with data_cube.mat file open")
+            sys.exit()
+        self.dc = sio.loadmat(ja_dir + "data_cube_6mw", matlab_compatible=True)["data_cube"][0][0][2][0]
+
+        self.ja_objs = []
+        for i in range(len(self.dc_short_file_names)):
+            print("Extracting data from data cube file (" + str(i+1) + "/" + str(len(self.dc_short_file_names)) +
+                  "): " + self.dc_short_file_names[i] + "...")
+            self.ja_objs.append(JointAngleFile(self.dc_short_file_names[i], dc_object_index=i))
 
         if dis_data_cube:
             self.display_info()
@@ -239,25 +274,44 @@ class DataCubeFile(object):
         print(self.dc["data_cube"])
 
 
+    def write_statistical_features(self, output_name="All"):
+        """
+        :param 'output_name', which defaults to 'All', which is the short name of the output .csv stats file that the
+        objects will share...specify a different name if desired
+        :return no return, but creates a single .csv output file that contains the statistical analysis of each joint
+        angle file contained within the data cube via calls to JointAngleFile.write_statistical_features() method
+        for each of the joint angle objects extracted at initialization
+        """
+        for i in range(len(self.ja_objs)):
+            self.ja_objs[i].write_statistical_features(output_name=output_name)
 
 
 
 class JointAngleFile(object):
 
-    def __init__(self, ja_file_name):
+    def __init__(self, ja_file_name, dc_object_index=-1):
         """
-            :param string name of the unique identifier of an 'jointangle-' data matlab file (e.g. 'D2'):
+            :param string name of the unique identifier of an 'jointangle-' data matlab file (e.g. 'D2'); also includes
+            'dc_object', which is set to non-zero if object is created as part of a DataCubeFile:
             :return no return, but extracts the data from the specified matlab file and extracts the features
             from each dimension
         """
         self.ja_file_name = ja_file_name
+        self.is_dc_object = True if dc_object_index != -1 else False
         ja_p = "jointangle"
         ja_s = "-6MinWalk"
-        #'Try-except' clause included to handle some slight naming inconsistencies with the JA filename syntax
-        try:
-            ja_data = sio.loadmat(ja_dir + ja_p + ja_file_name + ja_s)['jointangle']
-        except FileNotFoundError:
-            ja_data = sio.loadmat(ja_dir + ja_p + ja_file_name + ja_s + "-TruncLen5Min20Sec")['jointangle']
+
+        #Loads the JA data from the datacube file instead of the normal JA files if passed from DataCubeFile class
+        if dc_object_index != -1:
+            ja_data = sio.loadmat(ja_dir + "data_cube_6mw",
+                                  matlab_compatible=True)["data_cube"][0][0][2][0][dc_object_index]
+        else:
+            #'Try-except' clause included to handle some slight naming inconsistencies with the JA filename syntax
+            try:
+                ja_data = sio.loadmat(ja_dir + ja_p + ja_file_name + ja_s)['jointangle']
+            except FileNotFoundError:
+                ja_data = sio.loadmat(ja_dir + ja_p + ja_file_name + ja_s + "-TruncLen5Min20Sec")['jointangle']
+
 
         #x/y/z_angles arrays have shape (# of samples in JA data file x # of features (i.e. # of features, 22))
         self.x_angles = np.asarray([[s for s in sample[0::3]] for sample in ja_data])
@@ -355,13 +409,14 @@ class JointAngleFile(object):
         #and creates either a .csv with the default output_name (w/ .csv name from the JA short file name)
         #or with a given name and, if the given name already exists, appends it to the end of existing file
         df = pd.DataFrame([data], columns=data.keys(), index=[self.ja_file_name])
+        file_prefix = "DC" if self.is_dc_object else "JA"
         if not output_name:
-            output_complete_name = "output_files\\JA_" + self.ja_file_name + "_stats_features.csv"
-            print("Writing JA", self.ja_file_name, "statistial info to", output_complete_name)
-            df.to_csv(path_or_buf="output_files\\JA_" + self.ja_file_name + "_stats_features.csv", sep=",", mode="w")
+            output_complete_name = output_dir + file_prefix + "_"+ self.ja_file_name + "_stats_features.csv"
+            print("Writing", file_prefix, self.ja_file_name, "statistial info to", output_complete_name)
+            df.to_csv(path_or_buf=output_complete_name, sep=",", mode="w")
         else:
-            output_complete_name = "output_files\\JA_" + output_name + "_stats_features.csv"
-            print("Writing JA", self.ja_file_name, "statistial info to", output_complete_name)
+            output_complete_name = output_dir + file_prefix + "_" + output_name + "_stats_features.csv"
+            print("Writing", file_prefix, self.ja_file_name, "statistial info to", output_complete_name)
             if isfile(output_complete_name):
                 with open(output_complete_name, 'a') as f:
                     df.to_csv(f, header=False)
@@ -375,3 +430,4 @@ for fn in ad_short_file_names:
 for fn in ja_short_file_names:
     JointAngleFile(fn).write_statistical_features(output_name="All")
 
+DataCubeFile().write_statistical_features()
