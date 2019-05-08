@@ -3,9 +3,11 @@ import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
+from tkinter import*
 from collections import OrderedDict
 import sys
 from os.path import isfile
+import argparse
 
 sampling_rate = 60      #In Hz
 
@@ -13,6 +15,7 @@ sampling_rate = 60      #In Hz
 source_dir = "C:\\"
 output_dir = "output_files\\"
 
+file_types = ["ja", "ad", "dc"]
 ja_dir = source_dir + "6minwalk-matfiles\\joint_angles_only_matfiles\\"
 ja_short_file_names = ["D2", "D3", "D4", "HC2", "HC5", "HC6"]
 ad_dir = source_dir + "6minwalk-matfiles\\all_data_mat_files\\"
@@ -21,6 +24,7 @@ ad_dir = source_dir + "6minwalk-matfiles\\all_data_mat_files\\"
 ad_short_file_names = ["D2", "D3", "d4", "d5", "D6", "D7", "HC1", "HC2", "HC3",
                        "HC4", "HC5", "HC7", "HC8", "HC9", "HC10"]
 axis_labels = ["X", "Y", "Z"]
+
 
 segment_labels = ["Pelvis", "L5", "L3", "T12", "T8", "Neck", "Head", "RightShoulder", "RightUpperArm",
                   "RightForeArm", "RightHand", "LeftShoulder", "LeftUpperArm", "LeftForeArm", "LeftHand",
@@ -35,6 +39,13 @@ joint_labels = ["jL5S1", "jL4L3", "jL1T12", "jT9T8", "jT1C7", "jC1Head", "jRight
 sensor_labels = ["Pelvis", "T8", "Head", "RightShoulder", "RightUpperArm", "RightForeArm", "RightHand",
                  "LeftShoulder", "LeftUpperArm", "LeftForeArm", "LeftHand", "RightUpperLeg", "RightLowerLeg",
                  "RightFoot", "LeftUpperLeg", "LegLowerLeg", "LeftFoot"]
+
+#Mapping used to select lists of labels names to use based on the length of the numbers contained in data array
+seg_join_sens_map = {len(segment_labels): segment_labels,
+                     len(joint_labels): joint_labels,
+                     len(sensor_labels): sensor_labels}
+
+
 
 
 """
@@ -55,14 +66,14 @@ def mean_round(nums):
         :param list of values of which we wish to find the mean/average:
         :return a float value rounded to 2 decimal places of the mean of 'nums':
     """
-    return round(float(np.mean(nums)), 3)
+    return round(float(np.mean(nums)), 4)
 
 def variance_round(nums):
     """
         :param list of values of which we wish to find the variance:
         :return a float value rounded to 2 decimal places of the variance of 'nums':
     """
-    return round(float(np.var(nums)), 3)
+    return round(float(np.var(nums)), 4)
 
 def covariance_round(nums):
     """
@@ -70,14 +81,14 @@ def covariance_round(nums):
         x,y,z data) x # of samples):
         :return covariance matrix of rounded float values of shape = # of dimensions of data x # of dimensions of data:
     """
-    return [[round(float(n), 3) for n in num] for num in np.cov(nums.tolist())]
+    return [[round(float(n), 4) for n in num] for num in np.cov(nums.tolist())]
 
 def mean_diff_round(nums):
     """
         :param list of values of which we wish to find the mean diff values:
         :return mean value of the absolute values of the diffs list (see 'compute_diffs'):
     """
-    return round(float(np.mean(np.absolute(compute_diffs(nums)))), 3)
+    return round(float(np.mean(np.absolute(compute_diffs(nums)))), 4)
 
 def fft_round(nums, shape):
     """
@@ -86,6 +97,8 @@ def fft_round(nums, shape):
     """
     efeft = np.fft.fft2(nums, s=shape)
     return [[round(efeft[i][j], 4) for j in range(len(efeft[i]))] for i in range(len(efeft))]
+
+
 
 
 
@@ -142,21 +155,27 @@ class AllDataFile(object):
         point_connections = [(0, 1), (0, 15), (0, 19), (1, 2), (2, 3), (3, 4), (4, 5), (5, 6),
                              (7, 8), (8, 9), (9, 10), (11, 12), (12, 13), (13, 14), (15, 16),
                              (16, 17), (17, 18), (19, 20), (20, 21), (21, 22)]
+
         #For each sample to plot, reset the axis limits, plot the relevant 3D points for each feature, plot their
         #scatter point connections (e.g. head to neck, left arm to left shoulder, etc.), updates the frame and
         #time counter, and repeat every (1/sampling_rate) seconds
         for i in range(len(positions)):
-            ax.set_xlim(xzy_min_max[0], xzy_min_max[1])
-            ax.set_ylim(-4, -2)
-            ax.set_zlim(xzy_min_max[4], xzy_min_max[5])
-            ax.scatter(xyz_pos[0][i], xyz_pos[1][i], xyz_pos[2][i])
-            for pair in point_connections:
-                ax.plot([xyz_pos[0][i][pair[0]], xyz_pos[0][i][pair[1]]],
-                        [xyz_pos[1][i][pair[0]], xyz_pos[1][i][pair[1]]],
-                        [xyz_pos[2][i][pair[0]], xyz_pos[2][i][pair[1]]])
-            plt.title("Frame: " + str(i + 1) + ", time = " + str(round(((i + 1) / sampling_rate), 2)) + "s")
-            plt.pause(1 / sampling_rate)
-            ax.clear()
+            try:
+                ax.set_xlim(xzy_min_max[0], xzy_min_max[1])
+                ax.set_ylim(-4, -2)
+                ax.set_zlim(xzy_min_max[4], xzy_min_max[5])
+                ax.scatter(xyz_pos[0][i], xyz_pos[1][i], xyz_pos[2][i])
+                for pair in point_connections:
+                    ax.plot([xyz_pos[0][i][pair[0]], xyz_pos[0][i][pair[1]]],
+                            [xyz_pos[1][i][pair[0]], xyz_pos[1][i][pair[1]]],
+                            [xyz_pos[2][i][pair[0]], xyz_pos[2][i][pair[1]]])
+                plt.title("Frame: " + str(i + 1) + ", time = " + str(round(((i + 1) / sampling_rate), 2)) + "s")
+                plt.pause(1 / sampling_rate)
+                ax.clear()
+            except TclError:
+                print("Window closed on frame:", (i+1))
+                sys.exit()
+        plt.close()
 
 
     def file_info(self):
@@ -195,14 +214,14 @@ class AllDataFile(object):
 
         for i, measurement in enumerate(f_d_s_data):        #For each measurement category
             for j in range(len(f_d_s_data[i])):             #For each feature (e.g. segment, joint, or sensor)
+                seg_join_sens_labels = seg_join_sens_map[len(f_d_s_data[i])]
                 for k in range(len(f_d_s_data[i][j])):      #For each x,y,z dimension
-                    data[segment_labels[j] + ": " + axis_labels[k] + "-axis " + measurement_names[i] + " mean"] = \
-                        mean_round(measurement[j][k])
-                    data[segment_labels[j] + ": " + axis_labels[k] + "-axis " + measurement_names[i] + " variance"] = \
-                        variance_round(measurement[j][k])
-                    data[segment_labels[j] + ": " + axis_labels[k] + "-axis " + measurement_names[i] +
-                        " abs mean sample diff"] = mean_diff_round(measurement[j][k])
-                data[segment_labels[j] + ": " + "(x,y,z)" + measurement_names[i] + "2D FFT"] = \
+                    stat_name = "(" + measurement_names[i] + ") : (" + seg_join_sens_labels[j] \
+                                + ") : (" + axis_labels[k] + "-axis)"
+                    data[stat_name + " : (mean)"] = mean_round(measurement[j][k])
+                    data[stat_name + " : (variance)"] = variance_round(measurement[j][k])
+                    data[stat_name + " : (abs mean sample diff)"] = mean_diff_round(measurement[j][k])
+                data["(" + measurement_names[i] + "): ( " + seg_join_sens_labels[j] + ") : ((x,y,z)-axis) : (FFT)"] = \
                     fft_round(measurement[j], shape=self.fft_shape)
 
         # Creates a DataFrame object from a single list version of the dictionary (so it's only 1 row),
@@ -274,7 +293,7 @@ class DataCubeFile(object):
         print(self.dc["data_cube"])
 
 
-    def write_statistical_features(self, output_name="All"):
+    def write_statistical_features(self, output_name="all"):
         """
         :param 'output_name', which defaults to 'All', which is the short name of the output .csv stats file that the
         objects will share...specify a different name if desired
@@ -312,7 +331,7 @@ class JointAngleFile(object):
             except FileNotFoundError:
                 ja_data = sio.loadmat(ja_dir + ja_p + ja_file_name + ja_s + "-TruncLen5Min20Sec")['jointangle']
 
-
+        print("Extracting data from JA file " + self.ja_file_name + "....")
         #x/y/z_angles arrays have shape (# of samples in JA data file x # of features (i.e. # of features, 22))
         self.x_angles = np.asarray([[s for s in sample[0::3]] for sample in ja_data])
         self.y_angles = np.asarray([[s for s in sample[1::3]] for sample in ja_data])
@@ -333,10 +352,15 @@ class JointAngleFile(object):
         fig = plt.figure()
         ax = fig.add_subplot(111, projection='3d')
         plt.ion()
-        for sample in ja_3d_data:
-            ax.scatter(sample[:, 0], sample[:, 1], sample[:, 2])
-            plt.pause((1/sampling_rate))
-            ax.clear()
+        for i, sample in enumerate(ja_3d_data):
+            try:
+                ax.scatter(sample[:, 0], sample[:, 1], sample[:, 2])
+                plt.pause((1/sampling_rate))
+                ax.clear()
+            except TclError:
+                print("Window closed on frame:", (i+1))
+                sys.exit()
+        plt.close()
 
 
     def display_diffs_plot(self):
@@ -390,20 +414,22 @@ class JointAngleFile(object):
         #for each feature's dimension
         for i in range(len(angles[0])):     #For each feature
             for j in range(len(angles)):    #For each dimension
-                data[joint_labels[i] + ": " + axis_labels[j] + "-axis mean"] = mean_round(angles[j][i])
-                data[joint_labels[i] + ": " + axis_labels[j] + "-axis variance"] = variance_round(angles[j][i])
-                data[joint_labels[i] + ": " + axis_labels[j] + "-axis abs mean sample diff"] = \
+                stat_name = "(" + joint_labels[i] + ") : (" + axis_labels[j] + "-axis)"
+                data[stat_name + " : (mean)"] = mean_round(angles[j][i])
+                data[stat_name + " : (variance)"] = variance_round(angles[j][i])
+                data[stat_name + " : (abs mean sample diff)"] = \
                     mean_diff_round(angles[j][i])
             # angles[:, i] selects list of sample values for all 3 dimensions for feature 'i'
-            data[joint_labels[i] + ": (x,y,z) covariance"] = covariance_round(angles[:, i])
+            data[joint_labels[i] + ": (x,y,z) : (covariance)"] = covariance_round(angles[:, i])
         #Computes mean for each dimension (x, y, or z) but over every single feature and adds to the 'data' dictionary
         for i in range(len(axis_labels)):
-            data["(Over all features): " + axis_labels[i] + "-axis mean"] = \
-                mean_round([data[k] for k in data.keys() if axis_labels[i] + "-axis mean" in k])
-            data["(Over all features): " + axis_labels[i] + "-axis variance"] = \
-                mean_round([data[k] for k in data.keys() if axis_labels[i] + "-axis variance" in k])
-            data["(Over all features): " + axis_labels[i] + "-axis abs mean sample diff"] = \
-                mean_round([data[k] for k in data.keys() if axis_labels[i] + "-axis abs mean" in k])
+            stat_name = "(Over all features) : (" + axis_labels[i] + "-axis)"
+            data[stat_name + " : (mean)"] = \
+                mean_round([data[k] for k in data.keys() if axis_labels[i] + "-axis) : (mean)" in k])
+            data[stat_name + " : (variance)"] = \
+                variance_round([data[k] for k in data.keys() if axis_labels[i] + "-axis) : (variance)" in k])
+            data[stat_name + " : (abs mean sample diff)"] = \
+                mean_diff_round([data[k] for k in data.keys() if axis_labels[i] + "-axis) : (abs mean" in k])
 
         #Creates a DataFrame object from a single list version of the dictionary (so it's only 1 row),
         #and creates either a .csv with the default output_name (w/ .csv name from the JA short file name)
@@ -425,9 +451,106 @@ class JointAngleFile(object):
                     df.to_csv(f, header=True)
 
 
-for fn in ad_short_file_names:
-    AllDataFile(fn).write_statistical_features(output_name="All")
-for fn in ja_short_file_names:
-    JointAngleFile(fn).write_statistical_features(output_name="All")
+#for fn in ad_short_file_names:
+#    AllDataFile(fn).write_statistical_features(output_name="All")
+#for fn in ja_short_file_names:
+#    JointAngleFile(fn).write_statistical_features(output_name="All")
+#JointAngleFile("D2").write_statistical_features()
+#AllDataFile("D2").write_statistical_features()
 
-DataCubeFile().write_statistical_features()
+
+
+
+
+
+def class_selector(ft, fn, fns, is_all):
+    if ft == "ad":
+        if is_all:
+            for f in fns:
+                AllDataFile(f).write_statistical_features(output_name="all")
+        else:
+            AllDataFile(fn).write_statistical_features()
+    elif ft == "ja":
+        if is_all:
+            for f in fns:
+                JointAngleFile(f).write_statistical_features(output_name="all")
+        else:
+            JointAngleFile(fn).write_statistical_features()
+    else:
+        DataCubeFile().write_statistical_features()
+
+
+
+parser = argparse.ArgumentParser()
+parser.add_argument("ft", help="Specify type of file file we wish to read from, being one of 'JA' (joint angle), "
+                               "'AD' (all data), or 'DC' (data cube).")
+parser.add_argument("fn", help="Specify the short file name to load; e.g. for file 'All-HC2-6MinWalk.mat' or "
+                               "jointangleHC2-6MinWalk.mat, enter 'HC2'. Specify 'all' for all the files available "
+                               "in the default directory of the specified file type. Enter anything for 'dc' file type.")
+parser.add_argument("--dis_3d_pos", type=bool, nargs='?', const=True,
+                    help="Plots the dynamic positions of an AllDataFile object over time. "
+                         "Only works with 'ft' set as an 'AD' file name.")
+parser.add_argument("--dis_diff_plot", type=bool, nargs='?', const=True,
+                    help="Plots the diff plots of all features and axes of a JointAngleFile object over time."
+                         "Only works with 'ft' set as a 'JA' file name.")
+parser.add_argument("--dis_3d_angs", type=bool, nargs='?', const=True,
+                    help="Plots the 3D positions of all features' joint angles over time. "
+                         "Only works with 'ft' set as a 'JA' file name.")
+args = parser.parse_args()
+
+
+if not args.dis_3d_pos and not args.dis_diff_plot and not args.dis_3d_angs:
+    if args.ft in file_types:
+        file_names = []
+        if args.ft.lower() == "ad":
+            file_names = ad_short_file_names
+        elif args.ft.lower() == "ja":
+            file_names = ja_short_file_names
+        else:
+            file_names = None
+
+        if file_names:
+            if args.fn in file_names:
+                class_selector(args.ft, args.fn, None, False)
+            elif args.fn == "all":
+                class_selector(args.ft, None, file_names, True)
+            else:
+                print("Second arg ('fn') must be one of the file names for the '" + args.ft + "' file type, or 'all'")
+                sys.exit(1)
+        else:
+            DataCubeFile().write_statistical_features()
+    else:
+        print("First arg ('ft') must be one of the accepted file types ('ja', 'ad', or 'dc').")
+        sys.exit(1)
+elif args.dis_3d_pos:
+    print("DING")
+    if args.ft != "ad":
+        print("First arg ('ft') must be 'ad' for calling 'display_3d_positions' method.")
+        sys.exit(1)
+    else:
+        if args.fn in ad_short_file_names:
+            AllDataFile(args.fn).display_3d_positions()
+        else:
+            print("Second arg ('fn') must be the short name of an all data file (e.g. 'D2', 'HC5').")
+            sys.exit(1)
+elif args.dis_diff_plot:
+    if args.ft != "ja":
+        print("First arg ('ft') must be 'ja' for calling 'display_diffs_plot' method.")
+        sys.exit(1)
+    else:
+        if args.fn in ja_short_file_names:
+            JointAngleFile(args.fn).display_diffs_plot()
+        else:
+            print("Second arg ('fn') must be the short name of a joint angle file (e.g. 'D2').")
+            sys.exit(1)
+elif args.dis_3d_angs:
+    if args.ft != "ja":
+        print("First arg ('ft') must be 'ja' for calling 'display_3d_angles' method.")
+        sys.exit(1)
+    else:
+        if args.fn in ja_short_file_names:
+            JointAngleFile(args.fn).display_3d_angles()
+        else:
+            print("Second arg ('fn') must be the short name of a joint angle file (e.g. 'D2').")
+            sys.exit(1)
+
