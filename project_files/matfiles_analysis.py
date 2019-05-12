@@ -100,6 +100,36 @@ def fft_round(nums, shape):
 
 
 
+def check_for_abnormality(file_names, error_margin=1, abnormality_threshold=0.3):
+    """
+        :param 'file_names' to be the names of the files to check for abnormality, 'error_margin' to be the proportion
+        of the mean of a feature to compute the upper and lower bound (e.g. error_margin=0.2 for a feature of mean
+        '5' would mean a file part's value has to be within '4' and '6' for that feature to be considered a 'normal'
+        value), and 'abnormality_threshold' to be the portion of features for a file part outside of the normal ranges
+        for the file part to be considered 'abnormal'
+        :return: no return, but prints the names of the file parts that are considered to be abnormal
+    """
+    for m in range(len(file_names)):
+        file_df = pd.read_csv(file_names[m], index_col=0).iloc[:, 1:]
+        # Note: only computes the means for features w/ single values (e.g. mean), not multi-dims (e.g. covariances)
+        # for i in range(len(file_df.columns)):
+        cols_to_keep = [i for i in range(len(file_df.values[0])) if type(file_df.values[0, i])==float]
+        cols_to_remove = [i for i in range(len(file_df.values[0])) if i not in cols_to_keep]
+        file_df = file_df.drop(file_df.columns[cols_to_remove], axis=1)
+        col_means = [np.mean(file_df.iloc[:, i]) for i in range(len(file_df.iloc[0]))]
+
+        for i in range(len(file_df)):
+            features_out_of_range = 0
+            for j in range(len(file_df.iloc[0])):
+                feature, mean = abs(file_df.iloc[i, j]), abs(col_means[j])
+                lb, ub = mean - mean*error_margin, mean + mean*error_margin
+                if feature < lb or feature > ub:
+                    features_out_of_range += 1
+            if features_out_of_range / len(file_df.iloc[0]) > abnormality_threshold:
+                print(file_df.index.values[i], "outside", error_margin, "mean error margin for >",
+                      (abnormality_threshold*100), "% of its features")
+
+
 
 
 class AllDataFile(object):
@@ -188,9 +218,9 @@ class AllDataFile(object):
             print(k, ":", (self.df[k]))
 
 
-    def write_statistical_features(self, measurements_to_extract=None, output_name=None):
+    def write_statistical_features(self, measurements_to_extract=None, output_name=None, split_file=1):
         """
-            :param features_to_extract to be an optional list of measurement names from the AD file that we wish to
+            :param measurements_to_extract to be an optional list of measurement names from the AD file that we wish to
             apply statistical analysis (otherwise, defaults to 'measurement_names'), along with 'output_name' that
             defaults to the short name of the AD file, which writes to an individual file for the object (i.e.
             a single line .csv for the object); specify shared 'output_name' to instead append to an existing .csv:
@@ -198,6 +228,9 @@ class AllDataFile(object):
             measurements to an output .csv file
         """
         data = {}
+        # Adds a 'y' label for a given file
+        data['file_type'] = "HC" if "HC" in self.ad_file_name else "D"
+
         #Sets the default measurements to extract from the AD file object if none are specified as args
         measurement_names = measurements_to_extract if measurements_to_extract else [
             "position", "sensorFreeAcceleration", "sensorMagneticField", "velocity", "angularVelocity",
@@ -205,42 +238,59 @@ class AllDataFile(object):
         #Disregard first 3 samples (usually types 'identity', 'tpose' or 'tpose-isb')
         #Note that the somewhat-superfluous 's for s' is needed to force 'extract_data' to interpret data as 3D array
         #of shape (# measurements)x21810x(3*num_features) rather than 2D array of shape (# measurements)x21810x(unknown)
-        extract_data = [np.asarray([s for s in self.df.loc[3:, feature_name]]) for feature_name in measurement_names]
+
+
         # Extracts values of the various measurements in different layout so 'f_d_s_data' now has shape:
         # (# measurements (e.g. 3 for position, accel, and megnet field) x # of features (e.g. 23 for segments)
         # x # of dimensions (e.g. 3 for x,y,z position values) x # of samples (~22K))
-        f_d_s_data = [[[measurement[:, (i*3)+j] for j in range(3)] for i in range(int(len(measurement[0])/3))]
-                      for measurement in extract_data]
 
-        for i, measurement in enumerate(f_d_s_data):        #For each measurement category
-            for j in range(len(f_d_s_data[i])):             #For each feature (e.g. segment, joint, or sensor)
-                seg_join_sens_labels = seg_join_sens_map[len(f_d_s_data[i])]
-                for k in range(len(f_d_s_data[i][j])):      #For each x,y,z dimension
-                    stat_name = "(" + measurement_names[i] + ") : (" + seg_join_sens_labels[j] \
-                                + ") : (" + axis_labels[k] + "-axis)"
-                    data[stat_name + " : (mean)"] = mean_round(measurement[j][k])
-                    data[stat_name + " : (variance)"] = variance_round(measurement[j][k])
-                    data[stat_name + " : (abs mean sample diff)"] = mean_diff_round(measurement[j][k])
-                data["(" + measurement_names[i] + "): ( " + seg_join_sens_labels[j] + ") : ((x,y,z)-axis) : (FFT)"] = \
-                    fft_round(measurement[j], shape=self.fft_shape)
+        extract_data = self.df.loc[3:, measurement_names].values
+        f_d_s_data = np.zeros((len(measurement_names),
+                               max(len(segment_labels), len(joint_labels), len(sensor_labels)), 3,
+                               len(self.df.loc[:])-3))
+        for i in range(len(measurement_names)):
+            for j in range(int(len(self.df.loc[3:, measurement_names[i]].values[0])/3)):
+                for k in range(len(axis_labels)):
+                    for m in range(len(self.df.loc[3:])):
+                        f_d_s_data[i, j, k, m] = extract_data[m, i][(j*3)+k]
 
-        # Creates a DataFrame object from a single list version of the dictionary (so it's only 1 row),
-        # and creates either a .csv with the default output_name (w/ .csv name from the AD short file name)
-        # or with a given name and, if the given name already exists, appends it to the end of existing file
-        df = pd.DataFrame([data], columns=data.keys(), index=[self.ad_file_name])
-        if not output_name:
-            output_complete_name = output_dir + "AD_" + self.ad_file_name + "_stats_features.csv"
-            print("Writing AD", self.ad_file_name, "statistial info to", output_complete_name)
-            df.to_csv(path_or_buf=output_complete_name, sep=",", mode="w")
-        else:
-            output_complete_name = output_dir + "AD_" + output_name + "_stats_features.csv"
-            print("Writing AD", self.ad_file_name, "statistial info to", output_complete_name)
-            if isfile(output_complete_name):
-                with open(output_complete_name, 'a') as f:
-                    df.to_csv(f, header=False)
+        split_size = int(len(f_d_s_data[0, 0, 0])/split_file)
+        written_names = []
+        for f in range(split_file):
+            fds = f_d_s_data[:, :, :, (split_size*f):(split_size*(f+1))]
+            for i, measurement in enumerate(fds):        #For each measurement category
+                for j in range(len(fds[i])):             #For each feature (e.g. segment, joint, or sensor)
+                    seg_join_sens_labels = seg_join_sens_map[len(fds[i])]
+                    for k in range(len(fds[i][j])):      #For each x,y,z dimension
+                        stat_name = "(" + measurement_names[i] + ") : (" + seg_join_sens_labels[j] \
+                                    + ") : (" + axis_labels[k] + "-axis)"
+                        data[stat_name + " : (mean)"] = mean_round(measurement[j][k])
+                        data[stat_name + " : (variance)"] = variance_round(measurement[j][k])
+                        data[stat_name + " : (abs mean sample diff)"] = mean_diff_round(measurement[j][k])
+                    data["(" + measurement_names[i] + "): ( " + seg_join_sens_labels[j] + ") : ((x,y,z)-axis) : (FFT)"] = \
+                        fft_round(measurement[j], shape=self.fft_shape)
+
+            # Creates a DataFrame object from a single list version of the dictionary (so it's only 1 row),
+            # and creates either a .csv with the default output_name (w/ .csv name from the AD short file name)
+            # or with a given name and, if the given name already exists, appends it to the end of existing file
+            df = pd.DataFrame([data], columns=data.keys(),
+                              index=[self.ad_file_name + "_(" + str(f+1) + "/" + str(split_file) + ")"])
+            if not output_name:
+                output_complete_name = output_dir + "AD_" + self.ad_file_name + "_stats_features.csv"
+                print("Writing AD", self.ad_file_name, "(", (f+1), "/", split_file, ") statistial info to",
+                      output_complete_name)
             else:
-                with open(output_complete_name, 'w') as f:
-                    df.to_csv(f, header=True)
+                output_complete_name = output_dir + "AD_" + output_name + "_stats_features.csv"
+                print("Writing AD", self.ad_file_name, "(", (f + 1), "/", split_file, ") statistial info to",
+                      output_complete_name)
+            if isfile(output_complete_name):
+                with open(output_complete_name, 'a') as file:
+                    df.to_csv(file, header=False)
+            else:
+                with open(output_complete_name, 'w') as file:
+                    df.to_csv(file, header=True)
+            written_names.append(output_complete_name)
+        return written_names
 
 
 
@@ -396,7 +446,7 @@ class JointAngleFile(object):
         plt.show()
 
 
-    def write_statistical_features(self, output_name=None):
+    def write_statistical_features(self, output_name=None, split_file=1):
         """
             :param 'output_name' defaults to the short name of the joint angle file, which writes to an individual
             file for the object (i.e. a single line .csv for the object); specify shared 'output_name' to
@@ -407,50 +457,66 @@ class JointAngleFile(object):
         data = OrderedDict()
         x_angles, y_angles, z_angles = self.x_angles, self.y_angles, self.z_angles
 
+        #Adds a 'y' label for a given file
+        data['file_type'] = "HC" if "HC" in self.ja_file_name else "D"
+
         # Angles has shape: (# of dimensions of features (3 for x,y, and z) x # features (22 here) x # samples (~22K),
         # hence angles[i][j] selects list of sample values for dimension 'i' for feature 'j'
         angles = np.asarray([x_angles.T, y_angles.T, z_angles.T])
         #Adds mean, variance, covariance, and abs mean sample diff info to the 'data' dictionary
         #for each feature's dimension
-        for i in range(len(angles[0])):     #For each feature
-            for j in range(len(angles)):    #For each dimension
-                stat_name = "(" + joint_labels[i] + ") : (" + axis_labels[j] + "-axis)"
-                data[stat_name + " : (mean)"] = mean_round(angles[j][i])
-                data[stat_name + " : (variance)"] = variance_round(angles[j][i])
+        split_size = int(len(angles[0, 0]) / split_file)
+        written_names = []
+        for f in range(split_file):
+            ang = angles[:, :, (split_size * f):(split_size * (f + 1))]
+            for i in range(len(ang[0])):     #For each feature
+                for j in range(len(ang)):    #For each dimension
+                    stat_name = "(" + joint_labels[i] + ") : (" + axis_labels[j] + "-axis)"
+                    data[stat_name + " : (mean)"] = mean_round(ang[j][i])
+                    data[stat_name + " : (variance)"] = variance_round(ang[j][i])
+                    data[stat_name + " : (abs mean sample diff)"] = \
+                        mean_diff_round(ang[j][i])
+                # angles[:, i] selects list of sample values for all 3 dimensions for feature 'i'
+                data[joint_labels[i] + ": (x,y,z) : (covariance)"] = covariance_round(ang[:, i])
+            #Computes mean for each dimension (x, y, or z) but over every single feature and adds to the 'data' dictionary
+            for i in range(len(axis_labels)):
+                stat_name = "(Over all features) : (" + axis_labels[i] + "-axis)"
+                data[stat_name + " : (mean)"] = \
+                    mean_round([data[k] for k in data.keys() if axis_labels[i] + "-axis) : (mean)" in k])
+                data[stat_name + " : (variance)"] = \
+                    variance_round([data[k] for k in data.keys() if axis_labels[i] + "-axis) : (variance)" in k])
                 data[stat_name + " : (abs mean sample diff)"] = \
-                    mean_diff_round(angles[j][i])
-            # angles[:, i] selects list of sample values for all 3 dimensions for feature 'i'
-            data[joint_labels[i] + ": (x,y,z) : (covariance)"] = covariance_round(angles[:, i])
-        #Computes mean for each dimension (x, y, or z) but over every single feature and adds to the 'data' dictionary
-        for i in range(len(axis_labels)):
-            stat_name = "(Over all features) : (" + axis_labels[i] + "-axis)"
-            data[stat_name + " : (mean)"] = \
-                mean_round([data[k] for k in data.keys() if axis_labels[i] + "-axis) : (mean)" in k])
-            data[stat_name + " : (variance)"] = \
-                variance_round([data[k] for k in data.keys() if axis_labels[i] + "-axis) : (variance)" in k])
-            data[stat_name + " : (abs mean sample diff)"] = \
-                mean_diff_round([data[k] for k in data.keys() if axis_labels[i] + "-axis) : (abs mean" in k])
+                    mean_diff_round([data[k] for k in data.keys() if axis_labels[i] + "-axis) : (abs mean" in k])
 
-        #Creates a DataFrame object from a single list version of the dictionary (so it's only 1 row),
-        #and creates either a .csv with the default output_name (w/ .csv name from the JA short file name)
-        #or with a given name and, if the given name already exists, appends it to the end of existing file
-        df = pd.DataFrame([data], columns=data.keys(), index=[self.ja_file_name])
-        file_prefix = "DC" if self.is_dc_object else "JA"
-        if not output_name:
-            output_complete_name = output_dir + file_prefix + "_"+ self.ja_file_name + "_stats_features.csv"
-            print("Writing", file_prefix, self.ja_file_name, "statistial info to", output_complete_name)
-            df.to_csv(path_or_buf=output_complete_name, sep=",", mode="w")
-        else:
-            output_complete_name = output_dir + file_prefix + "_" + output_name + "_stats_features.csv"
-            print("Writing", file_prefix, self.ja_file_name, "statistial info to", output_complete_name)
-            if isfile(output_complete_name):
-                with open(output_complete_name, 'a') as f:
-                    df.to_csv(f, header=False)
+            #Creates a DataFrame object from a single list version of the dictionary (so it's only 1 row),
+            #and creates either a .csv with the default output_name (w/ .csv name from the JA short file name)
+            #or with a given name and, if the given name already exists, appends it to the end of existing file
+            df = pd.DataFrame([data], columns=data.keys(),
+                              index=[self.ja_file_name + "_(" + str(f+1) + "/" + str(split_file) + ")"])
+            file_prefix = "DC" if self.is_dc_object else "JA"
+            if not output_name:
+                output_complete_name = output_dir + file_prefix + "_" + self.ja_file_name + "_stats_features.csv"
+                print("Writing", file_prefix, self.ja_file_name, "(", (f+1) , "/", split_file,
+                      ") statistial info to", output_complete_name)
             else:
-                with open(output_complete_name, 'w') as f:
-                    df.to_csv(f, header=True)
+                output_complete_name = output_dir + file_prefix + "_" + output_name + "_stats_features.csv"
+                print("Writing", file_prefix, self.ja_file_name, "(", (f+1), "/",
+                      split_file, " ) statistial info to", output_complete_name)
+            if isfile(output_complete_name):
+                with open(output_complete_name, 'a') as file:
+                    df.to_csv(file, header=False)
+            else:
+                with open(output_complete_name, 'w') as file:
+                    df.to_csv(file, header=True)
+            written_names.append(output_complete_name)
+        return written_names
 
 
+
+
+
+
+#JointAngleFile("D2").write_statistical_features(output_name="All", split_file=5)
 #for fn in ad_short_file_names:
 #    AllDataFile(fn).write_statistical_features(output_name="All")
 #for fn in ja_short_file_names:
@@ -463,21 +529,23 @@ class JointAngleFile(object):
 
 
 
-def class_selector(ft, fn, fns, is_all):
+def class_selector(ft, fn, fns, is_all, split_files):
+    names = []
     if ft == "ad":
         if is_all:
             for f in fns:
-                AllDataFile(f).write_statistical_features(output_name="all")
+                names += AllDataFile(f).write_statistical_features(output_name="all", split_file=split_files)
         else:
-            AllDataFile(fn).write_statistical_features()
+            names.append(AllDataFile(fn).write_statistical_features(split_file=split_files))
     elif ft == "ja":
         if is_all:
             for f in fns:
-                JointAngleFile(f).write_statistical_features(output_name="all")
+                names += JointAngleFile(f).write_statistical_features(output_name="all", split_file=split_files)
         else:
-            JointAngleFile(fn).write_statistical_features()
+            names += JointAngleFile(fn).write_statistical_features(split_file=split_files)
     else:
-        DataCubeFile().write_statistical_features()
+        names += DataCubeFile().write_statistical_features()
+    return list(dict.fromkeys(np.ravel(names)))
 
 
 
@@ -487,19 +555,28 @@ parser.add_argument("ft", help="Specify type of file file we wish to read from, 
 parser.add_argument("fn", help="Specify the short file name to load; e.g. for file 'All-HC2-6MinWalk.mat' or "
                                "jointangleHC2-6MinWalk.mat, enter 'HC2'. Specify 'all' for all the files available "
                                "in the default directory of the specified file type. Enter anything for 'dc' file type.")
-parser.add_argument("--dis_3d_pos", type=bool, nargs='?', const=True,
+parser.add_argument("--dis_3d_pos", type=bool, nargs="?", const=True,
                     help="Plots the dynamic positions of an AllDataFile object over time. "
                          "Only works with 'ft' set as an 'AD' file name.")
-parser.add_argument("--dis_diff_plot", type=bool, nargs='?', const=True,
+parser.add_argument("--dis_diff_plot", type=bool, nargs="?", const=True,
                     help="Plots the diff plots of all features and axes of a JointAngleFile object over time."
                          "Only works with 'ft' set as a 'JA' file name.")
-parser.add_argument("--dis_3d_angs", type=bool, nargs='?', const=True,
+parser.add_argument("--dis_3d_angs", type=bool, nargs="?", const=True,
                     help="Plots the 3D positions of all features' joint angles over time. "
                          "Only works with 'ft' set as a 'JA' file name.")
+parser.add_argument("--split_files", type=int, help="Splits each of the files into 'n' number of parts to do statistical "
+                                          "analysis on, with each retaining the original file's file label ('HC' or 'D').")
+parser.add_argument("--check_for_abnormalities", type=float, nargs="?", const=True,
+                    help="Checks for abnormalities within the currently-working-on file within it's parts. In other words,"
+                         "if '--split_files=5', checks whether any of the 5 file parts is significantly different from "
+                         "any of the other parts.")
 args = parser.parse_args()
 
 
+split_files = args.split_files if args.split_files else 1
+
 if not args.dis_3d_pos and not args.dis_diff_plot and not args.dis_3d_angs:
+    names = []
     if args.ft in file_types:
         file_names = []
         if args.ft.lower() == "ad":
@@ -511,9 +588,9 @@ if not args.dis_3d_pos and not args.dis_diff_plot and not args.dis_3d_angs:
 
         if file_names:
             if args.fn in file_names:
-                class_selector(args.ft, args.fn, None, False)
+                names = class_selector(args.ft, args.fn, None, False, split_files=split_files)
             elif args.fn == "all":
-                class_selector(args.ft, None, file_names, True)
+                names = class_selector(args.ft, None, file_names, True, split_files=split_files)
             else:
                 print("Second arg ('fn') must be one of the file names for the '" + args.ft + "' file type, or 'all'")
                 sys.exit(1)
@@ -522,8 +599,13 @@ if not args.dis_3d_pos and not args.dis_diff_plot and not args.dis_3d_angs:
     else:
         print("First arg ('ft') must be one of the accepted file types ('ja', 'ad', or 'dc').")
         sys.exit(1)
+    if args.check_for_abnormalities:
+        check_for_abnormality(names, error_margin=args.check_for_abnormalities)
+
+
+
+
 elif args.dis_3d_pos:
-    print("DING")
     if args.ft != "ad":
         print("First arg ('ft') must be 'ad' for calling 'display_3d_positions' method.")
         sys.exit(1)
@@ -553,4 +635,3 @@ elif args.dis_3d_angs:
         else:
             print("Second arg ('fn') must be the short name of a joint angle file (e.g. 'D2').")
             sys.exit(1)
-
