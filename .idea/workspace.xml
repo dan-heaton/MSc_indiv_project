@@ -2,15 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="6269803a-5c93-4fe7-8214-f3bd850e9b27" name="Default Changelist" comment="Added program on using CRF for sequence labelling, and reorganized directory structure.">
-      <change afterPath="$PROJECT_DIR$/plans_and_presentations/~$Progress Made 24-04 to 07-05.pptx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/project_files/MatFileTypes.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/project_files/plot_3d_walk.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/plans_and_presentations/MSc Project Plan.ods" beforeDir="false" afterPath="$PROJECT_DIR$/plans_and_presentations/MSc Project Plan.ods" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/project_files/matfiles_analysis.py" beforeDir="false" afterPath="$PROJECT_DIR$/project_files/matfiles_analysis.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/project_files/matfiles_analysis_notes.txt" beforeDir="false" afterPath="$PROJECT_DIR$/project_files/matfiles_analysis_notes.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/project_files/output_files/AD_all_stats_features.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/project_files/output_files/DC_all_stats_features.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/project_files/output_files/JA_all_stats_features.csv" beforeDir="false" afterPath="$PROJECT_DIR$/project_files/output_files/JA_all_stats_features.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/project_files/output_files/JA_all_stats_features.csv" beforeDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -22,7 +19,7 @@
     <session id="-1966947946">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="12" />
+          <entry key="project.closed" value="14" />
           <entry key="project.open.time.0" value="3" />
           <entry key="project.open.time.10" value="2" />
           <entry key="project.open.time.12" value="1" />
@@ -30,72 +27,71 @@
           <entry key="project.open.time.18" value="1" />
           <entry key="project.open.time.3" value="3" />
           <entry key="project.open.time.4" value="12" />
-          <entry key="project.open.time.5" value="2" />
-          <entry key="project.open.time.6" value="6" />
-          <entry key="project.open.time.7" value="1" />
+          <entry key="project.open.time.5" value="3" />
+          <entry key="project.open.time.6" value="7" />
+          <entry key="project.open.time.7" value="2" />
           <entry key="project.open.time.8" value="2" />
           <entry key="project.open.time.9" value="1" />
-          <entry key="project.opened" value="35" />
+          <entry key="project.opened" value="38" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
           <entry key="D2_D3_stats_features" value="1" />
-          <entry key="csv" value="87" />
-          <entry key="py" value="26" />
+          <entry key="csv" value="109" />
+          <entry key="py" value="30" />
           <entry key="txt" value="5" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
-          <entry key="CSV" value="82" />
+          <entry key="CSV" value="104" />
           <entry key="PLAIN_TEXT" value="11" />
-          <entry key="Python" value="26" />
+          <entry key="Python" value="30" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="py" value="64054" />
+          <entry key="dummy" value="22" />
+          <entry key="py" value="71884" />
           <entry key="txt" value="645" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="PLAIN_TEXT" value="645" />
-          <entry key="Python" value="64054" />
+          <entry key="PLAIN_TEXT" value="667" />
+          <entry key="Python" value="71884" />
         </counts>
       </usages-collector>
     </session>
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/project_files/matfiles_analysis.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="146">
-              <caret line="534" column="18" lean-forward="true" selection-start-line="534" selection-start-column="18" selection-end-line="534" selection-end-column="18" />
+            <state relative-caret-position="2278">
+              <caret line="280" lean-forward="true" selection-start-line="280" selection-end-line="280" />
               <folding>
-                <element signature="e#0#22#0" expanded="true" />
-                <marker date="1557629369895" expanded="true" signature="2323:2324" ph="..." />
+                <marker date="1557803193134" expanded="true" signature="2828:2829" ph="..." />
+                <marker date="1557803193134" expanded="true" signature="4103:4208" ph="..." />
+                <marker date="1557803193134" expanded="true" signature="5053:5136" ph="..." />
+                <marker date="1557803193134" expanded="true" signature="5533:5980" ph="..." />
+                <marker date="1557803193134" expanded="true" signature="16201:16206" ph="..." />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/project_files/MatFileTypes.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state>
-              <caret column="22" selection-start-column="22" selection-end-column="22" />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/project_files/matfiles_analysis_notes.txt">
+        <entry file="file://$PROJECT_DIR$/project_files/plot_3d_walk.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="136">
-              <caret line="8" column="36" selection-start-line="8" selection-start-column="36" selection-end-line="8" selection-end-column="36" />
+            <state relative-caret-position="163">
+              <caret line="23" selection-start-line="23" selection-end-line="23" selection-end-column="108" />
+              <folding>
+                <element signature="e#0#18#0" expanded="true" />
+                <marker date="1557796819474" expanded="true" signature="991:993" ph="..." />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -111,25 +107,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>index=</find>
-      <find>pause</find>
-      <find>23</find>
-      <find>22</find>
-      <find>DMD</find>
-      <find>start</find>
-      <find>D7</find>
-      <find>asarray</find>
-      <find>output_complete</find>
-      <find>(x,</find>
-      <find>extracting da</find>
-      <find>output_fil</find>
-      <find>output_files\\</find>
-      <find>sensor_label</find>
-      <find>joint_labels</find>
-      <find>axis_labels</find>
-      <find>mean</find>
-      <find>extracting data</find>
-      <find>print(j)</find>
       <find>seg_join</find>
       <find>lower()</find>
       <find>except Tc</find>
@@ -138,15 +115,36 @@
       <find>print</find>
       <find>NAMES</find>
       <find>&quot;NAMES</find>
-      <find>cov</find>
       <find>class_select</find>
       <find>check_for_ab</find>
+      <find>cov</find>
+      <find>covariance_round</find>
+      <find>fft_</find>
+      <find>fft_round</find>
+      <find>seg_join_sen</find>
+      <find>for</find>
+      <find>np.fl</find>
+      <find>extract_stats</find>
+      <find>T</find>
+      <find>t</find>
+      <find>N_trajectori</find>
+      <find>view</find>
+      <find>t_start</find>
+      <find>xyz_min_max</find>
+      <find>xzy_min_max</find>
+      <find>x_t</find>
+      <find>az</find>
+      <find>display_3d_pos</find>
+      <find>frame_rate</find>
+      <find>plot_3d</find>
     </findStrings>
     <replaceStrings>
       <replace>pend_magnet_data</replace>
       <replace>magnet_data</replace>
       <replace>sampling_rate</replace>
       <replace>ja_display_diffs_plot</replace>
+      <replace>xyz_pos</replace>
+      <replace>xyz_pos_t</replace>
     </replaceStrings>
   </component>
   <component name="Git.Settings">
@@ -164,10 +162,12 @@
         <option value="$PROJECT_DIR$/background_research/CRF_seq_labelling.py" />
         <option value="$PROJECT_DIR$/project_files/output_files/D2_D3_stats_features.csv" />
         <option value="$PROJECT_DIR$/project_files/output_files/JA_D3_stats_features.csv" />
-        <option value="$PROJECT_DIR$/project_files/output_files/AD_D2_stats_features.csv" />
-        <option value="$PROJECT_DIR$/project_files/example.py" />
         <option value="$PROJECT_DIR$/project_files/MatFileTypes.py" />
         <option value="$PROJECT_DIR$/project_files/matfiles_analysis_notes.txt" />
+        <option value="$PROJECT_DIR$/project_files/output_files/AD_D2_stats_features.csv" />
+        <option value="$PROJECT_DIR$/project_files/example.py" />
+        <option value="$PROJECT_DIR$/project_files/example2.py" />
+        <option value="$PROJECT_DIR$/project_files/plot_3d_walk.py" />
         <option value="$PROJECT_DIR$/project_files/matfiles_analysis.py" />
       </list>
     </option>
@@ -185,6 +185,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -195,17 +196,21 @@
             <path>
               <item name="indiv_proj" type="b2602c69:ProjectViewProjectNode" />
               <item name="indiv_proj" type="462c0819:PsiDirectoryNode" />
+              <item name="background_research" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="indiv_proj" type="b2602c69:ProjectViewProjectNode" />
+              <item name="indiv_proj" type="462c0819:PsiDirectoryNode" />
               <item name="project_files" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+    <property name="settings.editor.selected.configurable" value="Errors" />
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
@@ -225,28 +230,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.matfiles_analysis">
-    <configuration name="CRF_PyTorch" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <module name="indiv_proj" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/background_research" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/background_research/CRF_PyTorch.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
+  <component name="RunManager" selected="Python.plot_3d_walk">
     <configuration name="CRF_seq_labelling (1)" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="indiv_proj" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -260,27 +244,6 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/background_research/CRF_seq_labelling.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="PyML-ch16-lang-model (1)" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <module name="indiv_proj" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/background_research" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/background_research/PyML-ch16-lang-model.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -310,6 +273,27 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="example2" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="indiv_proj" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/project_files" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="C:\Users\dheat\Dropbox\Imperial\Individual Project\indiv_proj\project_files\plot_3d_walk.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="matfiles_analysis" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="indiv_proj" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -331,20 +315,41 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="plot_3d_walk" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="indiv_proj" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/project_files" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/project_files/plot_3d_walk.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <list>
       <item itemvalue="Python.CRF_seq_labelling (1)" />
-      <item itemvalue="Python.CRF_PyTorch" />
-      <item itemvalue="Python.PyML-ch16-lang-model (1)" />
       <item itemvalue="Python.matfiles_analysis" />
       <item itemvalue="Python.example" />
+      <item itemvalue="Python.example2" />
+      <item itemvalue="Python.plot_3d_walk" />
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.matfiles_analysis" />
+        <item itemvalue="Python.plot_3d_walk" />
+        <item itemvalue="Python.example2" />
         <item itemvalue="Python.example" />
+        <item itemvalue="Python.matfiles_analysis" />
         <item itemvalue="Python.CRF_seq_labelling (1)" />
-        <item itemvalue="Python.PyML-ch16-lang-model (1)" />
-        <item itemvalue="Python.CRF_PyTorch" />
       </list>
     </recent_temporary>
   </component>
@@ -394,12 +399,12 @@
     <frame x="-6" y="-6" width="1549" height="837" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.48090523" visible="true" weight="0.12615588" />
-      <window_info id="Structure" order="1" sideWeight="0.51909477" side_tool="true" visible="true" weight="0.12615588" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.47571188" visible="true" weight="0.12615588" />
+      <window_info id="Structure" order="1" sideWeight="0.5242881" side_tool="true" visible="true" weight="0.12615588" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.4993395" weight="0.24186705" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.4993395" visible="true" weight="0.15558699" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.39886847" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -455,13 +460,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/background_research/PyML-ch16-lang-model.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="629">
-          <caret line="37" selection-start-line="37" selection-end-line="37" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/background_research/imu_dataset.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="459">
@@ -487,260 +485,20 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/project_files/example.py" />
-    <entry file="file://$PROJECT_DIR$/project_files/output_files/DC_all_stats_features.csv" />
-    <entry file="file://$PROJECT_DIR$/project_files/output_files/AD_D2_stats_features.csv" />
     <entry file="file://$PROJECT_DIR$/project_files/output_files/AD_1_D2_stats_features.csv" />
     <entry file="file://$PROJECT_DIR$/project_files/output_files/AD_2_D2_stats_features.csv" />
     <entry file="file://$PROJECT_DIR$/project_files/output_files/AD_3_D2_stats_features.csv" />
     <entry file="file://$PROJECT_DIR$/project_files/output_files/AD_all_stats_features.csv" />
+    <entry file="file://$PROJECT_DIR$/project_files/output_files/JA_all_stats_features.csv" />
+    <entry file="file://$PROJECT_DIR$/project_files/MatFileTypes.py" />
+    <entry file="file://$PROJECT_DIR$/project_files/output_files/DC_all_stats_features.csv" />
+    <entry file="file://$PROJECT_DIR$/project_files/output_files/JA_D2.csv" />
+    <entry file="file://$PROJECT_DIR$/project_files/output_files/AD_D2_stats_features.csv" />
     <entry file="file://$PROJECT_DIR$/project_files/output_files/JA_D2_stats_features.csv" />
-    <entry file="file://$PROJECT_DIR$/project_files/output_files/JA_all_stats_features.csv">
-      <provider selected="true" editor-type-id="csv-table-editor">
-        <state showInfoPanel="true" fixedHeaders="false" rowLines="3">
-          <column index="0" width="100" />
-          <column index="1" width="100" />
-          <column index="2" width="100" />
-          <column index="3" width="100" />
-          <column index="4" width="100" />
-          <column index="5" width="100" />
-          <column index="6" width="100" />
-          <column index="7" width="100" />
-          <column index="8" width="100" />
-          <column index="9" width="100" />
-          <column index="10" width="100" />
-          <column index="11" width="100" />
-          <column index="12" width="100" />
-          <column index="13" width="100" />
-          <column index="14" width="100" />
-          <column index="15" width="100" />
-          <column index="16" width="100" />
-          <column index="17" width="100" />
-          <column index="18" width="100" />
-          <column index="19" width="100" />
-          <column index="20" width="100" />
-          <column index="21" width="100" />
-          <column index="22" width="100" />
-          <column index="23" width="100" />
-          <column index="24" width="100" />
-          <column index="25" width="100" />
-          <column index="26" width="100" />
-          <column index="27" width="100" />
-          <column index="28" width="100" />
-          <column index="29" width="100" />
-          <column index="30" width="100" />
-          <column index="31" width="100" />
-          <column index="32" width="100" />
-          <column index="33" width="100" />
-          <column index="34" width="100" />
-          <column index="35" width="100" />
-          <column index="36" width="100" />
-          <column index="37" width="100" />
-          <column index="38" width="100" />
-          <column index="39" width="100" />
-          <column index="40" width="100" />
-          <column index="41" width="100" />
-          <column index="42" width="100" />
-          <column index="43" width="100" />
-          <column index="44" width="100" />
-          <column index="45" width="100" />
-          <column index="46" width="100" />
-          <column index="47" width="100" />
-          <column index="48" width="100" />
-          <column index="49" width="100" />
-          <column index="50" width="100" />
-          <column index="51" width="100" />
-          <column index="52" width="100" />
-          <column index="53" width="100" />
-          <column index="54" width="100" />
-          <column index="55" width="100" />
-          <column index="56" width="100" />
-          <column index="57" width="100" />
-          <column index="58" width="100" />
-          <column index="59" width="100" />
-          <column index="60" width="100" />
-          <column index="61" width="100" />
-          <column index="62" width="100" />
-          <column index="63" width="100" />
-          <column index="64" width="100" />
-          <column index="65" width="100" />
-          <column index="66" width="100" />
-          <column index="67" width="100" />
-          <column index="68" width="100" />
-          <column index="69" width="100" />
-          <column index="70" width="100" />
-          <column index="71" width="100" />
-          <column index="72" width="100" />
-          <column index="73" width="100" />
-          <column index="74" width="100" />
-          <column index="75" width="100" />
-          <column index="76" width="100" />
-          <column index="77" width="100" />
-          <column index="78" width="100" />
-          <column index="79" width="100" />
-          <column index="80" width="100" />
-          <column index="81" width="100" />
-          <column index="82" width="100" />
-          <column index="83" width="100" />
-          <column index="84" width="100" />
-          <column index="85" width="100" />
-          <column index="86" width="100" />
-          <column index="87" width="100" />
-          <column index="88" width="100" />
-          <column index="89" width="100" />
-          <column index="90" width="100" />
-          <column index="91" width="100" />
-          <column index="92" width="100" />
-          <column index="93" width="100" />
-          <column index="94" width="100" />
-          <column index="95" width="100" />
-          <column index="96" width="100" />
-          <column index="97" width="100" />
-          <column index="98" width="100" />
-          <column index="99" width="100" />
-          <column index="100" width="100" />
-          <column index="101" width="100" />
-          <column index="102" width="100" />
-          <column index="103" width="100" />
-          <column index="104" width="100" />
-          <column index="105" width="100" />
-          <column index="106" width="100" />
-          <column index="107" width="100" />
-          <column index="108" width="100" />
-          <column index="109" width="100" />
-          <column index="110" width="100" />
-          <column index="111" width="100" />
-          <column index="112" width="100" />
-          <column index="113" width="100" />
-          <column index="114" width="100" />
-          <column index="115" width="100" />
-          <column index="116" width="100" />
-          <column index="117" width="100" />
-          <column index="118" width="100" />
-          <column index="119" width="100" />
-          <column index="120" width="100" />
-          <column index="121" width="100" />
-          <column index="122" width="100" />
-          <column index="123" width="100" />
-          <column index="124" width="100" />
-          <column index="125" width="100" />
-          <column index="126" width="100" />
-          <column index="127" width="100" />
-          <column index="128" width="100" />
-          <column index="129" width="100" />
-          <column index="130" width="100" />
-          <column index="131" width="100" />
-          <column index="132" width="100" />
-          <column index="133" width="100" />
-          <column index="134" width="100" />
-          <column index="135" width="100" />
-          <column index="136" width="100" />
-          <column index="137" width="100" />
-          <column index="138" width="100" />
-          <column index="139" width="100" />
-          <column index="140" width="100" />
-          <column index="141" width="100" />
-          <column index="142" width="100" />
-          <column index="143" width="100" />
-          <column index="144" width="100" />
-          <column index="145" width="100" />
-          <column index="146" width="100" />
-          <column index="147" width="100" />
-          <column index="148" width="100" />
-          <column index="149" width="100" />
-          <column index="150" width="100" />
-          <column index="151" width="100" />
-          <column index="152" width="100" />
-          <column index="153" width="100" />
-          <column index="154" width="100" />
-          <column index="155" width="100" />
-          <column index="156" width="100" />
-          <column index="157" width="100" />
-          <column index="158" width="100" />
-          <column index="159" width="100" />
-          <column index="160" width="100" />
-          <column index="161" width="100" />
-          <column index="162" width="100" />
-          <column index="163" width="100" />
-          <column index="164" width="100" />
-          <column index="165" width="100" />
-          <column index="166" width="100" />
-          <column index="167" width="100" />
-          <column index="168" width="100" />
-          <column index="169" width="100" />
-          <column index="170" width="100" />
-          <column index="171" width="100" />
-          <column index="172" width="100" />
-          <column index="173" width="100" />
-          <column index="174" width="100" />
-          <column index="175" width="100" />
-          <column index="176" width="100" />
-          <column index="177" width="100" />
-          <column index="178" width="100" />
-          <column index="179" width="100" />
-          <column index="180" width="100" />
-          <column index="181" width="100" />
-          <column index="182" width="100" />
-          <column index="183" width="100" />
-          <column index="184" width="100" />
-          <column index="185" width="100" />
-          <column index="186" width="100" />
-          <column index="187" width="100" />
-          <column index="188" width="100" />
-          <column index="189" width="100" />
-          <column index="190" width="100" />
-          <column index="191" width="100" />
-          <column index="192" width="100" />
-          <column index="193" width="100" />
-          <column index="194" width="100" />
-          <column index="195" width="100" />
-          <column index="196" width="100" />
-          <column index="197" width="100" />
-          <column index="198" width="100" />
-          <column index="199" width="100" />
-          <column index="200" width="100" />
-          <column index="201" width="100" />
-          <column index="202" width="100" />
-          <column index="203" width="100" />
-          <column index="204" width="100" />
-          <column index="205" width="100" />
-          <column index="206" width="100" />
-          <column index="207" width="100" />
-          <column index="208" width="100" />
-          <column index="209" width="100" />
-          <column index="210" width="100" />
-          <column index="211" width="100" />
-          <column index="212" width="100" />
-          <column index="213" width="100" />
-          <column index="214" width="100" />
-          <column index="215" width="100" />
-          <column index="216" width="100" />
-          <column index="217" width="100" />
-          <column index="218" width="100" />
-          <column index="219" width="100" />
-          <column index="220" width="100" />
-          <column index="221" width="100" />
-          <column index="222" width="100" />
-          <column index="223" width="100" />
-          <column index="224" width="100" />
-          <column index="225" width="100" />
-          <column index="226" width="100" />
-          <column index="227" width="100" />
-          <column index="228" width="100" />
-          <column index="229" width="100" />
-          <column index="230" width="100" />
-        </state>
-      </provider>
-      <provider editor-type-id="csv-text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/project_files/matfiles_analysis.py">
+    <entry file="file://$PROJECT_DIR$/background_research/PyML-ch16-lang-model.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="146">
-          <caret line="534" column="18" lean-forward="true" selection-start-line="534" selection-start-column="18" selection-end-line="534" selection-end-column="18" />
-          <folding>
-            <element signature="e#0#22#0" expanded="true" />
-            <marker date="1557629369895" expanded="true" signature="2323:2324" ph="..." />
-          </folding>
+        <state relative-caret-position="2210">
+          <caret line="130" column="40" selection-start-line="130" selection-start-column="40" selection-end-line="130" selection-end-column="40" />
         </state>
       </provider>
     </entry>
@@ -751,10 +509,38 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/project_files/MatFileTypes.py">
+    <entry file="file://$PROJECT_DIR$/project_files/example.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret column="22" selection-start-column="22" selection-end-column="22" />
+        <state relative-caret-position="383">
+          <caret line="59" column="41" selection-start-line="59" selection-start-column="41" selection-end-line="59" selection-end-column="41" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/project_files/plot_3d_walk.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="163">
+          <caret line="23" selection-start-line="23" selection-end-line="23" selection-end-column="108" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+            <marker date="1557796819474" expanded="true" signature="991:993" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/project_files/matfiles_analysis.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2278">
+          <caret line="280" lean-forward="true" selection-start-line="280" selection-end-line="280" />
+          <folding>
+            <marker date="1557803193134" expanded="true" signature="2828:2829" ph="..." />
+            <marker date="1557803193134" expanded="true" signature="4103:4208" ph="..." />
+            <marker date="1557803193134" expanded="true" signature="5053:5136" ph="..." />
+            <marker date="1557803193134" expanded="true" signature="5533:5980" ph="..." />
+            <marker date="1557803193134" expanded="true" signature="16201:16206" ph="..." />
+          </folding>
         </state>
       </provider>
     </entry>
