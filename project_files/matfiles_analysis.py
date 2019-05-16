@@ -430,6 +430,11 @@ class DataCubeFile(object):
             self.ja_objs[i].write_statistical_features(output_name=output_name, split_file=split_file)
 
 
+    def write_direct_csv(self):
+        for i in range(len(self.ja_objs)):
+            self.ja_objs[i].write_direct_csv(output_name=self.dc_short_file_names[i])
+
+
 
 class JointAngleFile(object):
 
@@ -662,7 +667,10 @@ if not args.dis_3d_pos and not args.dis_diff_plot and not args.dis_3d_angs:
                 print("Second arg ('fn') must be one of the file names for the '" + args.ft + "' file type, or 'all'")
                 sys.exit(1)
         else:
-            DataCubeFile().write_statistical_features(split_file=split_files)
+            if not args.extract_csv:
+                DataCubeFile().write_statistical_features(split_file=split_files)
+            else:
+                DataCubeFile().write_direct_csv()
     else:
         print("First arg ('ft') must be one of the accepted file types ('ja', 'ad', or 'dc').")
         sys.exit(1)

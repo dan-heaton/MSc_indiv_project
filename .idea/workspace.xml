@@ -2,12 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="6269803a-5c93-4fe7-8214-f3bd850e9b27" name="Default Changelist" comment="Added program on using CRF for sequence labelling, and reorganized directory structure.">
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/project_files/plot_3d_walk.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/project_files/basic_rnn.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/plans_and_presentations/MSc Project Plan.ods" beforeDir="false" afterPath="$PROJECT_DIR$/plans_and_presentations/MSc Project Plan.ods" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/project_files/matfiles_analysis.py" beforeDir="false" afterPath="$PROJECT_DIR$/project_files/matfiles_analysis.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/project_files/output_files/JA_all_stats_features.csv" beforeDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -19,48 +17,48 @@
     <session id="-1966947946">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="14" />
+          <entry key="project.closed" value="17" />
           <entry key="project.open.time.0" value="3" />
           <entry key="project.open.time.10" value="2" />
-          <entry key="project.open.time.12" value="1" />
+          <entry key="project.open.time.12" value="2" />
           <entry key="project.open.time.15" value="1" />
           <entry key="project.open.time.18" value="1" />
           <entry key="project.open.time.3" value="3" />
-          <entry key="project.open.time.4" value="12" />
+          <entry key="project.open.time.4" value="13" />
           <entry key="project.open.time.5" value="3" />
-          <entry key="project.open.time.6" value="7" />
+          <entry key="project.open.time.6" value="8" />
           <entry key="project.open.time.7" value="2" />
           <entry key="project.open.time.8" value="2" />
           <entry key="project.open.time.9" value="1" />
-          <entry key="project.opened" value="38" />
+          <entry key="project.opened" value="41" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
           <entry key="D2_D3_stats_features" value="1" />
-          <entry key="csv" value="109" />
-          <entry key="py" value="30" />
-          <entry key="txt" value="5" />
+          <entry key="csv" value="111" />
+          <entry key="py" value="36" />
+          <entry key="txt" value="6" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
-          <entry key="CSV" value="104" />
-          <entry key="PLAIN_TEXT" value="11" />
-          <entry key="Python" value="30" />
+          <entry key="CSV" value="106" />
+          <entry key="PLAIN_TEXT" value="12" />
+          <entry key="Python" value="36" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="dummy" value="22" />
-          <entry key="py" value="71884" />
+          <entry key="dummy" value="33" />
+          <entry key="py" value="75165" />
           <entry key="txt" value="645" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="PLAIN_TEXT" value="667" />
-          <entry key="Python" value="71884" />
+          <entry key="PLAIN_TEXT" value="678" />
+          <entry key="Python" value="75165" />
         </counts>
       </usages-collector>
     </session>
@@ -70,27 +68,26 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/project_files/matfiles_analysis.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2278">
-              <caret line="280" lean-forward="true" selection-start-line="280" selection-end-line="280" />
+            <state relative-caret-position="355">
+              <caret line="303" column="33" lean-forward="true" selection-start-line="303" selection-start-column="33" selection-end-line="303" selection-end-column="33" />
               <folding>
-                <marker date="1557803193134" expanded="true" signature="2828:2829" ph="..." />
-                <marker date="1557803193134" expanded="true" signature="4103:4208" ph="..." />
-                <marker date="1557803193134" expanded="true" signature="5053:5136" ph="..." />
-                <marker date="1557803193134" expanded="true" signature="5533:5980" ph="..." />
-                <marker date="1557803193134" expanded="true" signature="16201:16206" ph="..." />
+                <marker date="1557864200351" expanded="true" signature="2828:2829" ph="..." />
+                <marker date="1557864200351" expanded="true" signature="4103:4208" ph="..." />
+                <marker date="1557864200351" expanded="true" signature="5053:5136" ph="..." />
+                <marker date="1557864200351" expanded="true" signature="5533:5980" ph="..." />
+                <marker date="1557864200351" expanded="true" signature="16201:16206" ph="..." />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/project_files/plot_3d_walk.py">
+        <entry file="file://$PROJECT_DIR$/project_files/basic_rnn.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="163">
-              <caret line="23" selection-start-line="23" selection-end-line="23" selection-end-column="108" />
+            <state relative-caret-position="147">
+              <caret line="95" column="22" selection-start-line="95" selection-start-column="22" selection-end-line="95" selection-end-column="22" />
               <folding>
-                <element signature="e#0#18#0" expanded="true" />
-                <marker date="1557796819474" expanded="true" signature="991:993" ph="..." />
+                <element signature="e#0#10#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -107,19 +104,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>seg_join</find>
-      <find>lower()</find>
-      <find>except Tc</find>
-      <find>&quot;all&quot;</find>
-      <find>DING</find>
-      <find>print</find>
-      <find>NAMES</find>
-      <find>&quot;NAMES</find>
-      <find>class_select</find>
-      <find>check_for_ab</find>
-      <find>cov</find>
-      <find>covariance_round</find>
-      <find>fft_</find>
       <find>fft_round</find>
       <find>seg_join_sen</find>
       <find>for</find>
@@ -137,6 +121,19 @@
       <find>display_3d_pos</find>
       <find>frame_rate</find>
       <find>plot_3d</find>
+      <find>input</find>
+      <find>word_to_int</find>
+      <find>128</find>
+      <find>tf.int32</find>
+      <find>iteration</find>
+      <find>epoch</find>
+      <find>x_data</find>
+      <find>labels:</find>
+      <find>labels</find>
+      <find>shape</find>
+      <find>args.split_</find>
+      <find>sio.</find>
+      <find>loadmat</find>
     </findStrings>
     <replaceStrings>
       <replace>pend_magnet_data</replace>
@@ -158,7 +155,6 @@
         <option value="$PROJECT_DIR$/imu_dataset.py" />
         <option value="$PROJECT_DIR$/CRF_seq_labelling.py" />
         <option value="$PROJECT_DIR$/background_research/CRF_PyTorch.py" />
-        <option value="$PROJECT_DIR$/background_research/PyML-ch16-lang-model.py" />
         <option value="$PROJECT_DIR$/background_research/CRF_seq_labelling.py" />
         <option value="$PROJECT_DIR$/project_files/output_files/D2_D3_stats_features.csv" />
         <option value="$PROJECT_DIR$/project_files/output_files/JA_D3_stats_features.csv" />
@@ -168,7 +164,11 @@
         <option value="$PROJECT_DIR$/project_files/example.py" />
         <option value="$PROJECT_DIR$/project_files/example2.py" />
         <option value="$PROJECT_DIR$/project_files/plot_3d_walk.py" />
+        <option value="$PROJECT_DIR$/background_research/PyML-ch16-lang-model.py" />
+        <option value="$PROJECT_DIR$/background_research/PyML-ch-16-IMDB-sentiment.py" />
+        <option value="$PROJECT_DIR$/project_files/BasicRNN.py" />
         <option value="$PROJECT_DIR$/project_files/matfiles_analysis.py" />
+        <option value="$PROJECT_DIR$/project_files/basic_rnn.py" />
       </list>
     </option>
   </component>
@@ -185,7 +185,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -196,17 +195,13 @@
             <path>
               <item name="indiv_proj" type="b2602c69:ProjectViewProjectNode" />
               <item name="indiv_proj" type="462c0819:PsiDirectoryNode" />
-              <item name="background_research" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="indiv_proj" type="b2602c69:ProjectViewProjectNode" />
-              <item name="indiv_proj" type="462c0819:PsiDirectoryNode" />
               <item name="project_files" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -230,8 +225,8 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.plot_3d_walk">
-    <configuration name="CRF_seq_labelling (1)" type="PythonConfigurationType" factoryName="Python" temporary="true">
+  <component name="RunManager" selected="Python.basic_rnn">
+    <configuration name="PyML-ch-16-IMDB-sentiment" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="indiv_proj" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -243,7 +238,7 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/background_research/CRF_seq_labelling.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/background_research/PyML-ch-16-IMDB-sentiment.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -252,7 +247,28 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="example" type="PythonConfigurationType" factoryName="Python" temporary="true">
+    <configuration name="PyML-ch16-lang-model" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="indiv_proj" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/background_research" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/background_research/PyML-ch16-lang-model.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="basic_rnn" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="indiv_proj" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -264,7 +280,7 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/project_files/example.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/project_files/basic_rnn.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -286,27 +302,6 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <option name="SCRIPT_NAME" value="C:\Users\dheat\Dropbox\Imperial\Individual Project\indiv_proj\project_files\plot_3d_walk.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="matfiles_analysis" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <module name="indiv_proj" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/project_files" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/project_files/matfiles_analysis.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -337,19 +332,19 @@
       <method v="2" />
     </configuration>
     <list>
-      <item itemvalue="Python.CRF_seq_labelling (1)" />
-      <item itemvalue="Python.matfiles_analysis" />
-      <item itemvalue="Python.example" />
       <item itemvalue="Python.example2" />
       <item itemvalue="Python.plot_3d_walk" />
+      <item itemvalue="Python.PyML-ch16-lang-model" />
+      <item itemvalue="Python.PyML-ch-16-IMDB-sentiment" />
+      <item itemvalue="Python.basic_rnn" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.basic_rnn" />
+        <item itemvalue="Python.PyML-ch-16-IMDB-sentiment" />
+        <item itemvalue="Python.PyML-ch16-lang-model" />
         <item itemvalue="Python.plot_3d_walk" />
         <item itemvalue="Python.example2" />
-        <item itemvalue="Python.example" />
-        <item itemvalue="Python.matfiles_analysis" />
-        <item itemvalue="Python.CRF_seq_labelling (1)" />
       </list>
     </recent_temporary>
   </component>
@@ -395,24 +390,33 @@
     <option name="localTasksCounter" value="5" />
     <servers />
   </component>
+  <component name="TodoView">
+    <todo-panel id="selected-file">
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
+    <todo-panel id="all">
+      <are-packages-shown value="true" />
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
+  </component>
   <component name="ToolWindowManager">
     <frame x="-6" y="-6" width="1549" height="837" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.47571188" visible="true" weight="0.12615588" />
-      <window_info id="Structure" order="1" sideWeight="0.5242881" side_tool="true" visible="true" weight="0.12615588" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.47058824" visible="true" weight="0.12615588" />
+      <window_info id="Structure" order="1" sideWeight="0.5294118" side_tool="true" visible="true" weight="0.12615588" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.4993395" visible="true" weight="0.15558699" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.497358" weight="0.21216407" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.39886847" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
-      <window_info anchor="bottom" id="TODO" order="6" />
-      <window_info anchor="bottom" id="Version Control" order="7" />
-      <window_info anchor="bottom" id="Terminal" order="8" />
-      <window_info anchor="bottom" id="Event Log" order="9" sideWeight="0.5006605" side_tool="true" weight="0.38189533" />
-      <window_info anchor="bottom" id="Python Console" order="10" />
+      <window_info anchor="bottom" id="TODO" order="6" sideWeight="0.4993395" weight="0.32956153" />
+      <window_info anchor="bottom" id="Version Control" order="7" sideWeight="0.49867898" weight="0.32956153" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="8" sideWeight="0.4966975" visible="true" weight="0.3026874" />
+      <window_info anchor="bottom" id="Event Log" order="9" sideWeight="0.50264204" side_tool="true" weight="0.21216407" />
+      <window_info anchor="bottom" id="Python Console" order="10" sideWeight="0.4966975" weight="0.32956153" />
       <window_info active="true" anchor="bottom" id="SVN Repositories" order="11" visible="true" weight="0.21074964" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
@@ -450,16 +454,6 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/CRF_seq_labelling.py" />
     <entry file="file://$PROJECT_DIR$/background_research/CRF_PyTorch.py" />
-    <entry file="file://$PROJECT_DIR$/background_research/PyML-ch-16-IMDB-sentiment.py">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/background_research/CRF_seq_labelling.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="119">
-          <caret line="14" selection-start-line="14" selection-end-line="14" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/background_research/imu_dataset.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="459">
@@ -495,10 +489,19 @@
     <entry file="file://$PROJECT_DIR$/project_files/output_files/JA_D2.csv" />
     <entry file="file://$PROJECT_DIR$/project_files/output_files/AD_D2_stats_features.csv" />
     <entry file="file://$PROJECT_DIR$/project_files/output_files/JA_D2_stats_features.csv" />
+    <entry file="file://$PROJECT_DIR$/project_files/example.py" />
+    <entry file="file://$PROJECT_DIR$/project_files/plot_3d_walk.py" />
+    <entry file="file://$PROJECT_DIR$/background_research/CRF_seq_labelling.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1249">
+          <caret line="14" selection-start-line="14" selection-end-line="14" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/background_research/PyML-ch16-lang-model.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2210">
-          <caret line="130" column="40" selection-start-line="130" selection-start-column="40" selection-end-line="130" selection-end-column="40" />
+        <state relative-caret-position="68">
+          <caret line="6" column="9" lean-forward="true" selection-start-line="6" selection-start-column="9" selection-end-line="6" selection-end-column="9" />
         </state>
       </provider>
     </entry>
@@ -509,37 +512,107 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/project_files/example.py">
+    <entry file="file://$PROJECT_DIR$/project_files/output_files/DC_all.csv" />
+    <entry file="file://$PROJECT_DIR$/project_files/output_files/DC_D11.csv">
+      <provider selected="true" editor-type-id="csv-table-editor">
+        <state showInfoPanel="true" fixedHeaders="false" rowLines="3">
+          <column index="0" width="100" />
+          <column index="1" width="100" />
+          <column index="2" width="100" />
+          <column index="3" width="100" />
+          <column index="4" width="100" />
+          <column index="5" width="100" />
+          <column index="6" width="100" />
+          <column index="7" width="100" />
+          <column index="8" width="100" />
+          <column index="9" width="100" />
+          <column index="10" width="100" />
+          <column index="11" width="100" />
+          <column index="12" width="100" />
+          <column index="13" width="100" />
+          <column index="14" width="100" />
+          <column index="15" width="100" />
+          <column index="16" width="100" />
+          <column index="17" width="100" />
+          <column index="18" width="100" />
+          <column index="19" width="100" />
+          <column index="20" width="100" />
+          <column index="21" width="100" />
+          <column index="22" width="100" />
+          <column index="23" width="100" />
+          <column index="24" width="100" />
+          <column index="25" width="100" />
+          <column index="26" width="100" />
+          <column index="27" width="100" />
+          <column index="28" width="100" />
+          <column index="29" width="100" />
+          <column index="30" width="100" />
+          <column index="31" width="100" />
+          <column index="32" width="100" />
+          <column index="33" width="100" />
+          <column index="34" width="100" />
+          <column index="35" width="100" />
+          <column index="36" width="100" />
+          <column index="37" width="100" />
+          <column index="38" width="100" />
+          <column index="39" width="100" />
+          <column index="40" width="100" />
+          <column index="41" width="100" />
+          <column index="42" width="100" />
+          <column index="43" width="100" />
+          <column index="44" width="100" />
+          <column index="45" width="100" />
+          <column index="46" width="100" />
+          <column index="47" width="100" />
+          <column index="48" width="100" />
+          <column index="49" width="100" />
+          <column index="50" width="100" />
+          <column index="51" width="100" />
+          <column index="52" width="100" />
+          <column index="53" width="100" />
+          <column index="54" width="100" />
+          <column index="55" width="100" />
+          <column index="56" width="100" />
+          <column index="57" width="100" />
+          <column index="58" width="100" />
+          <column index="59" width="100" />
+          <column index="60" width="100" />
+          <column index="61" width="100" />
+          <column index="62" width="100" />
+          <column index="63" width="100" />
+          <column index="64" width="100" />
+          <column index="65" width="100" />
+        </state>
+      </provider>
+      <provider editor-type-id="csv-text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/background_research/PyML-ch-16-IMDB-sentiment.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="383">
-          <caret line="59" column="41" selection-start-line="59" selection-start-column="41" selection-end-line="59" selection-end-column="41" />
-          <folding>
-            <element signature="e#0#18#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="210">
+          <caret line="104" column="50" selection-start-line="104" selection-start-column="50" selection-end-line="104" selection-end-column="50" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/project_files/plot_3d_walk.py">
+    <entry file="file://$PROJECT_DIR$/project_files/basic_rnn.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="163">
-          <caret line="23" selection-start-line="23" selection-end-line="23" selection-end-column="108" />
+        <state relative-caret-position="147">
+          <caret line="95" column="22" selection-start-line="95" selection-start-column="22" selection-end-line="95" selection-end-column="22" />
           <folding>
-            <element signature="e#0#18#0" expanded="true" />
-            <marker date="1557796819474" expanded="true" signature="991:993" ph="..." />
+            <element signature="e#0#10#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/project_files/matfiles_analysis.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2278">
-          <caret line="280" lean-forward="true" selection-start-line="280" selection-end-line="280" />
+        <state relative-caret-position="355">
+          <caret line="303" column="33" lean-forward="true" selection-start-line="303" selection-start-column="33" selection-end-line="303" selection-end-column="33" />
           <folding>
-            <marker date="1557803193134" expanded="true" signature="2828:2829" ph="..." />
-            <marker date="1557803193134" expanded="true" signature="4103:4208" ph="..." />
-            <marker date="1557803193134" expanded="true" signature="5053:5136" ph="..." />
-            <marker date="1557803193134" expanded="true" signature="5533:5980" ph="..." />
-            <marker date="1557803193134" expanded="true" signature="16201:16206" ph="..." />
+            <marker date="1557864200351" expanded="true" signature="2828:2829" ph="..." />
+            <marker date="1557864200351" expanded="true" signature="4103:4208" ph="..." />
+            <marker date="1557864200351" expanded="true" signature="5053:5136" ph="..." />
+            <marker date="1557864200351" expanded="true" signature="5533:5980" ph="..." />
+            <marker date="1557864200351" expanded="true" signature="16201:16206" ph="..." />
           </folding>
         </state>
       </provider>
