@@ -1,9 +1,0 @@
-tree[0][0]                          ->      matlab: tree
-tree[0][0][6]                       ->      matlab: tree.subject
-tree[0][0][6][0][0][10]             ->      matlab: tree.subject.frames
-tree[0][0][6][0][0][10][0][0][3][0] ->      matlab: tree.subject.frames.frame
-
-
-
-AD_D2 column 242 label currently: (sensorFreeAcceleration) : (L5).....should be (sens....) : T8
-f_d_s_data shape = (7, 23, 3, 21810)

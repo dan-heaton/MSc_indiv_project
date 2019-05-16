@@ -199,13 +199,7 @@ def check_for_abnormality(file_names, error_margin=1, abnormality_threshold=0.3)
     """
     for m in range(len(file_names)):
         file_df = pd.read_csv(file_names[m], index_col=0).iloc[:, 1:]
-        # Note: only computes the means for features w/ single values (e.g. mean), not multi-dims (e.g. covariances)
-        # for i in range(len(file_df.columns)):
-        cols_to_keep = [i for i in range(len(file_df.values[0])) if type(file_df.values[0, i])==float]
-        cols_to_remove = [i for i in range(len(file_df.values[0])) if i not in cols_to_keep]
-        file_df = file_df.drop(file_df.columns[cols_to_remove], axis=1)
         col_means = [np.mean(file_df.iloc[:, i]) for i in range(len(file_df.iloc[0]))]
-
         for i in range(len(file_df)):
             features_out_of_range = 0
             for j in range(len(file_df.iloc[0])):
