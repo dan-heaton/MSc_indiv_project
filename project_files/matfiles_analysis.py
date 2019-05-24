@@ -21,7 +21,7 @@ sub_dirs = ["6minwalk-matfiles\\", "6MW-matFiles\\", "NSAA\\"]
 output_dir = "output_files\\"
 
 #Lists of constants that dictate the allowed source file types to analyse and the dimensions of the data
-file_types = ["ja", "ad", "dc"]
+file_types = ["JA", "AD", "DC"]
 axis_labels = ["X", "Y", "Z"]
 
 #Below 3 lists are labels for the 23 segments, 22 joints, and 17 sensors, as dictated by the 'MVN User Manual'
@@ -134,9 +134,12 @@ def cov_eigenvals(nums, i):
     2D array of numbers (i.e. the top 2 of 3 eigenvals), depending on the index 'i'
     """
     vals = la.eig(covariance_round(nums))[0].tolist()
-    top_vals = [round(val, 4) for val in vals if val != min(vals)]
-    top_vals.sort(reverse=True)
+    vals = list(vals)
+    vals.sort(reverse=True)
+    top_vals = vals[:2]
     return round(top_vals[i], 4)
+
+
 
 def prop_outside_mean_zone(nums, percen=0.1):
     """
@@ -231,8 +234,8 @@ def extract_stats_features(f_index, file_part, split_file, file_name, measuremen
     # Creates and returns a DataFrame object from a single list version of the dictionary (so it's only 1 row),
     # and creates either a .csv with the default output_name (w/ .csv name from the AD short file name)
     # or with a given name and, if the given name already exists, appends it to the end of existing file
-    return pd.DataFrame([data],columns=data.keys(),index=[file_name + "_(" +
-                                                          str(f_index + 1) + "/" + str(split_file) + ")"])
+    return pd.DataFrame([data], columns=data.keys(), index=[file_name + "_(" +
+                                                            str(f_index + 1) + "/" + str(split_file) + ")"])
 
 
 
@@ -264,7 +267,7 @@ def check_for_abnormality(file_names, error_margin=1, abnormality_threshold=0.3)
 
 class AllDataFile(object):
 
-    def __init__(self, ad_file_name, short_fn, sub_dir):
+    def __init__(self, ad_file_name, sub_dir):
         """
             :param 'ad_file_name' being the string name of the complete name of the source file (i.e. full file
             path name), with 'short_fn' being the string name of the unique identifier of an 'All-' data matlab file
@@ -273,7 +276,9 @@ class AllDataFile(object):
             :return no return, but sets up the DataFrame 'df' attribute from the given matlab file
         """
         self.ad_file_name = ad_file_name
-        self.ad_short_file_name = short_fn
+        split_name = ad_file_name.split("\\")[-1].split("-")
+        splits = [[s for s in split_name if "HC" in s], [s for s in split_name if "D" in s]]
+        self.ad_short_file_name = splits[1][0] if not splits[0] else splits[0][0]
         self.ad_sub_dir = sub_dir
         # Loads the data from the given file name and extracts the root 'tree' from the file
         ad_data = sio.loadmat(ad_file_name)
@@ -435,10 +440,10 @@ class AllDataFile(object):
             #Writes just the data to file if the file already exists, or both the data and headers if the file
             #doesn't exist yet
             if isfile(output_complete_name):
-                with open(output_complete_name, 'a') as file:
+                with open(output_complete_name, 'a', newline='') as file:
                     df.to_csv(file, header=False)
             else:
-                with open(output_complete_name, 'w') as file:
+                with open(output_complete_name, 'w', newline='') as file:
                     df.to_csv(file, header=True)
             written_names.append(output_complete_name)
         #Returns the complete names of the file(s) that have been written or appended to a .csv
@@ -450,7 +455,7 @@ class AllDataFile(object):
 
 class DataCubeFile(object):
 
-    def __init__(self, dis_data_cube=False):
+    def __init__(self, sub_dir, dis_data_cube=False):
         """
             :param 'dis_data_cube' is specified to True if wish to display basic Data Cube info to the screen
             :return no return, but reads in the datacube object from .mat file, the datacube table from the .csv,
@@ -462,6 +467,8 @@ class DataCubeFile(object):
             the data_cube .mat file open in matlab, run writetable(excel_table, "data_cube_table.csv") in matlab for the
             following to work
         """
+
+        self.dc_sub_dir = sub_dir
 
         try:
             self.dc_table = pd.read_csv(source_dir + "data_cube_table.csv")
@@ -477,8 +484,8 @@ class DataCubeFile(object):
         for i in range(len(self.dc_short_file_names)):
             print("Extracting data from data cube file (" + str(i+1) + "/" + str(len(self.dc_short_file_names)) +
                   "): " + self.dc_short_file_names[i] + "...")
-            self.ja_objs.append(JointAngleFile(ja_file_name=self.dc_file_names[i],
-                                               short_fn=self.dc_short_file_names[i], dc_object_index=i))
+            self.ja_objs.append(JointAngleFile(ja_file_name=self.dc_file_names[i], sub_dir=self.dc_sub_dir,
+                                               dc_object_index=i, dc_short_file_name=self.dc_short_file_names[i]))
 
         if dis_data_cube:
             self.display_info()
@@ -513,20 +520,21 @@ class DataCubeFile(object):
         return written_names
 
 
-    def write_direct_csv(self):
+    def write_direct_csv(self, output_name="all"):
         """
         :param no params
         :return for each JointAngleFile object within the datacube, call their 'write_direct_csv' method with their
         'output_name' set to their respective short name
         """
+        written_names = []
         for i in range(len(self.ja_objs)):
-            self.ja_objs[i].write_direct_csv(output_name=self.dc_short_file_names[i])
-
+            written_names += self.ja_objs[i].write_direct_csv()
+        return written_names
 
 
 class JointAngleFile(object):
 
-    def __init__(self, ja_file_name, short_fn, sub_dir, dc_object_index=-1):
+    def __init__(self, ja_file_name, sub_dir, dc_object_index=-1, dc_short_file_name=None):
         """
             :param 'ja_file_name' being the string name of the complete name of the source file (i.e. full file
             path name), with 'short_fn' being the string name of the unique identifier of an 'joint angle' data
@@ -536,10 +544,15 @@ class JointAngleFile(object):
             :return no return, but sets up the DataFrame 'df' attribute from the given matlab file
         """
         self.ja_file_name = ja_file_name
-        self.ja_short_file_name = short_fn
+        split_name = ja_file_name.split("\\")[-1].split("-")
+        splits = [[s for s in split_name if "HC" in s], [s.upper() for s in split_name if "D" in s.upper()]]
+        if not dc_short_file_name:
+            self.ja_short_file_name = splits[1][0][splits[1][0].index("D"):] \
+                if not splits[0] else splits[0][0][splits[0][0].index("HC"):]
+        else:
+            self.ja_short_file_name = dc_short_file_name
         self.ja_sub_dir = sub_dir
         self.is_dc_object = True if dc_object_index != -1 else False
-
         #Loads the JA data from the datacube file instead of the normal JA files if passed from DataCubeFile class
         if dc_object_index != -1:
             self.ja_data = sio.loadmat(source_dir + "data_cube_6mw",
@@ -671,11 +684,11 @@ class JointAngleFile(object):
             #Writes just the data to file if the file already exists, or both the data and headers if the file
             #doesn't exist yet
             if isfile(output_complete_name):
-                with open(output_complete_name, 'a') as file:
-                    df.to_csv(file, header=False)
+                with open(output_complete_name, 'a', newline='') as file:
+                    df.to_csv(file, header=False, line_terminator="")
             else:
-                with open(output_complete_name, 'w') as file:
-                    df.to_csv(file, header=True)
+                with open(output_complete_name, 'w', newline='') as file:
+                    df.to_csv(file, header=True, line_terminator="")
             written_names.append(output_complete_name)
         #Returns the complete names of the file(s) that have been written or appended to a .csv
         return written_names
@@ -688,33 +701,42 @@ class JointAngleFile(object):
             :return: no return, but instead directly writes a JointAngleFile object from a .mat file to a .csv
             without extracting any of the statistical features
         """
-        df = pd.DataFrame(self.ja_data)
+        df = pd.DataFrame(self.ja_data, index=[self.ja_short_file_name for i in range(len(self.ja_data))])
         headers = [("(" + joint_labels[i] + ") : (" + axis_labels[j] + "-axis)")
                    for i in range(len(joint_labels)) for j in range(len(axis_labels))]
         file_prefix = "DC" if self.is_dc_object else "JA"
+
+        # Creates the relevant sub-directories within 'output_files' to store the created .csv
+        dc_ja_output_dir = output_dir + "direct_csv\\"
+        if not os.path.exists(dc_ja_output_dir):
+            os.mkdir(dc_ja_output_dir)
+        dc_ja_output_dir += file_prefix + "\\"
+        if not os.path.exists(dc_ja_output_dir):
+            os.mkdir(dc_ja_output_dir)
+
         if not output_name:
-            output_complete_name = output_dir + "direct_csv\\" + file_prefix + "_" + self.ja_file_name + ".csv"
+            output_complete_name = dc_ja_output_dir + file_prefix + "_" + self.ja_short_file_name + ".csv"
             print("Writing", file_prefix, self.ja_file_name, "to", output_complete_name)
         else:
-            output_complete_name = output_dir + "direct_csv\\" + file_prefix + "_" + output_name + ".csv"
+            output_complete_name = dc_ja_output_dir  + file_prefix + "_" + output_name + ".csv"
             print("Writing", file_prefix, self.ja_file_name, "to", output_complete_name)
         if isfile(output_complete_name):
-            with open(output_complete_name, 'a') as file:
-                df.to_csv(file, header=False, index=False)
+            with open(output_complete_name, 'a', newline='') as file:
+                df.to_csv(file, header=False)
         else:
-            with open(output_complete_name, 'w') as file:
-                df.to_csv(file, header=headers, index=False)
+            with open(output_complete_name, 'w', newline='') as file:
+                df.to_csv(file, header=headers)
         return output_complete_name
 
 
 
 
-def class_selector(ft, fn, short_fn, fns, sub_dir, is_all, split_files, is_extract_csv=False, split_size=None):
+def class_selector(ft, fn, fns, sub_dir, is_all, split_files, is_extract_csv=False, split_size=None):
     """
         :param 'ft' is the type of data file (i.e. one of 'ad', 'ja', or 'dc'), 'fn' is the full name of the data file
-        (i.e. the full-directory path of the file) if 'class_selector' is dealing with a single file, 'short_fn' is the
-        short file name (e.g. 'D2'), 'fns' is the full file names if 'class_selector' is dealing with multiple files
-        (i.e. the 'all' command line argument is given for 'fn'), 'sub_dir' is the sub-directory to write the file(s)
+        (i.e. the full-directory path of the file) if 'class_selector' is dealing with a single file, 'fns' is the
+        full file names if 'class_selector' is dealing with multiple files(i.e. the 'all'
+        command line argument is given for 'fn'), 'sub_dir' is the sub-directory to write the file(s)
         in question in their extracted stats .csv format, 'is_all' is set to true if 'all is given as 'fn' command line
         argument (else false), 'split_files' is set at the value given by '--split_files' command line argument (else 1),
         'is_extract_csv' is true if calling 'write_direct_csv' on JointAngleFile object (else false), and 'split_size'
@@ -724,35 +746,36 @@ def class_selector(ft, fn, short_fn, fns, sub_dir, is_all, split_files, is_extra
         with arguments governed by the passed in arguments to 'class_selector'
     """
     names = []
-    if ft == "ad":
+    if ft == "AD":
         if is_all:
             for f in fns:
-                names += AllDataFile(f, short_fn, sub_dir).write_statistical_features(
+                names += AllDataFile(f, sub_dir).write_statistical_features(
                     output_name="all", split_file=split_files, split_size=split_size)
         else:
-            names.append(AllDataFile(fn, short_fn, sub_dir).write_statistical_features(
+            names.append(AllDataFile(fn, sub_dir).write_statistical_features(
                 split_file=split_files, split_size=split_size))
-    elif ft == "ja":
+    elif ft == "JA":
         if not is_extract_csv:
             if is_all:
                 fns = [fn for fn in fns if "jointangle" in fn]
                 for f in fns:
-                    names += JointAngleFile(f, short_fn, sub_dir).write_statistical_features(
+                    names += JointAngleFile(f, sub_dir).write_statistical_features(
                         output_name="all", split_file=split_files, split_size=split_size)
             else:
-                names += JointAngleFile(fn, short_fn, sub_dir).write_statistical_features(
+                names += JointAngleFile(fn, sub_dir).write_statistical_features(
                     split_file=split_files, split_size=split_size)
         else:
             if is_all:
+                fns = [fn for fn in fns if "jointangle" in fn]
                 for f in fns:
-                    names += JointAngleFile(f, short_fn, sub_dir).write_direct_csv(output_name="all")
+                    names += JointAngleFile(f, sub_dir).write_direct_csv(output_name="all")
             else:
-                names += JointAngleFile(fn, short_fn, sub_dir).write_direct_csv()
+                names += JointAngleFile(fn, sub_dir).write_direct_csv()
     else:
         if not is_extract_csv:
-            names += DataCubeFile().write_statistical_features(split_file=split_files, split_size=split_size)
+            names += DataCubeFile(sub_dir).write_statistical_features(split_file=split_files, split_size=split_size)
         else:
-            names += DataCubeFile().write_direct_csv()
+            names += DataCubeFile(sub_dir).write_direct_csv()
     return list(dict.fromkeys(np.ravel(names)))
 
 
@@ -762,7 +785,7 @@ being necessary if 'ft' is 'DC')"""
 parser = argparse.ArgumentParser()
 parser.add_argument("dir", help="Specifies which source directory to use so as to process the files contained within "
                                 "them accordingly. Must be one of '6minwalk-matfiles', '6MW-matFiles' or 'NSAA'.")
-parser.add_argument("ft", help="Specify type of file file we wish to read from, being one of 'JA' (joint angle), "
+parser.add_argument("ft", help="Specify type of file we wish to read from, being one of 'JA' (joint angle), "
                                "'AD' (all data), or 'DC' (data cube).")
 parser.add_argument("fn", nargs="?", default="DC",
                     help="Specify the short file name to load; e.g. for file 'All-HC2-6MinWalk.mat' or "
@@ -840,16 +863,16 @@ else:
 #require any statistical value extraction to display their results
 if not args.dis_3d_pos and not args.dis_diff_plot and not args.dis_3d_angs:
     names = []
-    if args.ft.lower() in file_types:
+    if args.ft in file_types:
         if file_names != "dc":
             #Handles the 'ad'/'ja' case when file name is NOT 'all' (i.e. just a single file)
             if any(args.fn in fn for fn in file_names):
                 file_name = source_dir + [fn for fn in file_names if args.fn in fn][0]
-                names = class_selector(args.ft, file_name, short_fn=args.fn, fns=None, sub_dir=args.dir, is_all=False,
+                names = class_selector(args.ft, file_name, fns=None, sub_dir=args.dir, is_all=False,
                                        split_files=split_files, is_extract_csv=args.extract_csv, split_size=split_size)
             elif args.fn == "all":
                 file_names = [source_dir + fn for fn in file_names]
-                names = class_selector(args.ft, None, short_fn=args.fn, fns=file_names, sub_dir = args.dir, is_all=True,
+                names = class_selector(args.ft, None, fns=file_names, sub_dir = args.dir, is_all=True,
                                        split_files=split_files, is_extract_csv=args.extract_csv, split_size=split_size)
             else:
                 print("Third arg ('fn') must be one of the file names for the '" + args.ft + "' file type, or 'all'")
@@ -857,10 +880,10 @@ if not args.dis_3d_pos and not args.dis_diff_plot and not args.dis_3d_angs:
         #Handles the 'data cube' case
         else:
             if not args.extract_csv:
-                names = class_selector(args.ft, None, short_fn=args.fn, fns=None, sub_dir = args.dir, is_all=True,
+                names = class_selector(args.ft, None, fns=None, sub_dir = args.dir, is_all=True,
                                        split_files=split_files, is_extract_csv=False, split_size=split_size)
             else:
-                names = class_selector(args.ft, None, short_fn=args.fn, fns=None, sub_dir = args.dir, is_all=True,
+                names = class_selector(args.ft, None, fns=None, sub_dir = args.dir, is_all=True,
                                        split_files=split_files, is_extract_csv=True, split_size=split_size)
     else:
         print("Second arg ('ft') must be one of the accepted file types ('ja', 'ad', or 'dc').")
@@ -889,7 +912,7 @@ elif args.dis_3d_pos:
     else:
         if any(args.fn in fn for fn in file_names):
             file_name = source_dir + [fn for fn in file_names if args.fn in fn][0]
-            AllDataFile(file_name, args.fn, args.dir).display_3d_positions()
+            AllDataFile(file_name, args.dir).display_3d_positions()
         else:
             print("Third arg ('fn') must be the short name of an all data file (e.g. 'D2', 'HC5').")
             sys.exit(1)
