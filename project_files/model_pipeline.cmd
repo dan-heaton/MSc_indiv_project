@@ -22,4 +22,3 @@ if not [%6]==[] (python basic_rnn.py %file_type% %file_name% --split_size% %=% %
 
 
 endlocal
-
