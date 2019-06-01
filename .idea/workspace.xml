@@ -2,7 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="6269803a-5c93-4fe7-8214-f3bd850e9b27" name="Default Changelist" comment="Added program on using CRF for sequence labelling, and reorganized directory structure.">
-      <change beforePath="$PROJECT_DIR$/project_files/model_pipeline.cmd" beforeDir="false" afterPath="$PROJECT_DIR$/project_files/model_pipeline.cmd" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/project_files/mat_activity_divider.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plans_and_presentations/MSc Project Plan.ods" beforeDir="false" afterPath="$PROJECT_DIR$/plans_and_presentations/MSc Project Plan.ods" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/project_files/basic_rnn.py" beforeDir="false" afterPath="$PROJECT_DIR$/project_files/basic_rnn.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/project_files/ft_red_nsaa.py" beforeDir="false" afterPath="$PROJECT_DIR$/project_files/ft_red_nsaa.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/project_files/matfiles_analysis.py" beforeDir="false" afterPath="$PROJECT_DIR$/project_files/matfiles_analysis.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -14,50 +19,50 @@
     <session id="-1966947946">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="28" />
+          <entry key="project.closed" value="29" />
           <entry key="project.open.time.0" value="3" />
           <entry key="project.open.time.10" value="3" />
           <entry key="project.open.time.11" value="1" />
           <entry key="project.open.time.12" value="2" />
           <entry key="project.open.time.15" value="1" />
           <entry key="project.open.time.18" value="1" />
-          <entry key="project.open.time.3" value="6" />
-          <entry key="project.open.time.4" value="19" />
-          <entry key="project.open.time.5" value="8" />
-          <entry key="project.open.time.6" value="10" />
+          <entry key="project.open.time.3" value="7" />
+          <entry key="project.open.time.4" value="20" />
+          <entry key="project.open.time.5" value="9" />
+          <entry key="project.open.time.6" value="12" />
           <entry key="project.open.time.7" value="3" />
           <entry key="project.open.time.8" value="2" />
           <entry key="project.open.time.9" value="1" />
-          <entry key="project.opened" value="60" />
+          <entry key="project.opened" value="65" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
           <entry key="D2_D3_stats_features" value="1" />
-          <entry key="csv" value="176" />
-          <entry key="py" value="41" />
+          <entry key="csv" value="180" />
+          <entry key="py" value="42" />
           <entry key="txt" value="7" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
-          <entry key="CSV" value="171" />
+          <entry key="CSV" value="175" />
           <entry key="PLAIN_TEXT" value="13" />
-          <entry key="Python" value="41" />
+          <entry key="Python" value="42" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
           <entry key="Python Console" value="401" />
           <entry key="dummy" value="48" />
-          <entry key="py" value="109233" />
+          <entry key="py" value="116823" />
           <entry key="txt" value="645" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="PLAIN_TEXT" value="693" />
-          <entry key="Python" value="109634" />
+          <entry key="Python" value="117224" />
         </counts>
       </usages-collector>
     </session>
@@ -67,24 +72,24 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/project_files/matfiles_analysis.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="8058">
-              <caret line="474" column="38" selection-start-line="474" selection-start-column="38" selection-end-line="474" selection-end-column="38" />
+            <state relative-caret-position="381">
+              <caret line="367" column="75" lean-forward="true" selection-start-line="367" selection-start-column="75" selection-end-line="367" selection-end-column="75" />
               <folding>
-                <marker date="1558613257335" expanded="true" signature="2568:2569" ph="..." />
-                <marker date="1558613257335" expanded="true" signature="6411:6416" ph="..." />
+                <marker date="1559358154350" expanded="true" signature="2568:2569" ph="..." />
+                <marker date="1559358154350" expanded="true" signature="6411:6416" ph="..." />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/project_files/ft_red_nsaa.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="221">
-              <caret line="113" column="32" selection-start-line="113" selection-start-column="32" selection-end-line="113" selection-end-column="32" />
+            <state relative-caret-position="270">
+              <caret line="182" column="57" selection-start-line="182" selection-start-column="57" selection-end-line="182" selection-end-column="57" />
               <folding>
                 <element signature="e#0#19#0" expanded="true" />
-                <marker date="1558617680890" expanded="true" signature="8137:8140" ph="..." />
+                <marker date="1559338431593" expanded="true" signature="8137:8140" ph="..." />
               </folding>
             </state>
           </provider>
@@ -93,11 +98,25 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/project_files/basic_rnn.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="4675">
-              <caret line="283" column="51" selection-start-line="283" selection-start-column="51" selection-end-line="283" selection-end-column="51" />
+            <state relative-caret-position="391">
+              <caret line="185" column="57" lean-forward="true" selection-start-line="185" selection-start-column="57" selection-end-line="185" selection-end-column="57" />
               <folding>
                 <element signature="e#0#10#0" expanded="true" />
-                <marker date="1558676864727" expanded="true" signature="3569:3570" ph="..." />
+                <marker date="1559319963385" expanded="true" signature="3672:3673" ph="..." />
+                <marker date="1559319963385" expanded="true" signature="7556:8700" ph="..." />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/project_files/mat_activity_divider.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="925">
+              <caret line="78" column="36" lean-forward="true" selection-start-line="78" selection-start-column="36" selection-end-line="78" selection-end-column="36" />
+              <folding>
+                <element signature="e#428#443#0" expanded="true" />
+                <marker date="1559345597035" expanded="true" signature="5062:5065" ph="..." />
               </folding>
             </state>
           </provider>
@@ -114,29 +133,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>set_</find>
-      <find>extract_stat</find>
-      <find>split</find>
-      <find>read_csv</find>
-      <find>class_selec</find>
-      <find>print(</find>
-      <find>up</find>
-      <find>#Note: CHANGE THESE to location of the 3 sub-directories' encompassing directory local to the user</find>
-      <find>update</find>
-      <find>.head</find>
-      <find>.mat</find>
-      <find>print</find>
-      <find>nss</find>
-      <find>probabilities</find>
-      <find>seed</find>
-      <find>args.nss</find>
-      <find>\n</find>
-      <find>lower</find>
-      <find>second arg ('ft')</find>
-      <find>second arg ('ft') must be one</find>
-      <find>couldn't find the</find>
-      <find>a</find>
-      <find>headers</find>
       <find>writing...</find>
       <find>with open</find>
       <find>print(np.sha</find>
@@ -144,6 +140,29 @@
       <find>allfiles</find>
       <find>first</find>
       <find>first arg</find>
+      <find>build</find>
+      <find>anim</find>
+      <find>Second arg</find>
+      <find>file_types</find>
+      <find>('ja</find>
+      <find>exist</find>
+      <find>exists</find>
+      <find>output_dir</find>
+      <find>to_csv</find>
+      <find>dict</find>
+      <find>sio</find>
+      <find>sio.</find>
+      <find>tree</find>
+      <find>start</find>
+      <find>act_times</find>
+      <find>display_3d_positions</find>
+      <find>&quot;ja&quot;</find>
+      <find>'ad'</find>
+      <find>doesn't have</find>
+      <find>args.ft.lower</find>
+      <find>args.ft.lower()</find>
+      <find>animat</find>
+      <find>plt</find>
     </findStrings>
     <replaceStrings>
       <replace>pend_magnet_data</replace>
@@ -152,6 +171,8 @@
       <replace>ja_display_diffs_plot</replace>
       <replace>xyz_pos</replace>
       <replace>xyz_pos_t</replace>
+      <replace>'AD'</replace>
+      <replace>args.ft.upper()</replace>
     </replaceStrings>
   </component>
   <component name="Git.Settings">
@@ -179,15 +200,16 @@
         <option value="$PROJECT_DIR$/project_files/BasicRNN.py" />
         <option value="$PROJECT_DIR$/project_files/feature_reduction.py" />
         <option value="$PROJECT_DIR$/project_files/testy.py" />
-        <option value="$PROJECT_DIR$/project_files/matfiles_analysis.py" />
-        <option value="$PROJECT_DIR$/project_files/ft_red_nsaa.py" />
         <option value="$PROJECT_DIR$/project_files/basic_rnn.py" />
+        <option value="$PROJECT_DIR$/project_files/ft_red_nsaa.py" />
+        <option value="$PROJECT_DIR$/project_files/mat_activity_divider.py" />
+        <option value="$PROJECT_DIR$/project_files/matfiles_analysis.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="800" />
-    <option name="y" value="255" />
+    <option name="x" value="-15" />
+    <option name="y" value="-15" />
     <option name="width" value="2220" />
     <option name="height" value="1810" />
   </component>
@@ -199,6 +221,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -215,7 +238,6 @@
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -239,7 +261,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.ft_red_nsaa">
+  <component name="RunManager" selected="Python.mat_activity_divider">
     <configuration name="PyML-ch-16-IMDB-sentiment" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="indiv_proj" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -253,27 +275,6 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/background_research/PyML-ch-16-IMDB-sentiment.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="PyML-ch16-lang-model" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <module name="indiv_proj" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/background_research" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/background_research/PyML-ch16-lang-model.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -324,6 +325,27 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="mat_activity_divider" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="indiv_proj" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/project_files" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/project_files/mat_activity_divider.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="testy" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="indiv_proj" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -346,19 +368,19 @@
       <method v="2" />
     </configuration>
     <list>
-      <item itemvalue="Python.PyML-ch16-lang-model" />
       <item itemvalue="Python.PyML-ch-16-IMDB-sentiment" />
       <item itemvalue="Python.basic_rnn" />
       <item itemvalue="Python.testy" />
       <item itemvalue="Python.ft_red_nsaa" />
+      <item itemvalue="Python.mat_activity_divider" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.mat_activity_divider" />
         <item itemvalue="Python.ft_red_nsaa" />
         <item itemvalue="Python.testy" />
         <item itemvalue="Python.basic_rnn" />
         <item itemvalue="Python.PyML-ch-16-IMDB-sentiment" />
-        <item itemvalue="Python.PyML-ch16-lang-model" />
       </list>
     </recent_temporary>
   </component>
@@ -415,19 +437,20 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-6" y="-6" width="1549" height="837" extended-state="6" />
+    <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.64503044" visible="true" weight="0.16116248" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.64503044" visible="true" weight="0.164465" />
       <window_info id="Structure" order="1" sideWeight="0.35496956" side_tool="true" weight="0.16116248" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.497358" weight="0.21216407" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.497358" weight="0.3026874" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.39886847" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" sideWeight="0.4993395" weight="0.32956153" />
       <window_info anchor="bottom" id="Version Control" order="7" sideWeight="0.49867898" weight="0.32956153" />
-      <window_info active="true" anchor="bottom" id="Terminal" order="8" sideWeight="0.4966975" visible="true" weight="0.3026874" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="8" sideWeight="0.4966975" visible="true" weight="0.34087694" />
       <window_info anchor="bottom" id="Event Log" order="9" sideWeight="0.5033025" side_tool="true" weight="0.3026874" />
       <window_info anchor="bottom" id="Python Console" order="10" sideWeight="0.4966975" weight="0.2970297" />
       <window_info active="true" anchor="bottom" id="SVN Repositories" order="11" visible="true" weight="0.21074964" />
@@ -446,8 +469,6 @@
     <option name="LAST_COMMIT_MESSAGE" value="Added program on using CRF for sequence labelling, and reorganized directory structure." />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/project_files/output_files/D2_D3_stats_features.csv" />
-    <entry file="file://$PROJECT_DIR$/project_files/output_files/D2_D3_D4_HC2_HC5_HC6_stats_features.csv" />
     <entry file="file://$USER_HOME$/AppData/Local/Programs/Python/Python36/Lib/site-packages/pandas/core/frame.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="164">
@@ -516,106 +537,73 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/project_files/output_files/NSAA/AD/AD_D11_stats_features.csv" />
     <entry file="file://$PROJECT_DIR$/project_files/output_files/direct_csv/JA/JA_jointangleD2.csv" />
-    <entry file="file://$PROJECT_DIR$/project_files/output_files/6MW-matFiles/AD/AD_all_stats_features.csv">
-      <provider selected="true" editor-type-id="csv-text-editor">
-        <state relative-caret-position="136">
-          <caret line="8" column="37" selection-start-line="8" selection-start-column="37" selection-end-line="8" selection-end-column="37" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/project_files/output_files/6MW-matFiles/AD/AD_all_stats_features.csv" />
     <entry file="file://$PROJECT_DIR$/project_files/testy.py" />
     <entry file="file://$PROJECT_DIR$/project_files/output_files/direct_csv/JA/JA_D2.csv" />
     <entry file="file://$PROJECT_DIR$/project_files/output_files/direct_csv/DC/FR_DC_all.csv" />
-    <entry file="file://$PROJECT_DIR$/project_files/output_files/direct_csv/JA/JA_all.csv">
-      <provider selected="true" editor-type-id="LargeFileEditor" />
-    </entry>
     <entry file="file://$PROJECT_DIR$/project_files/output_files/direct_csv/DC/DC_all.csv" />
     <entry file="file://$PROJECT_DIR$/project_files/output_files/direct_csv/DC/DC_D3.csv" />
-    <entry file="file://$PROJECT_DIR$/project_files/output_files/6minwalk-matfiles/AD/AD_D2_stats_features.csv">
+    <entry file="file://$PROJECT_DIR$/project_files/output_files/6minwalk-matfiles/AD/AD_D2_stats_features.csv" />
+    <entry file="file://$PROJECT_DIR$/project_files/output_files/6minwalk-matfiles/AD/AD_D3_stats_features.csv" />
+    <entry file="file://$PROJECT_DIR$/project_files/output_files/NSAA/AD/AD_D14_stats_features.csv" />
+    <entry file="file://$PROJECT_DIR$/project_files/output_files/6minwalk-matfiles/AD/FR_AD_all_stats_features.csv" />
+    <entry file="file://$PROJECT_DIR$/project_files/output_files/6minwalk-matfiles/AD/AD_all_stats_features.csv" />
+    <entry file="file://$PROJECT_DIR$/project_files/output_files/6minwalk-matfiles/JA/JA_D3_stats_features.csv" />
+    <entry file="file://$PROJECT_DIR$/project_files/output_files/NSAA/AD/FR_AD_D14_stats_features.csv" />
+    <entry file="file://$PROJECT_DIR$/project_files/output_files/direct_csv/JA/JA_D3.csv" />
+    <entry file="file://$PROJECT_DIR$/project_files/output_files/direct_csv/DC/DC_D2.csv">
       <provider selected="true" editor-type-id="csv-text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/project_files/output_files/direct_csv/JA/JA_all.csv" />
+    <entry file="file://$PROJECT_DIR$/project_files/output_files/6minwalk-matfiles/JA/FR_JA_all_stats_features.csv">
+      <provider selected="true" editor-type-id="csv-text-editor">
+        <state relative-caret-position="-2907" />
+      </provider>
       <provider editor-type-id="csv-table-editor">
         <state showInfoPanel="true" fixedHeaders="false" rowLines="3" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/project_files/output_files/6minwalk-matfiles/AD/AD_D3_stats_features.csv" />
-    <entry file="file://$PROJECT_DIR$/project_files/output_files/NSAA/AD/AD_D14_stats_features.csv" />
-    <entry file="file://$PROJECT_DIR$/project_files/output_files/6minwalk-matfiles/AD/FR_AD_all_stats_features.csv">
-      <provider editor-type-id="csv-text-editor" />
-      <provider selected="true" editor-type-id="csv-table-editor">
-        <state showInfoPanel="true" fixedHeaders="false" rowLines="3">
-          <column index="0" width="100" />
-          <column index="1" width="100" />
-          <column index="2" width="100" />
-          <column index="3" width="100" />
-          <column index="4" width="100" />
-          <column index="5" width="100" />
-          <column index="6" width="100" />
-          <column index="7" width="100" />
-          <column index="8" width="100" />
-          <column index="9" width="100" />
-          <column index="10" width="100" />
-          <column index="11" width="100" />
-          <column index="12" width="100" />
-          <column index="13" width="100" />
-          <column index="14" width="100" />
-          <column index="15" width="100" />
-          <column index="16" width="100" />
-          <column index="17" width="100" />
-          <column index="18" width="100" />
-          <column index="19" width="100" />
-          <column index="20" width="100" />
-          <column index="21" width="100" />
-          <column index="22" width="100" />
-          <column index="23" width="100" />
-          <column index="24" width="100" />
-          <column index="25" width="100" />
-          <column index="26" width="100" />
-          <column index="27" width="100" />
-          <column index="28" width="100" />
-          <column index="29" width="100" />
-          <column index="30" width="100" />
-          <column index="31" width="100" />
-          <column index="32" width="100" />
-          <column index="33" width="100" />
+    <entry file="file://$PROJECT_DIR$/project_files/ft_red_nsaa.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="270">
+          <caret line="182" column="57" selection-start-line="182" selection-start-column="57" selection-end-line="182" selection-end-column="57" />
+          <folding>
+            <element signature="e#0#19#0" expanded="true" />
+            <marker date="1559338431593" expanded="true" signature="8137:8140" ph="..." />
+          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/project_files/output_files/6minwalk-matfiles/AD/AD_all_stats_features.csv">
-      <provider selected="true" editor-type-id="csv-text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/project_files/output_files/6minwalk-matfiles/JA/JA_D3_stats_features.csv" />
-    <entry file="file://$PROJECT_DIR$/project_files/output_files/NSAA/AD/FR_AD_D14_stats_features.csv" />
-    <entry file="file://$PROJECT_DIR$/project_files/output_files/6minwalk-matfiles/JA/FR_JA_all_stats_features.csv" />
-    <entry file="file://$PROJECT_DIR$/project_files/output_files/direct_csv/JA/JA_D3.csv" />
     <entry file="file://$PROJECT_DIR$/project_files/matfiles_analysis.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="8058">
-          <caret line="474" column="38" selection-start-line="474" selection-start-column="38" selection-end-line="474" selection-end-column="38" />
+        <state relative-caret-position="381">
+          <caret line="367" column="75" lean-forward="true" selection-start-line="367" selection-start-column="75" selection-end-line="367" selection-end-column="75" />
           <folding>
-            <marker date="1558613257335" expanded="true" signature="2568:2569" ph="..." />
-            <marker date="1558613257335" expanded="true" signature="6411:6416" ph="..." />
+            <marker date="1559358154350" expanded="true" signature="2568:2569" ph="..." />
+            <marker date="1559358154350" expanded="true" signature="6411:6416" ph="..." />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/project_files/basic_rnn.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="4675">
-          <caret line="283" column="51" selection-start-line="283" selection-start-column="51" selection-end-line="283" selection-end-column="51" />
+        <state relative-caret-position="391">
+          <caret line="185" column="57" lean-forward="true" selection-start-line="185" selection-start-column="57" selection-end-line="185" selection-end-column="57" />
           <folding>
             <element signature="e#0#10#0" expanded="true" />
-            <marker date="1558676864727" expanded="true" signature="3569:3570" ph="..." />
+            <marker date="1559319963385" expanded="true" signature="3672:3673" ph="..." />
+            <marker date="1559319963385" expanded="true" signature="7556:8700" ph="..." />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/project_files/ft_red_nsaa.py">
+    <entry file="file://$PROJECT_DIR$/project_files/mat_activity_divider.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="221">
-          <caret line="113" column="32" selection-start-line="113" selection-start-column="32" selection-end-line="113" selection-end-column="32" />
+        <state relative-caret-position="925">
+          <caret line="78" column="36" lean-forward="true" selection-start-line="78" selection-start-column="36" selection-end-line="78" selection-end-column="36" />
           <folding>
-            <element signature="e#0#19#0" expanded="true" />
-            <marker date="1558617680890" expanded="true" signature="8137:8140" ph="..." />
+            <element signature="e#428#443#0" expanded="true" />
+            <marker date="1559345597035" expanded="true" signature="5062:5065" ph="..." />
           </folding>
         </state>
       </provider>

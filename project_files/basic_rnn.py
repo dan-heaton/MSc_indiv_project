@@ -46,7 +46,11 @@ sub_dirs = ["AD", "JA", "DC"]
 #map to the .csvs containing the NSAA information
 nsaa_table_path = "C:\\msc_project_files\\"
 
+output_dir = "output_files\\RNN_outputs\\"
+
 """RNN hyperparameters"""
+x_shape = None
+y_shape = None
 sampling_rate = 60
 #Defines the number of sequences that correspond to one 'x' sample (e.g. for split size of 5 seconds and a sampling
 #rate of 60Hz, sequence length is 300)
@@ -56,9 +60,10 @@ num_lstm_cells = 128
 num_rnn_hidden_layers = 2
 learn_rate = 0.0001
 num_epochs = 20
+test_ratio = 0.2
 
 
-def preprocessing(source_dir):
+def preprocessing(source_dir, test_ratio):
     """
         :return given a short file name for 'fn' command-line argument, finds the relevant file in 'source_dir' and
         adds it to 'file_names' (or set 'file_names' to all file names in 'source_dir'), reads in each file name in
@@ -74,7 +79,7 @@ def preprocessing(source_dir):
     else:
         print("First arg ('dir') must be one of 'AD', 'JA', and 'DC'.")
         sys.exit()
-    if args.fn.lower() != "allfiles":
+    if args.fn.lower() != "all":
         if any(args.fn in s for s in os.listdir(source_dir)):
             file_names.append([s for s in os.listdir(source_dir) if args.fn in s][0])
         else:
@@ -95,9 +100,13 @@ def preprocessing(source_dir):
             x_data.append(data[(i * sequence_length):((i + 1) * sequence_length), 19:])
             y_data.append(y_label)
 
-    print(np.shape(x_data))
-    print(np.shape(y_data))
-    return train_test_split(x_data, y_data, shuffle=True, test_size=0.2)
+    global x_shape
+    global y_shape
+    x_shape = np.shape(x_data)
+    y_shape = np.shape(y_data)
+    print("X shape =", x_shape)
+    print("Y shape =", y_shape)
+    return train_test_split(x_data, y_data, shuffle=True, test_size=test_ratio)
 
 
 
@@ -136,7 +145,6 @@ def add_nsaa_scores(file_df):
         label_sample_map.append(inner)
     for i in range(len(nsaa_labels)):
         file_df.insert(loc=(i+1), column=nsaa_labels[i], value=label_sample_map[i])
-
     return file_df
 
 
@@ -154,6 +162,33 @@ def create_batch_generator(x, y=None, batch_size=64):
             yield x[ii:ii+batch_size], y[ii:ii+batch_size]
         else:
             yield x[ii:ii+batch_size]
+
+
+
+def write_to_csv(trues, preds, open_file=True):
+    print("\nWriting true and predicted values to .csv....")
+    df = pd.DataFrame()
+    df["Sequence Number"] = np.arange(1, len(trues)+1)
+    df["Trues"] = trues
+    df["Predictions"] = preds
+    #Empty column to keep a space between the trues/predictions and RNN settings
+    df[""] = ""
+    df["Settings"] = pd.Series(["X shape = " + str(x_shape),
+                                "Y shape = " + str(y_shape),
+                                "Test ratio = " + str(test_ratio),
+                                "Sequence length = " + str(sequence_length),
+                                "Features length = " + str(len(x_train[0][0])),
+                                "Num epochs = " + str(num_epochs),
+                                "Num LSTM units per layer = " + str(num_lstm_cells),
+                                "Num hidden layers = " + str(num_rnn_hidden_layers)])
+    if not os.path.exists(output_dir):
+        os.mkdir(output_dir)
+    full_output_name = output_dir + "RNN_trues_preds.csv"
+    if os.path.exists(full_output_name):
+        os.remove(full_output_name)
+    df.to_csv(full_output_name, index=False, float_format="%.2f")
+    if open_file:
+        os.startfile(full_output_name)
 
 
 
@@ -227,7 +262,6 @@ class BasicRNN(object):
             sess.run(self.init_op)
             iteration = 1
             for epoch in range(num_epochs):
-                print("\n")
                 state = sess.run(self.initial_state)
                 for batch_x, batch_y in create_batch_generator(x_train, y_train, self.batch_size):
                     feed = {'tf_x:0': batch_x, 'tf_y:0': batch_y, 'tf_keepprob:0': 0.5, self.initial_state: state}
@@ -264,7 +298,7 @@ class BasicRNN(object):
 
 
 #Extracts the training and testing data, builds the RNN based on the hyperparameters initially set, and trains the model
-x_train, x_test, y_train, y_test = preprocessing(source_dir)
+x_train, x_test, y_train, y_test = preprocessing(source_dir, test_ratio=test_ratio)
 rnn = BasicRNN(features_length=len(x_train[0][0]), seq_len=sequence_length, lstm_size=num_lstm_cells,
                    num_layers=num_rnn_hidden_layers, batch_size=batch_size, learning_rate=learn_rate)
 
@@ -280,6 +314,7 @@ if args.nss:
     print("\n\nMean Squared Error = " + str(round(mse, 4)))
     mae = mean_absolute_error(y_true=y_true, y_pred=preds)
     print("Mean Absolute Error = " + str(round(mae, 4)))
+    write_to_csv(trues=y_true, preds=preds)
 else:
     #Calculates and prints the accuracy to the user
     accuracy = round(((np.sum(preds == y_true) / len(y_true)) * 100), 2)

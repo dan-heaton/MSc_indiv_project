@@ -182,7 +182,6 @@ def add_nsaa_scores(file_df):
 #Recombine the now-reduced 'x' data with the source file name and label columns
 new_df = pd.DataFrame(np.concatenate((y, new_x), axis=1))
 
-
 #Add a column of NSAA scores to the DataFrame by referencing the external .csvs
 new_df_nsaa = add_nsaa_scores(new_df)
 

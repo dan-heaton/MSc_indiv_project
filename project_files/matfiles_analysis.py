@@ -325,7 +325,10 @@ class AllDataFile(object):
         ax.set_xlim(mins[0], maxs[0])
         ax.set_ylim(mins[1], maxs[1])
         ax.set_zlim(mins[2], maxs[2])
-        ax.get_proj = lambda: np.dot(Axes3D.get_proj(ax), np.diag([2, 1.5, 0.25, 1]))
+
+        xy_ratio = (maxs[1]-mins[1])/(maxs[0]-mins[0])
+        xz_ratio = (maxs[2]-mins[2])/(maxs[0]-mins[0])
+        ax.get_proj = lambda: np.dot(Axes3D.get_proj(ax), np.diag([1, xy_ratio, xz_ratio, 0.25]))
 
         colors = plt.cm.jet(np.linspace(0, 1, len(xyz_pos[0][0])))
         lines = sum([ax.plot([], [], [], '-', c=c) for c in colors], [])
@@ -345,8 +348,10 @@ class AllDataFile(object):
         #Function object that updates the plot based on the next sample of 3D coordinates for each feature (i.e.
         #each 'point' on the walking figure in the plot)
         def animate(i):
+            if i >= len(xyz_pos[0]):
+                exit()
             if (i*5)%sampling_rate == 0:
-                print("Plotting time: " + str((i*5)/sampling_rate) + "s")
+                print("Plotting time: " + str(int((i*5)/sampling_rate)) + "s")
             i = (5 * i) % xyz_pos_t.shape[1]
             for line, pt, xi in zip(lines, pts, xyz_pos_t):
                 x, y, z = xi[:i].T
@@ -355,6 +360,9 @@ class AllDataFile(object):
             for stick_line, (sp, ep) in zip(stick_lines, stick_defines):
                 stick_line._verts3d = xyz_pos_t[[sp, ep], i, :].T.tolist()
             fig.canvas.draw()
+            if (i+5) >= int(len(xyz_pos[0])):
+                plt.close()
+                print("Animation ended...")
             return lines + pts + stick_lines
 
         #Plot the figure in 3D space, with an update interval (defined in miliseconds) to be in real time
@@ -733,7 +741,7 @@ class JointAngleFile(object):
 
 def class_selector(ft, fn, fns, sub_dir, is_all, split_files, is_extract_csv=False, split_size=None):
     """
-        :param 'ft' is the type of data file (i.e. one of 'ad', 'ja', or 'dc'), 'fn' is the full name of the data file
+        :param 'ft' is the type of data file (i.e. one of 'AD', 'JA', or 'DC'), 'fn' is the full name of the data file
         (i.e. the full-directory path of the file) if 'class_selector' is dealing with a single file, 'fns' is the
         full file names if 'class_selector' is dealing with multiple files(i.e. the 'all'
         command line argument is given for 'fn'), 'sub_dir' is the sub-directory to write the file(s)
@@ -768,7 +776,7 @@ def class_selector(ft, fn, fns, sub_dir, is_all, split_files, is_extract_csv=Fal
             if is_all:
                 fns = [fn for fn in fns if "jointangle" in fn]
                 for f in fns:
-                    names += JointAngleFile(f, sub_dir).write_direct_csv(output_name="all")
+                    names += JointAngleFile(f, sub_dir).write_direct_csv()
             else:
                 names += JointAngleFile(fn, sub_dir).write_direct_csv()
     else:
@@ -834,28 +842,28 @@ else:
     sys.exit(1)
 file_names = []
 if args.dir == "6minwalk-matfiles":
-    if args.ft.lower() == "ad":
+    if args.ft.upper() == "AD":
         source_dir += "all_data_mat_files\\"
         file_names = os.listdir(source_dir)
-    elif args.ft.lower() == "ja":
+    elif args.ft.upper() == "JA":
         source_dir += "joint_angles_only_matfiles\\"
         file_names = os.listdir(source_dir)
-    elif args.ft.lower() == "dc":
+    elif args.ft.upper() == "DC":
         source_dir += "joint_angles_only_matfiles\\"
-        file_names = "dc"
+        file_names = "DC"
 elif args.dir == "6MW-matFiles":
-    if args.ft.lower() == "ad":
+    if args.ft.upper() == "AD":
         file_names = [f for f in os.listdir(source_dir) if f.endswith(".mat")]
     else:
-        print("Second arg must be 'ad', as '6MW-matFiles' doesn't have joint angle or data cube files in them.")
+        print("Second arg must be 'AD', as '6MW-matFiles' doesn't have joint angle or data cube files in them.")
         sys.exit(1)
 else:
-    if args.ft.lower() == "ad":
+    if args.ft.upper() == "AD":
         # Only 'matfiles' subdirectory of 'NSAA' applicable for analysis with this script
         source_dir += "matfiles\\"
         file_names = [f for f in os.listdir(source_dir) if f.endswith(".mat")]
     else:
-        print("Second arg must be 'ad', as 'NSAA\matfiles' doesn't have joint angle or data cube files in them.")
+        print("Second arg must be 'AD', as 'NSAA\matfiles' doesn't have joint angle or data cube files in them.")
         sys.exit(1)
 
 
@@ -864,8 +872,8 @@ else:
 if not args.dis_3d_pos and not args.dis_diff_plot and not args.dis_3d_angs:
     names = []
     if args.ft in file_types:
-        if file_names != "dc":
-            #Handles the 'ad'/'ja' case when file name is NOT 'all' (i.e. just a single file)
+        if file_names != "DC":
+            #Handles the 'AD'/'JA' case when file name is NOT 'all' (i.e. just a single file)
             if any(args.fn in fn for fn in file_names):
                 file_name = source_dir + [fn for fn in file_names if args.fn in fn][0]
                 names = class_selector(args.ft, file_name, fns=None, sub_dir=args.dir, is_all=False,
@@ -886,7 +894,7 @@ if not args.dis_3d_pos and not args.dis_diff_plot and not args.dis_3d_angs:
                 names = class_selector(args.ft, None, fns=None, sub_dir = args.dir, is_all=True,
                                        split_files=split_files, is_extract_csv=True, split_size=split_size)
     else:
-        print("Second arg ('ft') must be one of the accepted file types ('ja', 'ad', or 'dc').")
+        print("Second arg ('ft') must be one of the accepted file types ('JA', 'AD', or 'DC').")
         sys.exit(1)
     #Calls the 'check_for_abnormalities' function on the created .csv's if argument is specified
     if args.check_for_abnormalities:
@@ -906,8 +914,8 @@ if not args.dis_3d_pos and not args.dis_diff_plot and not args.dis_3d_angs:
 #of the above statistical analysis on the files given in argument; once the file object is created, its required
 #display method is called
 elif args.dis_3d_pos:
-    if args.ft != "ad":
-        print("Second arg ('ft') must be 'ad' for calling 'display_3d_positions' method.")
+    if args.ft != "AD":
+        print("Second arg ('ft') must be 'AD' for calling 'display_3d_positions' method.")
         sys.exit(1)
     else:
         if any(args.fn in fn for fn in file_names):
@@ -917,8 +925,8 @@ elif args.dis_3d_pos:
             print("Third arg ('fn') must be the short name of an all data file (e.g. 'D2', 'HC5').")
             sys.exit(1)
 elif args.dis_diff_plot:
-    if args.ft != "ja":
-        print("Second arg ('ft') must be 'ja' for calling 'display_diffs_plot' method.")
+    if args.ft != "JA":
+        print("Second arg ('ft') must be 'JA' for calling 'display_diffs_plot' method.")
         sys.exit(1)
     else:
         if any(args.fn in fn for fn in file_names):
@@ -928,8 +936,8 @@ elif args.dis_diff_plot:
             print("Third arg ('fn') must be the short name of a joint angle file (e.g. 'D2').")
             sys.exit(1)
 elif args.dis_3d_angs:
-    if args.ft != "ja":
-        print("Second arg ('ft') must be 'ja' for calling 'display_3d_angles' method.")
+    if args.ft != "JA":
+        print("Second arg ('ft') must be 'JA' for calling 'display_3d_angles' method.")
         sys.exit(1)
     else:
         if any(args.fn in fn for fn in file_names):
