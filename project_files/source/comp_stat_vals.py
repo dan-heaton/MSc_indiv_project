@@ -18,7 +18,7 @@ sampling_rate = 60      #In Hz
 #Note: CHANGE THESE to location of the 3 sub-directories' encompassing directory local to the user
 source_dir = "C:\\msc_project_files\\"
 sub_dirs = ["6minwalk-matfiles\\", "6MW-matFiles\\", "NSAA\\"]
-output_dir = "output_files\\"
+output_dir = "..\\output_files\\"
 
 #Lists of constants that dictate the allowed source file types to analyse and the dimensions of the data
 file_types = ["JA", "AD", "DC"]
@@ -277,7 +277,7 @@ class AllDataFile(object):
         """
         self.ad_file_name = ad_file_name
         split_name = ad_file_name.split("\\")[-1].split("-")
-        splits = [[s for s in split_name if "HC" in s], [s for s in split_name if "D" in s]]
+        splits = [[s for s in split_name if "HC" in s], [s for s in split_name if "D" in s or "d" in s]]
         self.ad_short_file_name = splits[1][0] if not splits[0] else splits[0][0]
         self.ad_sub_dir = sub_dir
         # Loads the data from the given file name and extracts the root 'tree' from the file
@@ -726,7 +726,7 @@ class JointAngleFile(object):
             output_complete_name = dc_ja_output_dir + file_prefix + "_" + self.ja_short_file_name + ".csv"
             print("Writing", file_prefix, self.ja_file_name, "to", output_complete_name)
         else:
-            output_complete_name = dc_ja_output_dir  + file_prefix + "_" + output_name + ".csv"
+            output_complete_name = dc_ja_output_dir + file_prefix + "_" + output_name + ".csv"
             print("Writing", file_prefix, self.ja_file_name, "to", output_complete_name)
         if isfile(output_complete_name):
             with open(output_complete_name, 'a', newline='') as file:
@@ -757,8 +757,7 @@ def class_selector(ft, fn, fns, sub_dir, is_all, split_files, is_extract_csv=Fal
     if ft == "AD":
         if is_all:
             for f in fns:
-                names += AllDataFile(f, sub_dir).write_statistical_features(
-                    output_name="all", split_file=split_files, split_size=split_size)
+                names += AllDataFile(f, sub_dir).write_statistical_features(split_file=split_files, split_size=split_size)
         else:
             names.append(AllDataFile(fn, sub_dir).write_statistical_features(
                 split_file=split_files, split_size=split_size))
@@ -785,6 +784,17 @@ def class_selector(ft, fn, fns, sub_dir, is_all, split_files, is_extract_csv=Fal
         else:
             names += DataCubeFile(sub_dir).write_direct_csv()
     return list(dict.fromkeys(np.ravel(names)))
+
+
+
+def del_files(names):
+    for name in names:
+        try:
+            os.remove(name)
+            print("'" + str(name) + "' successfully deleted")
+        except FileNotFoundError:
+            print("'" + str(name) + "' doesn't exist, unable to delete...")
+
 
 
 """Section below encompases all the command line arguments that can be supplied to the program, with those beginning 
@@ -825,6 +835,8 @@ parser.add_argument("--extract_csv", type=bool, nargs="?", const=True,
                     help="Directly writes a JA file from .mat to .csv format (i.e. without stat extraction).")
 parser.add_argument("--del_files", type=bool, nargs="?", const=True,
                     help="Deletes the created file(s) as soon as they're created.")
+parser.add_argument("--combine_all", type=bool, nargs="?", const=True,
+                    help="Combines all the written files into a single file with sub-title containing '_ALL'")
 args = parser.parse_args()
 
 
@@ -839,7 +851,7 @@ if args.dir + "\\" in sub_dirs:
 else:
     print("First arg ('dir') must be a name of a subdirectory within the source dir and must be one of "
           "'6minwalk-matfiles', '6MW-matFiles' or 'NSAA'.")
-    sys.exit(1)
+    sys.exit()
 file_names = []
 if args.dir == "6minwalk-matfiles":
     if args.ft.upper() == "AD":
@@ -856,7 +868,7 @@ elif args.dir == "6MW-matFiles":
         file_names = [f for f in os.listdir(source_dir) if f.endswith(".mat")]
     else:
         print("Second arg must be 'AD', as '6MW-matFiles' doesn't have joint angle or data cube files in them.")
-        sys.exit(1)
+        sys.exit()
 else:
     if args.ft.upper() == "AD":
         # Only 'matfiles' subdirectory of 'NSAA' applicable for analysis with this script
@@ -864,7 +876,7 @@ else:
         file_names = [f for f in os.listdir(source_dir) if f.endswith(".mat")]
     else:
         print("Second arg must be 'AD', as 'NSAA\matfiles' doesn't have joint angle or data cube files in them.")
-        sys.exit(1)
+        sys.exit()
 
 
 #Only do the statistical analysis on files if none of the optional 'display' arguments have been given, as these do not
@@ -884,7 +896,7 @@ if not args.dis_3d_pos and not args.dis_diff_plot and not args.dis_3d_angs:
                                        split_files=split_files, is_extract_csv=args.extract_csv, split_size=split_size)
             else:
                 print("Third arg ('fn') must be one of the file names for the '" + args.ft + "' file type, or 'all'")
-                sys.exit(1)
+                sys.exit()
         #Handles the 'data cube' case
         else:
             if not args.extract_csv:
@@ -895,18 +907,28 @@ if not args.dis_3d_pos and not args.dis_diff_plot and not args.dis_3d_angs:
                                        split_files=split_files, is_extract_csv=True, split_size=split_size)
     else:
         print("Second arg ('ft') must be one of the accepted file types ('JA', 'AD', or 'DC').")
-        sys.exit(1)
+        sys.exit()
     #Calls the 'check_for_abnormalities' function on the created .csv's if argument is specified
     if args.check_for_abnormalities:
         check_for_abnormality(names, error_margin=args.check_for_abnormalities)
+    #Combines all the written output files into one file and deletes the individual files the 'ALL' was sourced from
+    if args.combine_all:
+        all_name = output_dir + args.dir + "\\" + args.ft + "\\" + args.ft + "_ALL_stats_features.csv"
+        print("Combining all files into one and writing to " + all_name + "...")
+        for i, name in enumerate(names):
+            print("Adding", name, "to 'ALL' .csv...")
+            df = pd.read_csv(name, index_col=0)
+            if i == 0:
+                with open(all_name, 'w', newline='') as file:
+                    df.to_csv(file, header=True)
+            else:
+                with open(all_name, 'a', newline='') as file:
+                    df.to_csv(file, header=False)
+        #Get rid of the non-'ALL' files
+        del_files(names)
     #If '--del_files' optional argument given, delete the files that have just been created
     if args.del_files:
-        for name in names:
-            try:
-                os.remove(name)
-                print("'" + str(name) + "' successfully deleted")
-            except FileNotFoundError:
-                print("'" + str(name) + "' doesn't exist, unable to delete...")
+        del_files(names)
 
 
 
@@ -916,33 +938,33 @@ if not args.dis_3d_pos and not args.dis_diff_plot and not args.dis_3d_angs:
 elif args.dis_3d_pos:
     if args.ft != "AD":
         print("Second arg ('ft') must be 'AD' for calling 'display_3d_positions' method.")
-        sys.exit(1)
+        sys.exit()
     else:
         if any(args.fn in fn for fn in file_names):
             file_name = source_dir + [fn for fn in file_names if args.fn in fn][0]
             AllDataFile(file_name, args.dir).display_3d_positions()
         else:
             print("Third arg ('fn') must be the short name of an all data file (e.g. 'D2', 'HC5').")
-            sys.exit(1)
+            sys.exit()
 elif args.dis_diff_plot:
     if args.ft != "JA":
         print("Second arg ('ft') must be 'JA' for calling 'display_diffs_plot' method.")
-        sys.exit(1)
+        sys.exit()
     else:
         if any(args.fn in fn for fn in file_names):
             file_name = source_dir + [fn for fn in file_names if args.fn in fn][0]
             JointAngleFile(file_name, args.fn, args.dir).display_diffs_plot()
         else:
             print("Third arg ('fn') must be the short name of a joint angle file (e.g. 'D2').")
-            sys.exit(1)
+            sys.exit()
 elif args.dis_3d_angs:
     if args.ft != "JA":
         print("Second arg ('ft') must be 'JA' for calling 'display_3d_angles' method.")
-        sys.exit(1)
+        sys.exit()
     else:
         if any(args.fn in fn for fn in file_names):
             file_name = source_dir + [fn for fn in file_names if args.fn in fn][0]
             JointAngleFile(file_name, args.fn, args.dir).display_3d_angles()
         else:
             print("Third arg ('fn') must be the short name of a joint angle file (e.g. 'D2').")
-            sys.exit(1)
+            sys.exit()

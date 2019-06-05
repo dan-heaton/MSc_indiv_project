@@ -16,7 +16,7 @@ from sklearn.feature_selection import SelectFromModel
 nsaa_table_path = "C:\\msc_project_files\\"
 
 #Note: CHANGE THIS to location of the source data for the feature selection/reduction to use
-source_dir = "output_files\\"
+source_dir = "..\\output_files\\"
 
 sub_dirs = ["6minwalk-matfiles\\", "6MW-matFiles\\", "NSAA\\", "direct_csv\\"]
 sub_sub_dirs = ["AD\\", "JA\\", "DC\\"]
@@ -54,22 +54,25 @@ if args.dir + "\\" in sub_dirs:
 else:
     print("First arg ('dir') must be a name of a subdirectory within source dir and must be one of "
           "'6minwalk-matfiles', '6MW-matFiles', 'NSAA', or 'direct_csv'.")
-    sys.exit(1)
+    sys.exit()
 
 if args.ft.upper() + "\\" in sub_sub_dirs:
     source_dir += args.ft + "\\"
 else:
     print("Second arg ('ft') must be a name of a sub-subdirectory within source dir and must be one of \'AD\',"
           "\'JA', or \'DC\'.")
-    sys.exit(1)
-
+    sys.exit()
 
 match_fns = [s for s in os.listdir(source_dir) if s.split(".")[0].split("_")[1].upper() == args.fn.upper()]
 if match_fns:
-    full_file_name = source_dir + match_fns[0]
+    full_file_names = [source_dir + match_fns[0]]
 else:
-    print("Third arg ('fn') must be the short name of a file (e.g. 'D2' or 'all') within", source_dir)
-    sys.exit(1)
+    if args.fn == "all":
+        match_fns = [s for s in os.listdir(source_dir)]
+        full_file_names = [source_dir + match_fns[i] for i in range(len(match_fns))]
+    else:
+        print("Third arg ('fn') must be the short name of a file (e.g. 'D2' or 'all') within", source_dir)
+        sys.exit()
 
 if args.choice in choices:
     choice = args.choice
@@ -79,64 +82,69 @@ else:
           "(to carry out feature agglomeration), 'thresh' (to do features selection based on a minimal variance "
           "threshold for each features), and 'rf' (to fit the data to a random forest and use this to select "
           "the most useful features).")
-    sys.exit(1)
+    sys.exit()
 
 
 
-df = pd.read_csv(full_file_name)
-col_names = df.columns.values[2:]
-#Splits the loaded file into the 'y' parts (the original .mat source file column and file label) and 'x' parts (all
-#the statistical values extracted via 'matfiles_analysis.py')
-x = df.iloc[:, 2:].values
-y = df.iloc[:, :2].values
+def ft_red_select(full_file_name):
+    print("Reducing dims of " + full_file_name + "...")
+    df = pd.read_csv(full_file_name)
+    col_names = df.columns.values[2:]
+    #Splits the loaded file into the 'y' parts (the original .mat source file column and file label) and 'x' parts (all
+    #the statistical values extracted via 'comp_stat_vals.py')
+    x = df.iloc[:, 2:].values
+    y = df.iloc[:, :2].values
 
-#Normalize the data
-if not args.no_normalize:
-    x = normalize(x)
+    #Normalize the data
+    if not args.no_normalize:
+        x = normalize(x)
 
-#Overrides the number of features to keep in feature selection/reduction if optional argument is chosen
-if args.num_features:
-    num_components = args.num_features
+    #Overrides the number of features to keep in feature selection/reduction if optional argument is chosen
+    global num_components
+    if args.num_features:
+        num_components = args.num_features
 
-#Given the argument choice of feature selection/reduction, creates the relevant object, fits the 'x' data to it,
-#and reduces/transforms it to a lower dimensionality
-new_x = []
-print("Original 'x' shape:", np.shape(x))
-if choice == "pca":
-    pca = PCA(n_components=num_components)
-    new_x = pca.fit_transform(x)
-elif choice == "grp":
-    grp = GaussianRandomProjection(n_components=num_components)
-    new_x = grp.fit_transform(x)
-elif choice == "agglom":
-    #Find out
-    agg = FeatureAgglomeration(n_clusters=num_components)
-    new_x = agg.fit_transform(x)
-elif choice == "thresh":
-    #Below threshold gives ~26 components upon application
-    vt = VarianceThreshold(threshold=0.00015)
-    new_x = vt.fit_transform(x)
-    kept_features = list(vt.get_support(indices=True))
-    if args.dis_kept_features:
-        print("Kept features: ")
-        for i in kept_features:
-            print(col_names[i])
-elif choice == "rf":
-    y_labels = [1 if s == "D" else 0 for s in y[:, 1]]
-    clf = RandomForestClassifier(n_estimators=10000, random_state=0, n_jobs=-1)
-    print("Fitting RF model....")
-    clf.fit(x, y_labels)
-    sfm = SelectFromModel(clf, threshold=-np.inf, max_features=num_components)
-    print("Selecting best features from model...")
-    sfm.fit(x, y_labels)
-    kept_features = list(sfm.get_support(indices=True))
-    if args.dis_kept_features:
-        print("Kept features: ")
-        for i in kept_features:
-            print(col_names[i])
-    new_x = x[:, kept_features]
+    #Given the argument choice of feature selection/reduction, creates the relevant object, fits the 'x' data to it,
+    #and reduces/transforms it to a lower dimensionality
+    new_x = []
+    print("Original 'x' shape:", np.shape(x))
+    if choice == "pca":
+        pca = PCA(n_components=num_components)
+        new_x = pca.fit_transform(x)
+    elif choice == "grp":
+        grp = GaussianRandomProjection(n_components=num_components)
+        new_x = grp.fit_transform(x)
+    elif choice == "agglom":
+        #Find out
+        agg = FeatureAgglomeration(n_clusters=num_components)
+        new_x = agg.fit_transform(x)
+    elif choice == "thresh":
+        #Below threshold gives ~26 components upon application
+        vt = VarianceThreshold(threshold=0.00015)
+        new_x = vt.fit_transform(x)
+        kept_features = list(vt.get_support(indices=True))
+        if args.dis_kept_features:
+            print("Kept features: ")
+            for i in kept_features:
+                print(col_names[i])
+    elif choice == "rf":
+        y_labels = [1 if s == "D" else 0 for s in y[:, 1]]
+        clf = RandomForestClassifier(n_estimators=10000, random_state=0, n_jobs=-1)
+        print("Fitting RF model....")
+        clf.fit(x, y_labels)
+        sfm = SelectFromModel(clf, threshold=-np.inf, max_features=num_components)
+        print("Selecting best features from model...")
+        sfm.fit(x, y_labels)
+        kept_features = list(sfm.get_support(indices=True))
+        if args.dis_kept_features:
+            print("Kept features: ")
+            for i in kept_features:
+                print(col_names[i])
+        new_x = x[:, kept_features]
 
-print("Reduced 'x' shape:", np.shape(new_x))  
+    print("Reduced 'x' shape:", np.shape(new_x))
+    return new_x, y
+
 
 
 def add_nsaa_scores(file_df):
@@ -151,7 +159,8 @@ def add_nsaa_scores(file_df):
     nsaa_matfiles_dict = dict(pd.Series(nsaa_matfiles_cols.NSAA.values, index=nsaa_matfiles_cols.ID).to_dict())
 
     mw_dict.update(nsaa_matfiles_dict)
-    nss = [mw_dict[i] for i in [j.split("_")[0] for j in file_df.iloc[:, 0].values]]
+    nss = [mw_dict[i.upper()] for i in [j.split("_")[0] for j in file_df.iloc[:, 0].values]]
+
     file_df.insert(loc=0, column="NSS", value=nss)
 
     nsaa_acts_tab = pd.read_excel(nsaa_table_path + "NSAA\\KineDMD data updates Feb 2019.xlsx")
@@ -178,15 +187,21 @@ def add_nsaa_scores(file_df):
     return file_df
 
 
+for full_file_name in full_file_names:
+    new_x, y = ft_red_select(full_file_name)
 
-#Recombine the now-reduced 'x' data with the source file name and label columns
-new_df = pd.DataFrame(np.concatenate((y, new_x), axis=1))
+    #Recombine the now-reduced 'x' data with the source file name and label columns
+    new_df = pd.DataFrame(np.concatenate((y, new_x), axis=1))
 
-#Add a column of NSAA scores to the DataFrame by referencing the external .csvs
-new_df_nsaa = add_nsaa_scores(new_df)
+    #Add a column of NSAA scores to the DataFrame by referencing the external .csvs
+    try:
+        new_df_nsaa = add_nsaa_scores(new_df)
+    except KeyError:
+        print(full_file_name + " not found as entry in either '6mw_matfiles.xlsx' or 'nsaa_matfiles.xlsx', skipping...")
+        continue
 
-#Writes the new data to the same directory as before with the same name except with 'FR_' on the front
-split_full_file_name = full_file_name.split("\\")
-split_full_file_name[-1] = "FR_" + split_full_file_name[-1]
-new_full_file_name = "\\".join(split_full_file_name)
-new_df_nsaa.to_csv(new_full_file_name)
+    #Writes the new data to the same directory as before with the same name except with 'FR_' on the front
+    split_full_file_name = full_file_name.split("\\")
+    split_full_file_name[-1] = "FR_" + split_full_file_name[-1]
+    new_full_file_name = "\\".join(split_full_file_name)
+    new_df_nsaa.to_csv(new_full_file_name)
