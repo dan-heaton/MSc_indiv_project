@@ -58,6 +58,9 @@ else:
 
 if args.ft.upper() + "\\" in sub_sub_dirs:
     source_dir += args.ft + "\\"
+    if args.single_act:
+        if args.dir == "NSAA":
+            source_dir += "act_files\\"
 else:
     print("Second arg ('ft') must be a name of a sub-subdirectory within source dir and must be one of \'AD\',"
           "\'JA', or \'DC\'.")
@@ -157,10 +160,16 @@ def add_nsaa_scores(file_df):
     nsaa_matfiles_tab = pd.read_excel(nsaa_table_path + "NSAA\\matfiles\\nsaa_matfiles.xlsx")
     nsaa_matfiles_cols = nsaa_matfiles_tab[["ID", "NSAA"]]
     nsaa_matfiles_dict = dict(pd.Series(nsaa_matfiles_cols.NSAA.values, index=nsaa_matfiles_cols.ID).to_dict())
-
     mw_dict.update(nsaa_matfiles_dict)
-    nss = [mw_dict[i.upper()] for i in [j.split("_")[0] for j in file_df.iloc[:, 0].values]]
 
+    kinedmd_tab = pd.read_excel(nsaa_table_path + "NSAA\\KineDMD data updates Feb 2019.xlsx")
+    kinedmd_cols = pd.concat([kinedmd_tab.iloc[2:20, 0], kinedmd_tab.iloc[2:20, 70]], axis=1)
+    kinedmd_cols.columns = ["ID", "NSAA"]
+    kinedmd_dict = dict(pd.Series(kinedmd_cols.NSAA.values, index=kinedmd_cols.ID).to_dict())
+    mw_dict.update(kinedmd_dict)
+
+    #Adds column of overall NSAA scores at position 0
+    nss = [mw_dict[i.upper()] for i in [j.split("_")[0] for j in file_df.iloc[:, 0].values]]
     file_df.insert(loc=0, column="NSS", value=nss)
 
     nsaa_acts_tab = pd.read_excel(nsaa_table_path + "NSAA\\KineDMD data updates Feb 2019.xlsx")
@@ -185,7 +194,7 @@ def add_nsaa_scores(file_df):
         file_df.insert(loc=(i+1), column=nsaa_labels[i], value=label_sample_map[i])
 
     return file_df
-
+print(full_file_names)
 
 for full_file_name in full_file_names:
     new_x, y = ft_red_select(full_file_name)
@@ -197,7 +206,8 @@ for full_file_name in full_file_names:
     try:
         new_df_nsaa = add_nsaa_scores(new_df)
     except KeyError:
-        print(full_file_name + " not found as entry in either '6mw_matfiles.xlsx' or 'nsaa_matfiles.xlsx', skipping...")
+        print(full_file_name + " not found as entry in either '6mw_matfiles.xlsx', 'nsaa_matfiles.xlsx', "
+                               "or 'KineDMD data updates Feb 2019.xlsx', 'skipping...")
         continue
 
     #Writes the new data to the same directory as before with the same name except with 'FR_' on the front

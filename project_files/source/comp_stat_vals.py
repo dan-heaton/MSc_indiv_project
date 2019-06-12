@@ -293,7 +293,25 @@ class AllDataFile(object):
         # Gets the types in each column of the matrix (i.e. dtypes of submatrices)
         col_names = frame_data.dtype.names
         # Extract single outer-list wrapping for vectors and double outer-list values for single values
-        frame_data = [[elem[0] if len(elem[0]) != 1 else elem[0][0] for elem in row] for row in frame_data]
+        try:
+            frame_data = [[elem[0] if len(elem[0]) != 1 else elem[0][0] for elem in row] for row in frame_data]
+        except IndexError:
+            #Accounts for missing 'contact' values in certain rows of some '.mat' files by ignoring the 'contact' column
+            new_frame_data = []
+            for m, row in enumerate(frame_data):
+                #Ignore rows that don't have 'normal' as their 'type' cell
+                if row[3][0] != "normal":
+                    continue
+                row_data = []
+                for i in range(len(row)):
+                    if i == len(row) - 1:
+                        row_data.append(["", ""])
+                    elif len(row[i][0]) != 1:
+                        row_data.append(row[i][0])
+                    else:
+                        row_data.append(row[i][0][0])
+                new_frame_data.append(row_data)
+            frame_data = new_frame_data
         df = pd.DataFrame(frame_data, columns=col_names)
         self.df = df
 
@@ -400,15 +418,26 @@ class AllDataFile(object):
         # Extracts values of the various measurements in different layout so 'f_d_s_data' now has shape:
         # (# measurements (e.g. 3 for position, accel, and megnet field) x # of features (e.g. 23 for segments)
         # x # of dimensions (e.g. 3 for x,y,z position values) x # of samples (~22K))
-        extract_data = self.df.loc[3:, measurement_names].values
-        f_d_s_data = np.zeros((len(measurement_names),
-                               max(len(segment_labels), len(joint_labels), len(sensor_labels)), 3,
-                               len(self.df.loc[:])-3))
-        for i in range(len(measurement_names)):
-            for j in range(int(len(self.df.loc[3:, measurement_names[i]].values[0])/3)):
-                for k in range(len(axis_labels)):
-                    for m in range(len(self.df.loc[3:])):
-                        f_d_s_data[i, j, k, m] = extract_data[m, i][(j*3)+k]
+        if args.single_act:
+            extract_data = self.df.loc[:, measurement_names].values
+            f_d_s_data = np.zeros((len(measurement_names),
+                                   max(len(segment_labels), len(joint_labels), len(sensor_labels)), 3,
+                                   len(self.df.loc[:])))
+            for i in range(len(measurement_names)):
+                for j in range(int(len(self.df.loc[:, measurement_names[i]].values[0])/3)):
+                    for k in range(len(axis_labels)):
+                        for m in range(len(self.df.loc[:])):
+                            f_d_s_data[i, j, k, m] = extract_data[m, i][(j*3)+k]
+        else:
+            extract_data = self.df.loc[3:, measurement_names].values
+            f_d_s_data = np.zeros((len(measurement_names),
+                                   max(len(segment_labels), len(joint_labels), len(sensor_labels)), 3,
+                                   len(self.df.loc[:]) - 3))
+            for i in range(len(measurement_names)):
+                for j in range(int(len(self.df.loc[3:, measurement_names[i]].values[0]) / 3)):
+                    for k in range(len(axis_labels)):
+                        for m in range(len(self.df.loc[3:])):
+                            f_d_s_data[i, j, k, m] = extract_data[m, i][(j * 3) + k]
 
         #If 'split_size' is given as command line argument and 'split_file' isn't, set 'split_s' to the given number
         #multiplied by sampling rate (i.e. if given num is 5 and 'sampling_rate' is 60, 'split_s' is 300, i.e. the
@@ -432,17 +461,20 @@ class AllDataFile(object):
             if not os.path.exists(ad_output_dir):
                 os.mkdir(ad_output_dir)
             ad_output_dir += "AD\\"
+            if args.single_act:
+                ad_output_dir += "act_files\\"
             if not os.path.exists(ad_output_dir):
                 os.mkdir(ad_output_dir)
 
             #Sets output name of file (and related print statement) to whether or not the user is storing it in
             #an 'all' .csv or a .csv determined by the name of the writing file
+            af = "_" + self.ad_file_name.split(".")[0].split("_")[-1] if args.single_act else ""
             if not output_name:
-                output_complete_name = ad_output_dir + "AD_" + self.ad_short_file_name + "_stats_features.csv"
+                output_complete_name = ad_output_dir + "AD_" + self.ad_short_file_name + af + "_stats_features.csv"
                 print("Writing AD", self.ad_file_name, "(", (f+1), "/", split_file, ") statistial info to",
                       output_complete_name)
             else:
-                output_complete_name = ad_output_dir + "AD_" + output_name + "_stats_features.csv"
+                output_complete_name = ad_output_dir + "AD_" + output_name + af + "_stats_features.csv"
                 print("Writing AD", self.ad_file_name, "(", (f + 1), "/", split_file, ") statistial info to",
                       output_complete_name)
             #Writes just the data to file if the file already exists, or both the data and headers if the file
@@ -837,6 +869,8 @@ parser.add_argument("--del_files", type=bool, nargs="?", const=True,
                     help="Deletes the created file(s) as soon as they're created.")
 parser.add_argument("--combine_all", type=bool, nargs="?", const=True,
                     help="Combines all the written files into a single file with sub-title containing '_ALL'")
+parser.add_argument("--single_act", type=bool, nargs="?", const=True,
+                    help="Specify if the files to operate on are 'single act' files.")
 args = parser.parse_args()
 
 
@@ -873,11 +907,16 @@ else:
     if args.ft.upper() == "AD":
         # Only 'matfiles' subdirectory of 'NSAA' applicable for analysis with this script
         source_dir += "matfiles\\"
+        if args.single_act:
+            if args.dir == "NSAA":
+                source_dir += "act_files\\"
+            else:
+                print("Must be using 'NSAA\\AD' files when using '--single_act' optional argument...")
+                sys.exit()
         file_names = [f for f in os.listdir(source_dir) if f.endswith(".mat")]
     else:
         print("Second arg must be 'AD', as 'NSAA\matfiles' doesn't have joint angle or data cube files in them.")
         sys.exit()
-
 
 #Only do the statistical analysis on files if none of the optional 'display' arguments have been given, as these do not
 #require any statistical value extraction to display their results

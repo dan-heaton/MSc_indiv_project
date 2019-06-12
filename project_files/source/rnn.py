@@ -7,6 +7,8 @@ import argparse
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error
 from sklearn.metrics import mean_absolute_error
+from sklearn.metrics import r2_score
+from sklearn.metrics import confusion_matrix as cm
 import pyexcel as pe
 
 #Does not print to display the many warnings that TensorFlow throws up (many about updating to next version or
@@ -24,33 +26,55 @@ parser.add_argument("fn", help="Specify the short file name of a .csv to load fr
                                "in the 'source_dir'.")
 parser.add_argument("choice", help="Specify the choice of what the network should be training towards. Specify 'dhc' "
                                    "for simple binary classification of sequences, 'overall' for single-target "
-                                   "regression to predict the overall north star scores for sequences, or 'acts' for "
+                                   "regression to predict the overall north star scores for sequences, 'acts' for "
                                    "multi-target classification of possible NSAA activities that have taken place "
-                                   "in the sequence and what their corresponding individual NSAA would be.")
+                                   "in the sequence and what their corresponding individual NSAA would be, or 'indiv' "
+                                   "for predicting a score of 0, 1, or 2 from 'single-act' source files.")
 parser.add_argument("--seq_len", type=float, nargs="?", const=1,
                     help="Option to split a source file (be it a raw joint-angle file or a JA/DC/AD stats features file) "
                          "into multiple parts for training purposes, where '--seq_len' is the number of 'rows' of data "
                          "to correspond to each file label/score(s).")
+parser.add_argument("--seq_overlap", type=float, nargs="?", const=1,
+                    help="Option to specify the proportion of overlap in divided up sequences. E.g. set to '0.75' to "
+                         "have each of e.g. 742 sequences to overlap 75% of each other, resulting in 927 new sequences.")
 parser.add_argument("--write_settings", type=bool, nargs="?", const=True, default=False,
                     help="Option to write the hyperparameters of the RNN directly to the RNN results .csv file in "
                          "the appropriate row.")
+parser.add_argument("--epochs", type=int, nargs="?", const=1,
+                    help="Option to set number of epochs to use in this run of the model.")
 args = parser.parse_args()
 
-#If no optional argument given for '--split_size', defaults to split size = 10, i.e. defaults to splitting files into
+#If no optional argument given for '--seq_len', defaults to seq_len = 10, i.e. defaults to splitting files into
 #10 second increments
 if not args.seq_len:
     args.seq_len = 10.0
 
-#Location at which to store the created model
-model_path = "\\tmp\\model.ckpt"
+#If no optional argument given for '--seq_overlap', defaults to seq_overlap = 0, i.e. defaults to no overlap of sequences
+if not args.seq_overlap:
+    args.seq_overlap = 0
 
-#Note: CHANGE THIS to location of the source data for the RNN to use
+if args.seq_overlap == 1:
+    print("Can't set overlap to be 100% of each sequence...")
+    sys.exit()
+
+
+#Location at which to store the created model
+model_path = "..\\output_files\\rnn_models\\" + args.dir + "_" + args.ft + "_" + args.fn + "_" + args.choice + "\\model.ckpt"
+
+#Note: CHANGE THESE to location of the source data for the RNN to use
 source_dir = "..\\output_files\\"
 output_dir = "..\\output_files\\RNN_outputs\\"
+
+#Note: CHANGE THIS to location of the 3 sub-directories' encompassing directory local to the user. Raw measurements are
+#not stored in 'source_dir' as dropbox size is limited
+local_dir = "C:\\msc_project_files\\"
+
 sub_dirs = ["6minwalk-matfiles\\", "6MW-matFiles\\", "NSAA\\", "direct_csv\\"]
 sub_sub_dirs = ["AD\\", "JA\\", "DC\\"]
-choices = ["dhc", "overall", "acts"]
+choices = ["dhc", "overall", "acts", "indiv"]
 choice = None
+raw_measurements = ["position", "velocity", "acceleration", "angularVelocity", "angularAcceleration",
+                "sensorFreeAcceleration", "sensorMagneticField", "jointAngle", "jointAngleXZY"]
 
 #Note: CHANGE THIS to location of the 3 sub-directories' encompassing directory local to the user that's needed to
 #map to the .csvs containing the NSAA information
@@ -68,7 +92,10 @@ num_rnn_hidden_layers = 2
 learn_rate = 0.001
 num_epochs = 300
 test_ratio = 0.2
-num_acts=17
+num_acts = 17
+
+if args.epochs:
+    num_epochs = int(args.epochs)
 
 
 def preprocessing(test_ratio):
@@ -90,11 +117,15 @@ def preprocessing(test_ratio):
               "'6minwalk-matfiles', '6MW-matFiles', 'NSAA', or 'direct_csv'.")
         sys.exit()
 
-    if args.ft + "\\" in sub_sub_dirs:
+    if args.dir == "NSAA" and args.choice == "indiv" and args.ft in raw_measurements:
+        source_dir = local_dir + "NSAA\\matfiles\\act_files\\" + args.ft + "\\"
+    elif args.ft + "\\" in sub_sub_dirs:
         source_dir += args.ft + "\\"
+    elif args.dir == "NSAA" and args.ft in raw_measurements:
+        source_dir = local_dir + "NSAA\\matfiles\\" + args.ft + "\\"
     else:
         print("Second arg ('ft') must be a name of a sub-subdirectory within source dir and must be one of \'AD\',"
-              "\'JA', or \'DC\'.")
+              "\'JA', or \'DC\' (unless dir is give as 'NSAA', where 'ft' can be a measurement name).")
         sys.exit()
 
     if args.fn.lower() != "all":
@@ -104,59 +135,102 @@ def preprocessing(test_ratio):
             print("Cannot find '" + str(args.fn) + "' in '" + source_dir + " '")
             sys.exit()
     else:
-        file_names = [fn for fn in os.listdir(source_dir)]
+        try:
+            file_names = [fn for fn in os.listdir(source_dir)]
+        except FileNotFoundError:
+            print(args.dir, "not a valid 'dir' name for when choice='" + args.choice + "...")
+            sys.exit()
 
     global choice
     if args.choice in choices:
         choice = args.choice
     else:
         print("Must provide a choice of 'dhc' for simple binary classification of sequences, 'overall' for single-target "
-              "regression to predict the overall north star scores for sequences, or 'acts' for multi-target "
+              "regression to predict the overall north star scores for sequences, 'acts' for multi-target "
               "classification of possible NSAA activities that have taken place in the sequence and what their "
-              "corresponding individual NSAA would be.")
+              "corresponding individual NSAA would be, or 'indiv' for predicting a score of 0, 1, or 2 from "
+              "'single-act' source files.")
         sys.exit()
 
     #Ensures that only the written files from feature select/reduct script are used if present (i.e. if the directory
     #we are concerned with is not within 'direct_csv')
-    if args.dir != "direct_csv":
+    if args.dir != "direct_csv" and not source_dir.startswith(local_dir):
         file_names = [fn for fn in file_names if fn.startswith("FR_")]
+
 
     for file_name in file_names:
         print("Extracting '" + file_name + "' to x_data and y_data....")
+        print(source_dir + file_name)
         data = pd.read_csv(source_dir + file_name)
         if choice == "overall":
             #Only had the overall and individual NSAA scores if not already within the file
             if data.columns.values[1] != "NSS":
-                data = add_nsaa_scores(data.values)
+                try:
+                    data = add_nsaa_scores(data.values)
+                except KeyError:
+                    print(file_name + " not found as entry in either '6mw_matfiles.xlsx', 'nsaa_matfiles.xlsx', "
+                                           "or 'KineDMD data updates Feb 2019.xlsx', 'skipping...")
+                    continue
             #Gets the overall NSAA score of the first row of the file, which will be the same throughout the file
             data = data.values
-            if args.dir != "direct_csv":
+            if args.dir != "direct_csv" and not source_dir.startswith(local_dir):
                 y_label = data[0, 1]
             else:
                 y_label = data[0, 0]
         elif choice == "dhc":
             data = data.values
-            if args.dir != "direct_csv":
+            if args.dir != "direct_csv" and not source_dir.startswith(local_dir):
                 y_label = 1 if file_name.split("_")[2][0] == "D" else 0
+            elif source_dir.startswith(local_dir):
+                y_label = 1 if file_name.split("_")[0][0] == "D" else 0
             else:
                 y_label = 1 if file_name.split("_")[1][0] == "D" else 0
-        else:
+        elif choice == "acts":
             if data.columns.values[1] != "NSS":
-                data = add_nsaa_scores(data.values)
+                try:
+                    data = add_nsaa_scores(data.values)
+                except KeyError:
+                    print(file_name + " not found as entry in either '6mw_matfiles.xlsx', 'nsaa_matfiles.xlsx', "
+                                           "or 'KineDMD data updates Feb 2019.xlsx', 'skipping...")
+                    continue
             data = data.values
-            if args.dir != "direct_csv":
+            if args.dir != "direct_csv" and not source_dir.startswith(local_dir):
                 y_label = data[0][2:19]
             else:
                 y_label = data[0][1:18]
+        else:
+            if data.columns.values[1] != "NSS":
+                try:
+                    data = add_nsaa_scores(data.values)
+                except KeyError:
+                    print(file_name + " not found as entry in either '6mw_matfiles.xlsx', 'nsaa_matfiles.xlsx', "
+                                           "or 'KineDMD data updates Feb 2019.xlsx', 'skipping...")
+                    continue
+            data = data.values
+            y_label = data[0][int(file_name.split(".")[0].split("_")[1].split("act")[1])]
+
         num_data_splits = int(len(data) / sequence_length)
+        num_data_splits = int(num_data_splits * (1/(1-args.seq_overlap)))
+        start, end = 0, 0
         for i in range(num_data_splits):
+            end = start + sequence_length
+            #Prevents moving window from 'clipping' the end of the data rows and getting a number of rows of
+            #less than 'sequence_length'
+            if end > len(data):
+                continue
             if args.dir == "direct_csv" and choice == "dhc":
-                x_data.append(data[(i * sequence_length):((i + 1) * sequence_length), 1:])
+                x_data.append(data[start:end, 1:])
             elif args.dir == "direct_csv":
-                x_data.append(data[(i * sequence_length):((i + 1) * sequence_length), 19:])
+                x_data.append(data[start:end, 19:])
+            elif source_dir.startswith(local_dir) and choice == "dhc":
+                x_data.append(data[start:end, 1:])
+            elif source_dir.startswith(local_dir):
+                x_data.append(data[start:end, 19:])
             else:
-                x_data.append(data[(i * sequence_length):((i + 1) * sequence_length), 21:])
+                x_data.append(data[start:end, 21:])
             y_data.append(y_label)
+            #Note: overlap lengths are rounded DOWN via 'int'
+            start += int(sequence_length*(1-args.seq_overlap))
 
     global x_shape
     global y_shape
@@ -178,8 +252,14 @@ def add_nsaa_scores(file_df):
     nsaa_matfiles_tab = pd.read_excel(nsaa_table_path + "NSAA\\matfiles\\nsaa_matfiles.xlsx")
     nsaa_matfiles_cols = nsaa_matfiles_tab[["ID", "NSAA"]]
     nsaa_matfiles_dict = dict(pd.Series(nsaa_matfiles_cols.NSAA.values, index=nsaa_matfiles_cols.ID).to_dict())
-
     mw_dict.update(nsaa_matfiles_dict)
+
+    kinedmd_tab = pd.read_excel(nsaa_table_path + "NSAA\\KineDMD data updates Feb 2019.xlsx")
+    kinedmd_cols = pd.concat([kinedmd_tab.iloc[2:20, 0], kinedmd_tab.iloc[2:20, 70]], axis=1)
+    kinedmd_cols.columns = ["ID", "NSAA"]
+    kinedmd_dict = dict(pd.Series(kinedmd_cols.NSAA.values, index=kinedmd_cols.ID).to_dict())
+    mw_dict.update(kinedmd_dict)
+
     #Adds column of overall NSAA scores at position 0
     nss = [mw_dict[i] for i in [j.split("_")[0] for j in file_df.iloc[:, 0].values]]
     file_df.insert(loc=0, column="NSS", value=nss)
@@ -224,7 +304,7 @@ def create_batch_generator(x, y=None, batch_size=64):
 
 
 
-def write_to_csv(trues, preds, open_file=True):
+def write_to_csv(trues, preds, output_strs, open_file=True):
     print("\nWriting true and predicted values to .csv....")
     df = pd.DataFrame()
     df["Sequence Number"] = np.arange(1, len(trues)+1)
@@ -233,13 +313,14 @@ def write_to_csv(trues, preds, open_file=True):
         df["Predictions"] = preds
     else:
         df["Predictions"] = ["[" + " ".join(str(num) for num in preds[i]) + "]" for i in range(len(preds))]
-    #Empty column to keep a space between the trues/predictions and RNN settings
-    df[""] = ""
+    df["Results"] = ""
+    df.iloc[0, -1] = ", ".join(output_strs)
     settings = ["X shape = " + str(x_shape), "Y shape = " + str(y_shape), "Test ratio = " + str(test_ratio),
                 "Sequence length = " + str(sequence_length), "Features length = " + str(len(x_train[0][0])),
                 "Num epochs = " + str(num_epochs), "Num LSTM units per layer = " + str(num_lstm_cells),
                 "Num hidden layers = " + str(num_rnn_hidden_layers), "Learning rate = " + str(learn_rate)]
     df["Settings"] = pd.Series(settings)
+
     if not os.path.exists(output_dir):
         os.mkdir(output_dir)
     full_output_name = output_dir + "RNN_trues_preds.csv"
@@ -308,7 +389,8 @@ class RNN(object):
             logits = tf.squeeze(logits, name='logits_squeezed')
         else:
             logits = tf.layers.dense(inputs=lstm_outputs[:, -1], units=self.num_acts, activation=None, name='logits')
-        if choice == "overall":
+
+        if choice == "overall" or choice == "indiv":
             cost = tf.reduce_mean(tf.losses.mean_squared_error(labels=tf_y, predictions=logits), name='cost')
             predictions = {'cost': cost}
         elif choice == "dhc":
@@ -364,7 +446,7 @@ class RNN(object):
                 feed = {'tf_x:0': batch_x, 'tf_keepprob:0': 1.0, self.initial_state: test_state}
                 if return_proba:
                     pred, test_state = sess.run(['probabilities:0', self.final_state], feed_dict=feed)
-                elif choice == "overall":
+                elif choice == "overall" or choice == "indiv":
                     pred, test_state = sess.run(['logits_squeezed:0', self.final_state], feed_dict=feed)
                 else:
                     pred, test_state = sess.run(['labels:0', self.final_state], feed_dict=feed)
@@ -385,24 +467,28 @@ preds = rnn.predict(x_test)
 y_true = y_test[:len(preds)]
 
 
-if choice == "overall":
-    mse = mean_squared_error(y_true=y_true, y_pred=preds)
-    print("\n\nMean Squared Error = " + str(round(mse, 4)))
-    mae = mean_absolute_error(y_true=y_true, y_pred=preds)
-    print("Mean Absolute Error = " + str(round(mae, 4)))
+output_strs = []
+if choice == "overall" or choice == "indiv":
+    output_strs.append("Mean Squared Error = " + str(round(mean_squared_error(y_true=y_true, y_pred=preds), 4)))
+    output_strs.append("Mean Absolute Error = " + str(round(mean_absolute_error(y_true=y_true, y_pred=preds), 4)))
+    output_strs.append("Root Mean Squared Error = " + str(round(np.sqrt(mean_squared_error(y_true=y_true, y_pred=preds)), 4)))
+    output_strs.append("R^2 Score = " + str(round(r2_score(y_true=y_true, y_pred=preds), 4)))
+
 elif choice == "dhc":
-    #Calculates and prints the accuracy to the user
-    accuracy = round(((np.sum(preds == y_true) / len(y_true)) * 100), 2)
-    print("\n\nTest Accuracy = " + str(accuracy) + "%")
+    output_strs.append(str(cm(y_true=y_true, y_pred=preds)) + "\n(Note: row names = true vals, col names = pred vals;"
+                       + "cm[0,0] = True HC, cm[0,1] = False D, cm[1,0] = False HC, c[1,1] = True D)")
+    output_strs.append("Test Accuracy = " + str(round(((np.sum(preds == y_true) / len(y_true)) * 100), 2)) + "%")
 else:
     ind_sum, all_sum = 0, 0
     for i in range(len(preds)):
         ind_sum += np.sum(preds[i] == y_true[i])
         all_sum = all_sum + 1 if list(preds[i]) == list(y_true[i]) else all_sum
-    ind_accuracy = round(((ind_sum / (len(y_true)*num_acts)) * 100), 2)
-    print("\n\nIndividual Activity Accuracy = " + str(ind_accuracy) + "%")
-    all_accuracy = round(((all_sum / len(y_true)) * 100), 2)
-    print("All Activities Accuracy = " + str(all_accuracy) + "%")
+    output_strs.append("Individual Activity Accuracy = " + str(round(((ind_sum / (len(y_true)*num_acts)) * 100), 2)) + "%")
+    output_strs.append("All Activities Accuracy = " + str(round(((all_sum / len(preds)) * 100), 2)) + "%")
 
 
-write_to_csv(trues=y_true, preds=preds)
+print("\n\n")
+for output_str in output_strs:
+    print(output_str)
+
+write_to_csv(trues=y_true, preds=preds, output_strs=output_strs)

@@ -13,7 +13,7 @@ import scipy.io as sio
 parser = argparse.ArgumentParser()
 parser.add_argument("version", help="Specify the version that we wish to consider (i.e. the visit number of the "
                                     "patients). Must be either 'V1' or 'V2'.")
-parser.add_argument("fn", help="Specify the patient ID to split the .mat file of")
+parser.add_argument("fn", help="Specify the patient ID to split the .mat file of. Specify 'all' for all files available.")
 args = parser.parse_args()
 
 source_dir = "C:\\msc_project_files\\NSAA\\"
@@ -63,7 +63,8 @@ def divide_mat_file(act_times_outer, ids):
     global source_dir
     source_dir += "matfiles\\"
     if args.version == "V1":
-        version_fns = [fn for fn in os.listdir(source_dir) if not fn.endswith("2.mat") and "V2" not in fn]
+        version_fns = [fn for fn in os.listdir(source_dir) if not fn.endswith("2.mat")
+                       and not fn.endswith("3.mat") and "V2" not in fn]
     else:
         version_fns = [fn for fn in os.listdir(source_dir) if fn.endswith("2.mat") or "V2" in fn]
 
