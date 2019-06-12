@@ -1,0 +1,74 @@
+In order for others to be able to 'display' the source .mat files real-time using a function from the 
+'comp_stat_vals.py' script, it's been requested to add a miniature guide in order to help setup and explain 
+the required libraries, software, and commands that are necessary to input. This guide is broadly broken up 
+into 3 sections: prerequisites (covering the required installations beforehand) and running the necessary 
+commands (including a brief breakdown of the individual parts of the commands and example scenarios).
+
+
+------ Prerequisites ------
+
+Note that the order covered below is the recommended order of setup and some tasks could be completed 
+out-of-order, though there is no guarantee in this scenario that it will work as intended.
+
+1.) Install Python (version >3.6.0, though versions >3.0 may still work though would probably be incompatible 
+with the versions of the other libraries that are to be installed).
+
+2.) Setup 'pip' with the required environment variables changes. The exact steps needed here is too indepth 
+to cover, though a quick google of 'pip installation' should point the user in the right direction. One will 
+know they've set it up correct if they can type 'pip install <example package name>' via the command line 
+within any directory and it correctly installs the package in question.
+
+3.) Install the following packages with their respective version via pip, i.e.: 'pip install <package>=<version>'
+	-- scipy, version 1.1.0
+	-- numpy, version 1.16.3
+	-- pandas, version 0.24.2
+	-- matplotlib, version 3.0.0
+Note that it *may* be possibly install via pip without specifying a package (i.e. just installing the most 
+up-to-date version), but there is no guarantee of success. Also note that these are only the scripts that are 
+used in running the 'comp_stat_vals.py' script, which is where the '3D plotting' functionality is, and using any 
+other scripts would need other libraries (e.g. 'rnn.py' needs 'tensorflow').
+
+4.) OPTIONAL: install an IDE for python, preferably PyCharm as it has many features that are inbuild that 
+helps with running scripts, including a built-in command line that defaults to the project name in question
+
+5.) Download the necessary .mat files for the project. The URL of the 'box' link should be already available. 
+Once downloaded, place these outer directories ('NSAA', '6minwalk-matfiles', and '6MW-matFiles' for example) 
+within this new directory. An example of a default location would be: 'C:\msc_project_files' so each of these 
+downloaded directories are located at 'C:\msc_project_files\NSAA', 'C:\msc_project_files\6minwalk-matfiles', 
+and 'C:\msc_project_files\6MW-matFiles'.
+
+6.) Modify line 19 of 'comp_stat_vals.py' to make 'source_dir' point to the chosen location of the default 
+location of the downloaded .mat files. This is necessary to enure that 'comp_stat_vals.py' look for the 
+.mat files in the correct place.
+
+
+
+
+------ Running the script ------
+
+1.) Using the command line/terminal, navigate to the location of the 'comp_stat_vals.py' script.
+
+2.) For a given file that the user wishes to do the 3D plot of, input the following into the command line:
+
+	'python comp_stat_vals <dir> <ft> <fn> --dis_3d_pos'
+
+	--'dir' is the subdirectory of the default directory that we wish to source the '.mat' file from; for 
+	example, set 'dir' to 'NSAA' if we are looking at a file from the 'NSAA' set of data.
+	--'ft' is the file type of the file that we wish to be plotting; as we require the position data here 
+	and are only looking at source files given to us, for plotting 3D positions 'ft' will only ever 
+	be set to 'AD'
+	--'fn' the short-name of the file that we will be looking at within 'dir' that also corresponds to 
+	the ID of the subject in the file; examples include 'D4' or 'HC3'
+
+
+	For example, if we wished to observe a 3D plot of 'C:\msc_project_files\NSAA\matfiles\D11-012-NSAA.mat', 
+	we would enter the following at the command line after having navigated to the location of 'comp_stat_vals.py':
+		
+		'python comp_stat_vals.py NSAA AD D11 --dis_3d_pos'
+
+3.) After ~5 seconds where the data is sourced, extracted, reconfigured to work in 3D, and animated, a new 
+window will appear. This is the 3D plot that runs in real time. Note that one should also see as a console output 
+the time stamp in seconds of where the plot currently is at. There is no current way to pause, slow down, or 
+speed up the plotting, though one can change the viewing perspective by left clicking and dragging with the 
+cursor or zoom in and out by right clicking and dragging with the cursor.
+
