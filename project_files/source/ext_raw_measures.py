@@ -4,17 +4,17 @@ import os
 import scipy.io as sio
 import pandas as pd
 
-#Note: CHANGE THESE to location of the 3 sub-directories' encompassing directory local to the user
+#Note: CHANGE THIS to location of the 3 sub-directories' encompassing the user's downloaded .mat files
 source_dir = "C:\\msc_project_files\\"
+
 sub_dirs = ["6minwalk-matfiles\\", "6MW-matFiles\\", "NSAA\\"]
-#Note: 'orientation' and 'sensorOrientation' are NOT included due to having '92' and '68' dimensions, respectively
-#and not being in form of values for x,y,z dim
+#List of possible measurements to extract from the source .mat files. Note that 'orientation' and 'sensorOrientation'
+#are NOT included due to having '92' and '68' dimensions, respectively and not being in form of values for x,y,z dims
 measurements = ["position", "velocity", "acceleration", "angularVelocity", "angularAcceleration",
                 "sensorFreeAcceleration", "sensorMagneticField", "jointAngle", "jointAngleXZY"]
-
 axis_labels = ["X", "Y", "Z"]
 
-#Below 3 lists are labels for the 23 segments, 22 joints, and 17 sensors, as dictated by the 'MVN User Manual'
+#Below 3 lists are labels for the 23 segments, 22 joints, and 17 sensors, respectively, as dictated by the 'MVN User Manual'
 segment_labels = ["Pelvis", "L5", "L3", "T12", "T8", "Neck", "Head", "RightShoulder", "RightUpperArm",
                   "RightForeArm", "RightHand", "LeftShoulder", "LeftUpperArm", "LeftForeArm", "LeftHand",
                   "RightUpperLeg", "RightLowerLeg", "RightFoot", "RightToe", "LeftUpperLeg", "LeftLowerLeg",
@@ -37,7 +37,10 @@ measure_to_len_map = {"orientation": 23, "position": 23, "velocity": 23, "accele
 #Mapping used to select lists of labels names to use based on the length of the numbers contained in data array
 seg_join_sens_map = {len(segment_labels): segment_labels, len(joint_labels): joint_labels, len(sensor_labels): sensor_labels}
 
-
+"""Section below encompasses all the required arguments for the script to run. Note that the default behaviour of the 
+script is to operate on complete files, rather than 'single-act' files produced by the 'mat_act_div.py' script; hence, 
+the optional '--single_act' argument must be specified if it wants to operate on those files to ensure the correct 
+files are retrieved."""
 parser = argparse.ArgumentParser()
 parser.add_argument("dir", help="Specifies which source directory to use so as to process the files contained within "
                                 "them accordingly. Must be one of '6minwalk-matfiles', '6MW-matFiles' or 'NSAA'.")
@@ -50,6 +53,8 @@ parser.add_argument("--single_act", type=bool, nargs="?", const=True,
 args = parser.parse_args()
 
 
+#Sets 'source_dir' to the correct directory name, based on the argument passed in for 'dir' and whether or not the
+#optional argument '--single_act' was set or not.
 if args.dir + "\\" in sub_dirs:
     if args.dir == "6minwalk-matfiles":
         source_dir += args.dir + "\\all_data_mat_files\\"
@@ -64,6 +69,9 @@ else:
           "'6minwalk-matfiles', '6MW-matFiles', 'NSAA', or 'direct_csv'.")
     sys.exit()
 
+#Gets the names of all the files within the 'source_dir' directory and filters them to a list of one element if
+#the 'fn' argument corresponds to a file within this, or a list of all '.mat' files within this directory if the 'fn'
+#argument is 'all'
 file_names = os.listdir(source_dir)
 if any(args.fn in fn for fn in file_names):
     full_file_names = [source_dir + [fn for fn in file_names if args.fn in fn][0]]
@@ -73,6 +81,10 @@ else:
     print("Second arg ('fn') must be the short name of a file (e.g. 'D2' or 'all') within", source_dir)
     sys.exit()
 
+#Sets measures to all possible measurement names if the argument given is 'all', or get all parts of the 'measurements'
+#argument, splits it up by commas, and adds the measurement names to a list. E.g., if the script was run as
+#'python ext_raw_measures.py NSAA all position,acceleration,jointAngle', then measures would now contain:
+#['position', 'acceleration', 'jointAngle']
 measures = []
 if args.measurements == "all":
     measures = measurements
@@ -84,6 +96,8 @@ else:
             print("'" + measure + "' not a valid 'measurement' name. Must be 'all' or one of:", measurements)
             sys.exit()
 
+#For each of the measurements to extract from the source file(s), create a unique subdirectory within 'source_dir'
+#with a name equal to the measurement name; if this already exists, instead just remove each file contained within it
 for measure in measures:
     if not os.path.exists(source_dir + measure):
         os.mkdir(source_dir + measure)
@@ -91,14 +105,18 @@ for measure in measures:
         for f in os.listdir(source_dir + measure):
             os.remove(source_dir + measure + "\\" + f)
 
+#For each of the files that we wish to extract the raw measurements of (given as a short file name in 'fn' or all
+#available filenames if 'fn' is set as 'all'...
 for full_file_name in full_file_names:
     print("\nExtracting", measures, "from '" + full_file_name + "'...")
+    #Loads the file given the file name and extracts the table data from within the '.mat' structure
     mat_file = sio.loadmat(full_file_name)
     tree = mat_file["tree"]
     try:
         frame_data = tree[0][0][6][0][0][10][0][0][3][0]
     except IndexError:
         frame_data = tree[0][0][6][0][0][10][0][0][2][0]
+    #Gets the names of each of the columns within
     col_names = frame_data.dtype.names
     # Extract single outer-list wrapping for vectors and double outer-list values for single values
     try:
@@ -120,11 +138,19 @@ for full_file_name in full_file_names:
                     row_data.append(row[i][0][0])
             new_frame_data.append(row_data)
         frame_data = new_frame_data
+
+    #Creates a DataFrame from the data extracted from the source '.mat' file in question, skipping the first 3 rows
+    #if it's a 'single-act' file (as these just correspond to 'setup' rows)
     if not args.single_act:
         df = pd.DataFrame(frame_data, columns=col_names).iloc[3:]
     else:
         df = pd.DataFrame(frame_data, columns=col_names).iloc[:]
 
+    #For each measurement to extract from the file, gets a list of names of features for that measurement (23 segments
+    #labels, #22 joint labels, or 17 sensor labels), create a list of column names for each column of extracted
+    #data from the file, gets the necessary columns from the DataFrame corresponding to the measurement in question,
+    #creates a new DataFrame from this with the index names being the short-file name (e.g. 'D11'), and writes this
+    #to a .csv file within 'source_dir' with a name corresponding to its source file name and extracted measurement
     for measure in measures:
         measurement_names = seg_join_sens_map[measure_to_len_map[measure]]
         headers = ["(" + measurement_name + ") : (" + axis + "-axis)"
