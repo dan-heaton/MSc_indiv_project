@@ -17,6 +17,9 @@ parser.add_argument("version", help="Specify the version that we wish to conside
                                     "patients). Must be either 'V1' or 'V2'. Consult the google sheet and the relevant "
                                     "row subcategory the subject name is under for the correct version number.")
 parser.add_argument("fn", help="Specify the patient ID to split the .mat file of. Specify 'all' for all files available.")
+parser.add_argument("--detect_activities", help="Specify if wishing to use the scripts in-built action detection "
+                                                "functionality to get the times of activites of the subjects, rather "
+                                                "than using the Google sheet.")
 args = parser.parse_args()
 
 #Note: CHANGE THIS to the location of the NSAA subdirectory local to the user's downloaded .mat files
@@ -161,5 +164,9 @@ def divide_mat_file(act_times_outer, ids):
 
 
 #Runs the script with the above-described two functions
-act_times, ids = extract_act_times()
+if not args.detect_activities:
+    act_times, ids = extract_act_times()
+else:
+    pass
+    #TODO Insert the action detection function
 divide_mat_file(act_times, ids)

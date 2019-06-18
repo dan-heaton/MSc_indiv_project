@@ -1,3 +1,26 @@
 check if Wj is supposed to be Wij instead?
 
 see how many paramters there are in the average CRF (i.e. i x j?)
+
+
+
+Missing table entries																							
+																							
+	ID	Notes																					
+	D1	Missing info in 'KineDMD data updates...' (entry in table mostly blank)																					
+	D8	Missing info in 'KineDMD data updates...' (entry in table mostly blank)																					
+	D13	Missing entirely from all tables																					
+	D20	Entry in 'nsaa_matfiles' that includes overall NSAA and walk dist, but no entry in 'KineDMD'																					
+	D4v2	Entry in 'nsaa_matfiles' that includes overall NSAA and walk dist, but no entry in 'KineDMD'																					
+	D5v2	Entry in 'nsaa_matfiles' that includes overall NSAA and walk dist, but no entry in 'KineDMD'																					
+	D6v2	No entry in 'KineDMD data updates...' even though files exist for D6v2																					
+	D7v2	No entry in 'KineDMD data updates...' even though files exist for D7v2																					
+																							
+Missing 'NSAA\matfiles' files																							
+																							
+	ID																						
+	D1																						
+	D8																						
+	D13																						
+	HC1																						
+	HC2																						

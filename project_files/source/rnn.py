@@ -16,11 +16,19 @@ import pyexcel as pe
 tf.logging.set_verbosity(tf.logging.ERROR)
 
 
+"""Section below encompasses all the arguments that are required to setup and train the model. This includes the 
+name of the directory to source the files from to train the model, the type of files that this directory contains, 
+the name(s) of the file to train the model, and the choice of training model (i.e. what the model should be setup 
+to predict as output). Option arguments include those to specify the sequence length the RNN should deal with, the 
+percentage of sequence overlap between train/test samples, the number of epochs to use, and whether to write the 
+settings to the output results file (these go to default values if not specified)."""
 parser = argparse.ArgumentParser()
 parser.add_argument("dir", help="Specifies which source directory to use so as to process the files contained within "
                                 "them accordingly. Must be one of '6minwalk-matfiles', '6MW-matFiles' or 'NSAA'.")
 parser.add_argument("ft", help="Specify type of .mat file that the .csv is to come from, being one of 'JA' (joint "
-                               "angle), 'AD' (all data), or 'DC' (data cube).")
+                               "angle), 'AD' (all data), or 'DC' (data cube). Alternatively, supply a name of a "
+                               "measurement (e.g. 'position', 'velocity', 'jointAngle', etc.) if the file is to be "
+                               "trained on raw measurements.")
 parser.add_argument("fn", help="Specify the short file name of a .csv to load from 'source_dir'; e.g. for file "
                                "'All_D2_stats_features.csv', enter 'D2'. Specify 'all' for all the files available "
                                "in the 'source_dir'.")
@@ -45,7 +53,7 @@ parser.add_argument("--epochs", type=int, nargs="?", const=1,
 args = parser.parse_args()
 
 #If no optional argument given for '--seq_len', defaults to seq_len = 10, i.e. defaults to splitting files into
-#10 second increments
+#10 length increments
 if not args.seq_len:
     args.seq_len = 10.0
 
@@ -53,32 +61,33 @@ if not args.seq_len:
 if not args.seq_overlap:
     args.seq_overlap = 0
 
+#Ensures the sequence overlap isn't '1', which would result in an infinite number of sequences as the sequence window
+#would never 'move along' the data
 if args.seq_overlap == 1:
     print("Can't set overlap to be 100% of each sequence...")
     sys.exit()
 
 
-#Location at which to store the created model
-model_path = "..\\output_files\\rnn_models\\" + args.dir + "_" + args.ft + "_" + args.fn + "_" + args.choice + "\\model.ckpt"
-
-#Note: CHANGE THESE to location of the source data for the RNN to use
-source_dir = "..\\output_files\\"
-output_dir = "..\\output_files\\RNN_outputs\\"
-
-#Note: CHANGE THIS to location of the 3 sub-directories' encompassing directory local to the user. Raw measurements are
-#not stored in 'source_dir' as dropbox size is limited
+#Note: CHANGE THIS to location of the 3 sub-directories' encompassing directory local to the user.
 local_dir = "C:\\msc_project_files\\"
 
+#Location at which to store the created model that will be used by 'model_predictor.py'
+model_path = local_dir + "output_files\\rnn_models\\" + args.dir + "_" + args.ft + "_" + \
+             args.fn + "_" + args.choice + "\\model.ckpt"
+
+#Other locations and sub-dir nameswithin 'local_dir' that will contain the files we need, as dictated by assuming the
+#user has previously run the required scripts (e.g. 'comp_stat_vals', 'ext_raw_measures', etc.)
+source_dir = local_dir + "output_files\\"
+output_dir = local_dir + "output_files\\RNN_outputs\\"
 sub_dirs = ["6minwalk-matfiles\\", "6MW-matFiles\\", "NSAA\\", "direct_csv\\"]
 sub_sub_dirs = ["AD\\", "JA\\", "DC\\"]
+
+#Available choices of model outputs for 'choice' argument to take and available measurement names for 'ft' to take 
+#if not one of 'sub_sub_dirs'
 choices = ["dhc", "overall", "acts", "indiv"]
 choice = None
 raw_measurements = ["position", "velocity", "acceleration", "angularVelocity", "angularAcceleration",
                 "sensorFreeAcceleration", "sensorMagneticField", "jointAngle", "jointAngleXZY"]
-
-#Note: CHANGE THIS to location of the 3 sub-directories' encompassing directory local to the user that's needed to
-#map to the .csvs containing the NSAA information
-nsaa_table_path = "C:\\msc_project_files\\"
 
 """RNN hyperparameters"""
 x_shape = None
@@ -94,6 +103,7 @@ num_epochs = 300
 test_ratio = 0.2
 num_acts = 17
 
+#Only sets 'num_epochs' to different value if '--epochs' optional argument is provided
 if args.epochs:
     num_epochs = int(args.epochs)
 
@@ -102,13 +112,14 @@ def preprocessing(test_ratio):
     """
         :return given a short file name for 'fn' command-line argument, finds the relevant file in 'source_dir' and
         adds it to 'file_names' (or set 'file_names' to all file names in 'source_dir'), reads in each file name in
-        'file_names' as .csv's into dataframes, create corresponding 'y-labels' (with one 'y-label' corresponding to
+        'file_names' as .csv's into DataFrames, create corresponding 'y-labels' (with one 'y-label' corresponding to
         each row in the .csv, with it being a 1 if it's from a file beginning with 'D' or 0 otherwise), and shuffling/
         splitting them into training and testing x- and y-components
     """
     file_names = []
     x_data, y_data = [], []
 
+    #Appends the sub_dir name to 'source_dir' if it's one of the allowed names
     global source_dir
     if args.dir + "\\" in sub_dirs:
         source_dir += args.dir.upper() + "\\"
@@ -117,6 +128,8 @@ def preprocessing(test_ratio):
               "'6minwalk-matfiles', '6MW-matFiles', 'NSAA', or 'direct_csv'.")
         sys.exit()
 
+    #Change 'source_dir' to point to the directory of raw measurement files, single-act raw measurements files,
+    #or another type of file (e.g. 'AD' or 'JA')
     if args.dir == "NSAA" and args.choice == "indiv" and args.ft in raw_measurements:
         source_dir = local_dir + "NSAA\\matfiles\\act_files\\" + args.ft + "\\"
     elif args.ft + "\\" in sub_sub_dirs:
@@ -128,8 +141,10 @@ def preprocessing(test_ratio):
               "\'JA', or \'DC\' (unless dir is give as 'NSAA', where 'ft' can be a measurement name).")
         sys.exit()
 
+    #Appends to the list of files the single file name corresponding to the 'fn' argument or all available files within
+    #'source_dir' if 'fn' is 'all'
     if args.fn.lower() != "all":
-        if any(args.fn in s for s in os.listdir(source_dir)):
+        if any(args.fn == s.upper().split("-")[0] for s in os.listdir(source_dir)):
             file_names.append([s for s in os.listdir(source_dir) if args.fn in s][0])
         else:
             print("Cannot find '" + str(args.fn) + "' in '" + source_dir + " '")
@@ -141,6 +156,8 @@ def preprocessing(test_ratio):
             print(args.dir, "not a valid 'dir' name for when choice='" + args.choice + "...")
             sys.exit()
 
+    #Sets 'choice' equal to the 'choice' argument if it's one of the allowed output RNN choices (i.e. 'dhc', 'acts',
+    #'indiv', or 'overall')
     global choice
     if args.choice in choices:
         choice = args.choice
@@ -158,12 +175,16 @@ def preprocessing(test_ratio):
         file_names = [fn for fn in file_names if fn.startswith("FR_")]
 
 
+    #For each file name that we are dealing with (all files names in 'source_dir' if 'fn' is 'all, else a single
+    #file name), adds 'y' labels based on what type of model output we are training for and divide up both 'x' and 'y'
+    #data into sequences
     for file_name in file_names:
         print("Extracting '" + file_name + "' to x_data and y_data....")
-        print(source_dir + file_name)
+        #Read in the data from the corresponding .csv
         data = pd.read_csv(source_dir + file_name)
+        #If the model output type is 'overall', add the NSAA scores if they aren't included already,
+        #and get the overall NSAA score from the first row's first cell in the file as the 'y_label'
         if choice == "overall":
-            #Only had the overall and individual NSAA scores if not already within the file
             if data.columns.values[1] != "NSS":
                 try:
                     data = add_nsaa_scores(data.values)
@@ -171,12 +192,13 @@ def preprocessing(test_ratio):
                     print(file_name + " not found as entry in either '6mw_matfiles.xlsx', 'nsaa_matfiles.xlsx', "
                                            "or 'KineDMD data updates Feb 2019.xlsx', 'skipping...")
                     continue
-            #Gets the overall NSAA score of the first row of the file, which will be the same throughout the file
             data = data.values
             if args.dir != "direct_csv" and not source_dir.startswith(local_dir):
                 y_label = data[0, 1]
             else:
                 y_label = data[0, 0]
+        #If the model output type is 'dhc', set 'y_label' to 1 if the first letter of the short file name within the
+        #file name is 'D', else set it to 0 (i.e. if it's a 'HC' file)
         elif choice == "dhc":
             data = data.values
             if args.dir != "direct_csv" and not source_dir.startswith(local_dir):
@@ -185,6 +207,8 @@ def preprocessing(test_ratio):
                 y_label = 1 if file_name.split("_")[0][0] == "D" else 0
             else:
                 y_label = 1 if file_name.split("_")[1][0] == "D" else 0
+        #If the model output type is 'acts', add the NSAA scores if they aren't included already, and get the
+        #individual NSAA activity scores from 17 cells in the first row of the data
         elif choice == "acts":
             if data.columns.values[1] != "NSS":
                 try:
@@ -198,6 +222,9 @@ def preprocessing(test_ratio):
                 y_label = data[0][2:19]
             else:
                 y_label = data[0][1:18]
+        #If the model output type is 'indiv', add the NSAA scores if they aren't included already, get the name of the
+        #activity the file is sourced from (e.g. 'act5') and, based on this, retrieve the value of the correct column
+        #from the first row of data (e.g. retrieve the 5th column of the first row if file contains 'act5')
         else:
             if data.columns.values[1] != "NSS":
                 try:
@@ -209,9 +236,13 @@ def preprocessing(test_ratio):
             data = data.values
             y_label = data[0][int(file_name.split(".")[0].split("_")[1].split("act")[1])]
 
+        #Determine the number of data splits needed based on the size of the data file and the desired sequence length,
+        #including rounding it down and accounting for the sequence overlap proportion)
         num_data_splits = int(len(data) / sequence_length)
         num_data_splits = int(num_data_splits * (1/(1-args.seq_overlap)))
         start, end = 0, 0
+        #For each desired sequence, determine the start and end positions of the sequence in 'data', extract this from
+        #the body of 'data', append this to 'x_data', and append the previously-determined 'y_label' to 'y_data'
         for i in range(num_data_splits):
             end = start + sequence_length
             #Prevents moving window from 'clipping' the end of the data rows and getting a number of rows of
@@ -243,33 +274,51 @@ def preprocessing(test_ratio):
 
 
 def add_nsaa_scores(file_df):
+    """
+    :param 'file_df', which contains the values in a 2D numpy array, to have the values NSAA scores appended on each
+    of its rows
+    :return: the same data as before, but with the overall and individual NSAA scores appended at the beginning of
+    each row of the data
+    """
     #To make sure that accepted parameter is as a DataFrame
     file_df = pd.DataFrame(file_df)
-    mw_tab = pd.read_excel(nsaa_table_path + "6MW-matFiles\\6mw_matfiles.xlsx")
+
+    #For each of the 3 tables of data that we have on the subjects, load in the table, find the columns with ID and
+    #overall NSAA scores, and create a dictionary of matching values, e.g. {'D4': 15, 'D11: 28,...}, with all values
+    #from each table
+    mw_tab = pd.read_excel(local_dir + "6MW-matFiles\\6mw_matfiles.xlsx")
     mw_cols = mw_tab[["ID", "NSAA"]]
     mw_dict = dict(pd.Series(mw_cols.NSAA.values, index=mw_cols.ID).to_dict())
 
-    nsaa_matfiles_tab = pd.read_excel(nsaa_table_path + "NSAA\\matfiles\\nsaa_matfiles.xlsx")
+    nsaa_matfiles_tab = pd.read_excel(local_dir + "NSAA\\matfiles\\nsaa_matfiles.xlsx")
     nsaa_matfiles_cols = nsaa_matfiles_tab[["ID", "NSAA"]]
     nsaa_matfiles_dict = dict(pd.Series(nsaa_matfiles_cols.NSAA.values, index=nsaa_matfiles_cols.ID).to_dict())
     mw_dict.update(nsaa_matfiles_dict)
 
-    kinedmd_tab = pd.read_excel(nsaa_table_path + "NSAA\\KineDMD data updates Feb 2019.xlsx")
+    kinedmd_tab = pd.read_excel(local_dir + "NSAA\\KineDMD data updates Feb 2019.xlsx")
     kinedmd_cols = pd.concat([kinedmd_tab.iloc[2:20, 0], kinedmd_tab.iloc[2:20, 70]], axis=1)
     kinedmd_cols.columns = ["ID", "NSAA"]
     kinedmd_dict = dict(pd.Series(kinedmd_cols.NSAA.values, index=kinedmd_cols.ID).to_dict())
     mw_dict.update(kinedmd_dict)
 
-    #Adds column of overall NSAA scores at position 0
+    #Adds column of overall NSAA scores at position 0 of every row of the data values, with the NSAA score being
+    #appended determined by the short file name of the data as found at the beginning of each row of the data
     nss = [mw_dict[i] for i in [j.split("_")[0] for j in file_df.iloc[:, 0].values]]
     file_df.insert(loc=0, column="NSS", value=nss)
 
-    nsaa_acts_tab = pd.read_excel(nsaa_table_path + "NSAA\\KineDMD data updates Feb 2019.xlsx")
+    #Loads the data that contains information about single act NSAA scores from the relevant .xlsx file, extracts the
+    #file names and single-acts columns, and creates a list of label names (i.e. the names of the activities) and a
+    #dictionary that maps the label names to a list of single-act scores
+    nsaa_acts_tab = pd.read_excel(local_dir + "NSAA\\KineDMD data updates Feb 2019.xlsx")
     nsaa_acts_file_names = nsaa_acts_tab.iloc[2:20, 0].values
     nsaa_acts = nsaa_acts_tab.iloc[2:20, 53:70].values
     nsaa_acts_dict = dict(zip(nsaa_acts_file_names, nsaa_acts))
     nsaa_labels = nsaa_acts_tab.iloc[1, 53:70].values
 
+    #For each label name and for every row, adds the score that is found in the single-acts dictionary for the relevant
+    #activity for a given short file name (if it isn't found in the dictionary, add a '2' as we're assuming it's a
+    #healthy control patient), add these together, and insert each new row of values at the beginning of the old rows
+    #so each now have the additional single-act scores and overall NSAA scores at the beginning of each row and return it
     label_sample_map = []
     for i in range(len(nsaa_labels)):
         inner = []
@@ -289,7 +338,12 @@ def add_nsaa_scores(file_df):
 
 
 def create_batch_generator(x, y=None, batch_size=64):
-    n_batches =len(x)//batch_size
+    """
+    :param 'x', which is the data to create batches out of and, if 'y' is supplied as well, create batches out of
+    this as well based on the 'batch_size' provided
+    :return: the next batch of data to the calling function
+    """
+    n_batches = len(x)//batch_size
     #Ensures 'x' is a multiple of batch size
     x = x[:n_batches*batch_size]
     if y is not None:
@@ -305,6 +359,14 @@ def create_batch_generator(x, y=None, batch_size=64):
 
 
 def write_to_csv(trues, preds, output_strs, open_file=True):
+    """
+    :param 'trues', which are a list of 'true' values for each of the test sequences that have been tested on the model,
+    'preds', which are the predicted values corresponding to each 'true' value, and 'output_strs' which are the strings
+    that have been printed to the console and will also be stored in the output file (with 'open_file' being whether to
+    immediately open it upon writing to it
+    :return: no return, but instead writes the sequence numbers, true values, predicted values, console output, and
+    model settings to a new file within 'output_dir'
+    """
     print("\nWriting true and predicted values to .csv....")
     df = pd.DataFrame()
     df["Sequence Number"] = np.arange(1, len(trues)+1)
@@ -321,6 +383,9 @@ def write_to_csv(trues, preds, output_strs, open_file=True):
                 "Num hidden layers = " + str(num_rnn_hidden_layers), "Learning rate = " + str(learn_rate)]
     df["Settings"] = pd.Series(settings)
 
+    #Create 'output_dir' if it doesn't exist and, if it does exist, remove the existing file and write the data frame
+    #to this file, opening it afterwards if required; if the '--write_settings' argument is given, append the settings
+    #written to this file to the 'RNN Results.ods' file directly rather than manually copying them over
     if not os.path.exists(output_dir):
         os.mkdir(output_dir)
     full_output_name = output_dir + "RNN_trues_preds.csv"
@@ -439,7 +504,7 @@ class RNN(object):
             now-trained RNN model
         """
         preds = []
-        with tf.Session(graph = self.g) as sess:
+        with tf.Session(graph=self.g) as sess:
             self.saver.restore(sess, model_path)
             test_state = sess.run(self.initial_state)
             for ii, batch_x in enumerate(create_batch_generator(x_test, None, batch_size=self.batch_size), 1):
@@ -467,6 +532,9 @@ preds = rnn.predict(x_test)
 y_true = y_test[:len(preds)]
 
 
+#Based on what type of model was created (i.e. with which output type), create several strings based on various
+#evaluation metrics (i.e. the performance results of the model in question on test data) and append them to a list,
+#which is then printed to the console and also passed to the 'write_to_csv' so they can be written to file
 output_strs = []
 if choice == "overall" or choice == "indiv":
     output_strs.append("Mean Squared Error = " + str(round(mean_squared_error(y_true=y_true, y_pred=preds), 4)))

@@ -18,7 +18,7 @@ sampling_rate = 60      #In Hz
 #Note: CHANGE THESE to location of the 3 sub-directories' encompassing directory local to the user
 source_dir = "C:\\msc_project_files\\"
 sub_dirs = ["6minwalk-matfiles\\", "6MW-matFiles\\", "NSAA\\"]
-output_dir = "..\\output_files\\"
+output_dir = source_dir + "output_files\\"
 
 #Lists of constants that dictate the allowed source file types to analyse and the dimensions of the data
 file_types = ["JA", "AD", "DC"]
