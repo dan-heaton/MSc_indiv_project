@@ -65,13 +65,17 @@ else:
 #Appends the sub_sub_dir name to 'source_dir' if it's an allowed name, along with appending 'act_files\\' if it's 'NSAA'
 if args.ft.upper() + "\\" in sub_sub_dirs:
     source_dir += args.ft + "\\"
-    if args.single_act:
-        if args.dir == "NSAA":
-            source_dir += "act_files\\"
 else:
     print("Second arg ('ft') must be a name of a sub-subdirectory within source dir and must be one of \'AD\',"
           "\'JA', or \'DC\'.")
     sys.exit()
+
+#Removes existing files that contain reduced dimensionality versions of the source files so new files won't be
+#written on top of existing files
+for file in os.listdir(source_dir):
+    if "FR_" in file:
+        os.remove(source_dir + file)
+
 
 #Find the matching full file name in 'source_dir' given the 'fn' argument, otherwise use all file names in 'source_dir'
 #if 'fn' is 'all'
@@ -165,7 +169,6 @@ def ft_red_select(full_file_name):
     return new_x, y
 
 
-
 def add_nsaa_scores(file_df):
     """
     :param 'file_df', which contains the values in a 2D numpy array, to have the values NSAA scores appended on each
@@ -176,59 +179,50 @@ def add_nsaa_scores(file_df):
     #To make sure that accepted parameter is as a DataFrame
     file_df = pd.DataFrame(file_df)
 
-    #For each of the 3 tables of data that we have on the subjects, load in the table, find the columns with ID and
+    #For the table of data that we have on the subjects, load in the table, find the columns with ID and
     #overall NSAA scores, and create a dictionary of matching values, e.g. {'D4': 15, 'D11: 28,...}, with all values
     #from each table
-    mw_tab = pd.read_excel(local_dir + "6MW-matFiles\\6mw_matfiles.xlsx")
-    mw_cols = mw_tab[["ID", "NSAA"]]
-    mw_dict = dict(pd.Series(mw_cols.NSAA.values, index=mw_cols.ID).to_dict())
-
-    nsaa_matfiles_tab = pd.read_excel(local_dir + "NSAA\\matfiles\\nsaa_matfiles.xlsx")
-    nsaa_matfiles_cols = nsaa_matfiles_tab[["ID", "NSAA"]]
-    nsaa_matfiles_dict = dict(pd.Series(nsaa_matfiles_cols.NSAA.values, index=nsaa_matfiles_cols.ID).to_dict())
-    mw_dict.update(nsaa_matfiles_dict)
-
-    kinedmd_tab = pd.read_excel(local_dir + "NSAA\\KineDMD data updates Feb 2019.xlsx")
-    kinedmd_cols = pd.concat([kinedmd_tab.iloc[2:20, 0], kinedmd_tab.iloc[2:20, 70]], axis=1)
-    kinedmd_cols.columns = ["ID", "NSAA"]
-    kinedmd_dict = dict(pd.Series(kinedmd_cols.NSAA.values, index=kinedmd_cols.ID).to_dict())
-    mw_dict.update(kinedmd_dict)
+    nsaa_6mw_tab = pd.read_excel("..\\documentation\\nsaa_6mw_info.xlsx")
+    nsaa_6mw_cols = nsaa_6mw_tab[["ID", "NSAA"]]
+    nsaa_overall_dict = dict(pd.Series(nsaa_6mw_cols.NSAA.values, index=nsaa_6mw_cols.ID).to_dict())
 
     #Adds column of overall NSAA scores at position 0 of every row of the data values, with the NSAA score being
     #appended determined by the short file name of the data as found at the beginning of each row of the data
-    nss = [mw_dict[i] for i in [j.split("_")[0] for j in file_df.iloc[:, 0].values]]
+    nss = [nsaa_overall_dict[i.upper()[:-2] if i.upper().endswith("V2") else i.upper()]
+           for i in [j.split("_")[0] for j in file_df.iloc[:, 0].values]]
     file_df.insert(loc=0, column="NSS", value=nss)
 
-    #Loads the data that contains information about single act NSAA scores from the relevant .xlsx file, extracts the
+    #Loads the data that contains information about single act NSAA scores from the .xlsx file, extracts the
     #file names and single-acts columns, and creates a list of label names (i.e. the names of the activities) and a
     #dictionary that maps the label names to a list of single-act scores
-    nsaa_acts_tab = pd.read_excel(local_dir + "NSAA\\KineDMD data updates Feb 2019.xlsx")
-    nsaa_acts_file_names = nsaa_acts_tab.iloc[2:20, 0].values
-    nsaa_acts = nsaa_acts_tab.iloc[2:20, 53:70].values
-    nsaa_acts_dict = dict(zip(nsaa_acts_file_names, nsaa_acts))
-    nsaa_labels = nsaa_acts_tab.iloc[1, 53:70].values
+    nsaa_single_dict = {}
+    for name, acts in zip(nsaa_6mw_tab.loc[:, "ID"].values, nsaa_6mw_tab.iloc[:, 5:].values):
+        if not any(np.isnan(acts)):
+            nsaa_single_dict[name] = acts
+    nsaa_act_labels = nsaa_6mw_tab.columns.values[5:]
 
     #For each label name and for every row, adds the score that is found in the single-acts dictionary for the relevant
     #activity for a given short file name (if it isn't found in the dictionary, add a '2' as we're assuming it's a
     #healthy control patient), add these together, and insert each new row of values at the beginning of the old rows
     #so each now have the additional single-act scores and overall NSAA scores at the beginning of each row and return it
     label_sample_map = []
-    for i in range(len(nsaa_labels)):
+    for i in range(len(nsaa_act_labels)):
         inner = []
         for j in range(len(file_df.index)):
-            fn = file_df.iloc[j, 1].split("_")[0]
-            if fn in nsaa_acts_dict:
-                inner.append(nsaa_acts_dict[fn][i])
-            else:
-                #If patient isn't found in the 'KineDMB' table, assume its a healthy control patient and thus all
-                #scores for all activities are perfect (i.e. '2').
+            fn = file_df.iloc[j, 1].split("_")[0].upper()
+            fn = fn[:-2] if fn.endswith("V2") else fn
+            if fn in nsaa_single_dict:
+                inner.append(nsaa_single_dict[fn][i])
+            elif fn.startswith("HC"):
                 inner.append(2)
+            else:
+                # If patient isn't found in the table (and thus we don't have info on the individual NSAA scores),
+                # don't continue with the file and move onto the next one
+                raise KeyError
         label_sample_map.append(inner)
-    for i in range(len(nsaa_labels)):
-        file_df.insert(loc=(i+1), column=nsaa_labels[i], value=label_sample_map[i])
+    for i in range(len(nsaa_act_labels)):
+        file_df.insert(loc=(i + 1), column=nsaa_act_labels[i], value=label_sample_map[i])
     return file_df
-
-
 
 #For each of the full file names of the files that we wish to reduce the dimensions of, get the new 'x' and 'y'
 #components of their reduced form, concatenate them together, add the overall and single-act NSAA scores if possible
@@ -244,8 +238,7 @@ for full_file_name in full_file_names:
     try:
         new_df_nsaa = add_nsaa_scores(new_df)
     except KeyError:
-        print(full_file_name + " not found as entry in either '6mw_matfiles.xlsx', 'nsaa_matfiles.xlsx', "
-                               "or 'KineDMD data updates Feb 2019.xlsx', 'skipping...")
+        print(full_file_name + " not found as entry in either 'nsaa_6mw_info', skipping...")
         continue
 
     #Writes the new data to the same directory as before with the same name except with 'FR_' on the front

@@ -10,6 +10,7 @@ from sklearn.metrics import mean_absolute_error
 from sklearn.metrics import r2_score
 from sklearn.metrics import confusion_matrix as cm
 import pyexcel as pe
+from matplotlib import pyplot as plt
 
 #Does not print to display the many warnings that TensorFlow throws up (many about updating to next version or
 #deprecated functionality)
@@ -48,6 +49,9 @@ parser.add_argument("--seq_overlap", type=float, nargs="?", const=1,
 parser.add_argument("--write_settings", type=bool, nargs="?", const=True, default=False,
                     help="Option to write the hyperparameters of the RNN directly to the RNN results .csv file in "
                          "the appropriate row.")
+parser.add_argument("--create_graph", type=bool, nargs="?", const=True, default=False,
+                    help="Option to create a graph of the true values against the predicted values and save them "
+                         "to the 'Graphs' subdirectory within the 'documentation' directory.")
 parser.add_argument("--epochs", type=int, nargs="?", const=1,
                     help="Option to set number of epochs to use in this run of the model.")
 args = parser.parse_args()
@@ -99,7 +103,7 @@ batch_size = 64
 num_lstm_cells = 128
 num_rnn_hidden_layers = 2
 learn_rate = 0.001
-num_epochs = 300
+num_epochs = 20
 test_ratio = 0.2
 num_acts = 17
 
@@ -171,9 +175,8 @@ def preprocessing(test_ratio):
 
     #Ensures that only the written files from feature select/reduct script are used if present (i.e. if the directory
     #we are concerned with is not within 'direct_csv')
-    if args.dir != "direct_csv" and not source_dir.startswith(local_dir):
+    if args.dir != "direct_csv" and source_dir.startswith(local_dir + "output_files\\"):
         file_names = [fn for fn in file_names if fn.startswith("FR_")]
-
 
     #For each file name that we are dealing with (all files names in 'source_dir' if 'fn' is 'all, else a single
     #file name), adds 'y' labels based on what type of model output we are training for and divide up both 'x' and 'y'
@@ -189,11 +192,10 @@ def preprocessing(test_ratio):
                 try:
                     data = add_nsaa_scores(data.values)
                 except KeyError:
-                    print(file_name + " not found as entry in either '6mw_matfiles.xlsx', 'nsaa_matfiles.xlsx', "
-                                           "or 'KineDMD data updates Feb 2019.xlsx', 'skipping...")
+                    print(file_name + " not found as entry in either 'nsaa_6mw_info', skipping...")
                     continue
             data = data.values
-            if args.dir != "direct_csv" and not source_dir.startswith(local_dir):
+            if args.dir != "direct_csv" and source_dir.startswith(local_dir + "output_files\\"):
                 y_label = data[0, 1]
             else:
                 y_label = data[0, 0]
@@ -202,6 +204,8 @@ def preprocessing(test_ratio):
         elif choice == "dhc":
             data = data.values
             if args.dir != "direct_csv" and not source_dir.startswith(local_dir):
+                y_label = 1 if file_name.split("_")[2][0] == "D" else 0
+            elif args.dir == "NSAA":
                 y_label = 1 if file_name.split("_")[2][0] == "D" else 0
             elif source_dir.startswith(local_dir):
                 y_label = 1 if file_name.split("_")[0][0] == "D" else 0
@@ -253,9 +257,9 @@ def preprocessing(test_ratio):
                 x_data.append(data[start:end, 1:])
             elif args.dir == "direct_csv":
                 x_data.append(data[start:end, 19:])
-            elif source_dir.startswith(local_dir) and choice == "dhc":
+            elif source_dir.startswith(local_dir) and choice == "dhc" and args.dir != "NSAA":
                 x_data.append(data[start:end, 1:])
-            elif source_dir.startswith(local_dir):
+            elif source_dir.startswith(local_dir) and "output_files" not in source_dir:
                 x_data.append(data[start:end, 19:])
             else:
                 x_data.append(data[start:end, 21:])
@@ -269,6 +273,15 @@ def preprocessing(test_ratio):
     y_shape = np.shape(y_data)
     print("X shape =", x_shape)
     print("Y shape =", y_shape)
+
+    #Appends the arguments that were used to invoke the model and its sequence length to a file that stores
+    #the sequence lengths (to be used by the 'model_predictor.py' script
+    model_shape = pd.read_excel("..\\documentation\\model_shapes.xlsx")
+    new_model_shape = model_shape.append(
+        {"dir": args.dir, "ft": args.ft, "measure": args.choice, "seq_len": x_shape[1]}, ignore_index=True)
+    new_model_shape.to_excel("..\\documentation\\model_shapes.xlsx", index=False)
+
+
     return train_test_split(x_data, y_data, shuffle=True, test_size=test_ratio)
 
 
@@ -283,56 +296,49 @@ def add_nsaa_scores(file_df):
     #To make sure that accepted parameter is as a DataFrame
     file_df = pd.DataFrame(file_df)
 
-    #For each of the 3 tables of data that we have on the subjects, load in the table, find the columns with ID and
+    #For the table of data that we have on the subjects, load in the table, find the columns with ID and
     #overall NSAA scores, and create a dictionary of matching values, e.g. {'D4': 15, 'D11: 28,...}, with all values
     #from each table
-    mw_tab = pd.read_excel(local_dir + "6MW-matFiles\\6mw_matfiles.xlsx")
-    mw_cols = mw_tab[["ID", "NSAA"]]
-    mw_dict = dict(pd.Series(mw_cols.NSAA.values, index=mw_cols.ID).to_dict())
-
-    nsaa_matfiles_tab = pd.read_excel(local_dir + "NSAA\\matfiles\\nsaa_matfiles.xlsx")
-    nsaa_matfiles_cols = nsaa_matfiles_tab[["ID", "NSAA"]]
-    nsaa_matfiles_dict = dict(pd.Series(nsaa_matfiles_cols.NSAA.values, index=nsaa_matfiles_cols.ID).to_dict())
-    mw_dict.update(nsaa_matfiles_dict)
-
-    kinedmd_tab = pd.read_excel(local_dir + "NSAA\\KineDMD data updates Feb 2019.xlsx")
-    kinedmd_cols = pd.concat([kinedmd_tab.iloc[2:20, 0], kinedmd_tab.iloc[2:20, 70]], axis=1)
-    kinedmd_cols.columns = ["ID", "NSAA"]
-    kinedmd_dict = dict(pd.Series(kinedmd_cols.NSAA.values, index=kinedmd_cols.ID).to_dict())
-    mw_dict.update(kinedmd_dict)
+    nsaa_6mw_tab = pd.read_excel("..\\documentation\\nsaa_6mw_info.xlsx")
+    nsaa_6mw_cols = nsaa_6mw_tab[["ID", "NSAA"]]
+    nsaa_overall_dict = dict(pd.Series(nsaa_6mw_cols.NSAA.values, index=nsaa_6mw_cols.ID).to_dict())
 
     #Adds column of overall NSAA scores at position 0 of every row of the data values, with the NSAA score being
     #appended determined by the short file name of the data as found at the beginning of each row of the data
-    nss = [mw_dict[i] for i in [j.split("_")[0] for j in file_df.iloc[:, 0].values]]
+    nss = [nsaa_overall_dict[i.upper()[:-2] if i.upper().endswith("V2") else i.upper()]
+           for i in [j.split("_")[0] for j in file_df.iloc[:, 0].values]]
     file_df.insert(loc=0, column="NSS", value=nss)
 
-    #Loads the data that contains information about single act NSAA scores from the relevant .xlsx file, extracts the
+    #Loads the data that contains information about single act NSAA scores from the .xlsx file, extracts the
     #file names and single-acts columns, and creates a list of label names (i.e. the names of the activities) and a
     #dictionary that maps the label names to a list of single-act scores
-    nsaa_acts_tab = pd.read_excel(local_dir + "NSAA\\KineDMD data updates Feb 2019.xlsx")
-    nsaa_acts_file_names = nsaa_acts_tab.iloc[2:20, 0].values
-    nsaa_acts = nsaa_acts_tab.iloc[2:20, 53:70].values
-    nsaa_acts_dict = dict(zip(nsaa_acts_file_names, nsaa_acts))
-    nsaa_labels = nsaa_acts_tab.iloc[1, 53:70].values
+    nsaa_single_dict = {}
+    for name, acts in zip(nsaa_6mw_tab.loc[:, "ID"].values, nsaa_6mw_tab.iloc[:, 5:].values):
+        if not any(np.isnan(acts)):
+            nsaa_single_dict[name] = acts
+    nsaa_act_labels = nsaa_6mw_tab.columns.values[5:]
 
     #For each label name and for every row, adds the score that is found in the single-acts dictionary for the relevant
     #activity for a given short file name (if it isn't found in the dictionary, add a '2' as we're assuming it's a
     #healthy control patient), add these together, and insert each new row of values at the beginning of the old rows
     #so each now have the additional single-act scores and overall NSAA scores at the beginning of each row and return it
     label_sample_map = []
-    for i in range(len(nsaa_labels)):
+    for i in range(len(nsaa_act_labels)):
         inner = []
         for j in range(len(file_df.index)):
-            fn = file_df.iloc[j, 1].split("_")[0]
-            if fn in nsaa_acts_dict:
-                inner.append(nsaa_acts_dict[fn][i])
-            else:
-                #If patient isn't found in the 'KineDMB' table, assume its a healthy control patient and thus all
-                #scores for all activities are perfect (i.e. '2').
+            fn = file_df.iloc[j, 1].split("_")[0].upper()
+            fn = fn[:-2] if fn.endswith("V2") else fn
+            if fn in nsaa_single_dict:
+                inner.append(nsaa_single_dict[fn][i])
+            elif fn.startswith("HC"):
                 inner.append(2)
+            else:
+                #If patient isn't found in the table (and thus we don't have info on the individual NSAA scores),
+                #don't continue with the file and move onto the next one
+                raise KeyError
         label_sample_map.append(inner)
-    for i in range(len(nsaa_labels)):
-        file_df.insert(loc=(i+1), column=nsaa_labels[i], value=label_sample_map[i])
+    for i in range(len(nsaa_act_labels)):
+        file_df.insert(loc=(i+1), column=nsaa_act_labels[i], value=label_sample_map[i])
     return file_df
 
 
@@ -376,7 +382,8 @@ def write_to_csv(trues, preds, output_strs, open_file=True):
     else:
         df["Predictions"] = ["[" + " ".join(str(num) for num in preds[i]) + "]" for i in range(len(preds))]
     df["Results"] = ""
-    df.iloc[0, -1] = ", ".join(output_strs)
+    df.iloc[0, -1] = ' '.join(sys.argv[1:])
+    df.iloc[1, -1] = ", ".join(output_strs)
     settings = ["X shape = " + str(x_shape), "Y shape = " + str(y_shape), "Test ratio = " + str(test_ratio),
                 "Sequence length = " + str(sequence_length), "Features length = " + str(len(x_train[0][0])),
                 "Num epochs = " + str(num_epochs), "Num LSTM units per layer = " + str(num_lstm_cells),
@@ -388,9 +395,12 @@ def write_to_csv(trues, preds, output_strs, open_file=True):
     #written to this file to the 'RNN Results.ods' file directly rather than manually copying them over
     if not os.path.exists(output_dir):
         os.mkdir(output_dir)
-    full_output_name = output_dir + "RNN_trues_preds.csv"
-    if os.path.exists(full_output_name):
-        os.remove(full_output_name)
+    file_index = 1
+    full_output_name = output_dir + args.dir + "_" + args.ft + "_" + args.choice + "_" + str(num_epochs) + \
+                       "_" + "RNN_trues_preds_" + str(file_index) + ".csv"
+    while os.path.exists(full_output_name):
+        file_index += 1
+        full_output_name = "_".join(full_output_name.split("_")[:-1]) + "_" + str(file_index) + ".csv"
     df.to_csv(full_output_name, index=False, float_format="%.2f")
     if open_file:
         os.startfile(full_output_name)
@@ -399,6 +409,18 @@ def write_to_csv(trues, preds, output_strs, open_file=True):
         sheet = pe.get_sheet(file_name="..\\RNN Results.ods")
         sheet.row += settings
         sheet.save_as("..\\RNN Results.ods")
+    if args.create_graph:
+        fig, ax = plt.subplots()
+        ax.scatter(trues, preds, alpha=0.10)
+        x = np.linspace(*ax.get_xlim())
+        ax.plot(x, x)
+        plt.title("Plot of true overall NSAA scores against predicted overall NSAA scores")
+        plt.xlabel("True overall NSAA scores")
+        plt.ylabel("Predicted overall NSAA scores")
+        file_name = args.dir + "_" + args.ft + "_" + args.choice + "_trues_preds"
+        plt.savefig("..\\documentation\\Graphs\\" + file_name)
+        plt.gcf().set_size_inches(10, 10)
+        plt.show()
 
 
 
@@ -541,7 +563,6 @@ if choice == "overall" or choice == "indiv":
     output_strs.append("Mean Absolute Error = " + str(round(mean_absolute_error(y_true=y_true, y_pred=preds), 4)))
     output_strs.append("Root Mean Squared Error = " + str(round(np.sqrt(mean_squared_error(y_true=y_true, y_pred=preds)), 4)))
     output_strs.append("R^2 Score = " + str(round(r2_score(y_true=y_true, y_pred=preds), 4)))
-
 elif choice == "dhc":
     output_strs.append(str(cm(y_true=y_true, y_pred=preds)) + "\n(Note: row names = true vals, col names = pred vals;"
                        + "cm[0,0] = True HC, cm[0,1] = False D, cm[1,0] = False HC, c[1,1] = True D)")
