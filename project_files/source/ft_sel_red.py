@@ -70,12 +70,13 @@ else:
           "\'JA', or \'DC\'.")
     sys.exit()
 
+"""
 #Removes existing files that contain reduced dimensionality versions of the source files so new files won't be
 #written on top of existing files
 for file in os.listdir(source_dir):
     if "FR_" in file:
         os.remove(source_dir + file)
-
+"""
 
 #Find the matching full file name in 'source_dir' given the 'fn' argument, otherwise use all file names in 'source_dir'
 #if 'fn' is 'all'
@@ -85,7 +86,7 @@ if match_fns:
 else:
     if args.fn == "all":
         match_fns = [s for s in os.listdir(source_dir)]
-        full_file_names = [source_dir + match_fns[i] for i in range(len(match_fns))]
+        full_file_names = [source_dir + match_fns[i] for i in range(len(match_fns)) if "FR_" not in match_fns[i]]
     else:
         print("Third arg ('fn') must be the short name of a file (e.g. 'D2' or 'all') within", source_dir)
         sys.exit()
@@ -245,4 +246,6 @@ for full_file_name in full_file_names:
     split_full_file_name = full_file_name.split("\\")
     split_full_file_name[-1] = "FR_" + split_full_file_name[-1]
     new_full_file_name = "\\".join(split_full_file_name)
+    if os.path.exists(new_full_file_name):
+        os.remove(new_full_file_name)
     new_df_nsaa.to_csv(new_full_file_name)

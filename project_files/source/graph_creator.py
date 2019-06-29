@@ -5,21 +5,30 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 parser = argparse.ArgumentParser()
-parser.add_argument("start_exp", type=int, help="Experiment number in 'RNN Results.xlsx' of the first experiment "
-                                                 "(inclusive) to have the graph consist.")
-parser.add_argument("end_exp", type=int, help="Experiment number in 'RNN Results.xlsx' of the last experiment "
-                                               "(inclusive) to have the graph consist.")
-parser.add_argument("choice", help="Name of metric of which we wish to plot the results. Must be one of 'acc', 'mse', "
-                                   "'mae', 'rmse', 'r2', 'ind_act', or 'all_act'.")
-parser.add_argument("xaxis", help="Values to be plotting on the x-axis. Must be one of 'seq_len' (for plotting sequence "
-                                  "length along the x-axis), 'ft' (for plotting the different file types along x-axis), "
-                                  "'seq_over' (for plotting sequence overlaps along the x-axis), or 'features'.")
+parser.add_argument("start_exp", nargs="?", default=None,
+                    help="Experiment number in 'RNN Results.xlsx' of the first experiment (inclusive) to have "
+                         "the graph consist.")
+parser.add_argument("end_exp", nargs="?", default=None, type=int,
+                    help="Experiment number in 'RNN Results.xlsx' of the last experiment (inclusive) to have "
+                         "the graph consist.")
+parser.add_argument("choice", nargs="?", default=None,
+                    help="Name of metric of which we wish to plot the results. Must be one of 'acc', 'mse', "
+                         "'mae', 'rmse', 'r2', 'ind_act', or 'all_act'.")
+parser.add_argument("xaxis", nargs="?", default=None,
+                    help="Values to be plotting on the x-axis. Must be one of 'seq_len' (for plotting sequence "
+                         "length along the x-axis), 'ft' (for plotting the different file types along x-axis), "
+                         "'seq_over' (for plotting sequence overlaps along the x-axis), or 'features'.")
 parser.add_argument("--save_img", type=bool, nargs="?", const=True,
                     help="Save the image to the 'documentation\\Graphs' directory.")
 parser.add_argument("--no_display", type=bool, nargs="?", const=True,
                     help="Specify if specifically don't want to open the plot before writing.")
-parser.add_argument("--split_rows", type=bool, nargs="?", const=True,
+parser.add_argument("--split_rows_overlap", type=bool, nargs="?", const=True,
                     help="Set if wish to divide up the rows to be plotted as 2 separate lines on the plot.")
+parser.add_argument("--split_rows_disc", type=bool, nargs="?", const=True,
+                    help="Set if wish to divide up the rows to be plotted as 2 separate lines on the plot.")
+parser.add_argument("--x_log", type=bool, nargs="?", const=True,
+                    help="Specify if wish to plot x-axis values in log scale (e.g. when plotting very large "
+                         "sequence lengths.")
 args = parser.parse_args()
 
 results_path = "..\\documentation\\RNN Results.xlsx"
@@ -27,6 +36,32 @@ results_path = "..\\documentation\\RNN Results.xlsx"
 #Note: CHANGE THIS to location of the 3 sub-directories' encompassing directory local to the user so the
 #'RNN_trues_preds.csv' can be correctly sourced
 local_dir = "C:\\msc_project_files\\"
+
+
+#Only executed if the first argument is provided as a file name within 'RNN_outputs', whereupon it loads the file,
+#reads in the predicted and true values, plots them, shows it to the user, and saves the image to the 'Graphs' directory
+if "_" in args.start_exp:
+    try:
+        trues_preds = pd.read_csv(local_dir + "output_files\\RNN_outputs\\" + args.start_exp + ".csv")
+        trues, preds = trues_preds["Trues"], trues_preds["Predictions"]
+        fig, ax = plt.subplots()
+        ax.scatter(trues, preds, alpha=0.03)
+        x = np.linspace(*ax.get_xlim())
+        ax.plot(x, x)
+        plt.title("Plot of true overall NSAA scores against predicted overall NSAA scores")
+        plt.xlabel("True overall NSAA scores")
+        plt.ylabel("Predicted overall NSAA scores")
+        plt.savefig("..\\documentation\\Graphs\\" + args.start_exp)
+        plt.gcf().set_size_inches(10, 10)
+        plt.show()
+    except FileNotFoundError:
+        print("First arg ('start_exp') must be the name of a file within 'RNN_outputs' and cannot load '" +
+              local_dir + "output_files\\RNN_outputs\\" + args.start_exp + "' ...")
+        sys.exit()
+    #Exit the program after plotting the graph, as remainder of the program expects to see other arguments present
+    sys.exit()
+
+
 
 choices_map = {"acc": "Test Accuracy", "mse": "Mean Squared Error", "mae": "Mean Absolute Error",
                "rmse": "Root Mean Squared Error", "r2": "R^2 Score",
@@ -77,7 +112,8 @@ dirs, measures, seq_lens, seq_overs, results, features = [], [], [], [], [], []
 for i, row in exper_data.iterrows():
     dirs.append(row["'rnn' arguments"].split(" ")[2])
     measures.append(row["'rnn' arguments"].split(" ")[3])
-    seq_lens.append(int(row[10].split(" ")[-1]))
+   # seq_lens.append(int(row[10].split(" ")[-1]))
+    seq_lens.append(int(row["'rnn' arguments"].split("--seq_len=")[-1].split(" ")[0]))
     features.append(int(row[11].split(" ")[-1]))
     res_names = [j.split(" = ")[0] for j in row["Results"].split(", ")]
     res_res = [j.split(" = ")[1] for j in row["Results"].split(", ")]
@@ -96,9 +132,17 @@ for i, row in exper_data.iterrows():
 if xaxis_choice == "seq_len":
     #Combine these measurements into a dictionary with each key being a measurement name and each value being a list
     #of two lists, with each of these sub-lists containing the sequence lengths and required results
-    if args.split_rows:
+    if args.split_rows_overlap:
         measures = np.ravel([["Same overlap" for i in range(len(measures)//2)],
                              ["Scaling overlap w/ seq_len" for i in range(len(measures)//2)]])
+    elif args.split_rows_disc:
+        measures = [[], []]
+        for i, row in exper_data.iterrows():
+            if "discard_prop" not in row["'rnn' arguments"]:
+                measures[0].append("No discard_prop")
+            else:
+                measures[1].append("Discard prop")
+        measures = [elem for inner in measures for elem in inner]
     df_dict = {measure: [[], []] for measure in measures}
     for i in range(len(measures)):
         df_dict[measures[i]][0].append(seq_lens[i])
@@ -141,7 +185,9 @@ elif xaxis_choice == "features":
     plt.xlabel("Number of features")
     plt.ylabel(choices_map[choice])
 
-
+#Sets the scaling of the x-axis to logarithmic if the required argument is set
+if args.x_log:
+    plt.xscale("log")
 
 #Only save the plot image to file (with a name based on the rows of data used and metric plotted) if argument is specified
 if args.save_img:

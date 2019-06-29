@@ -450,7 +450,7 @@ class AllDataFile(object):
             split_s = int(len(f_d_s_data[0, 0, 0])/split_file)
 
         written_names = []
-        for f in range(split_file):
+        for i, f in enumerate(range(split_file)):
             fds = f_d_s_data[:, :, :, (split_s*f):(split_s*(f+1))]
             # Creates a dictionary of extracted statistical values for a given file part
             df = extract_stats_features(f_index=f, file_part=fds, split_file=split_file,
@@ -477,6 +477,9 @@ class AllDataFile(object):
                 output_complete_name = ad_output_dir + "AD_" + output_name + af + "_stats_features.csv"
                 print("Writing AD", self.ad_file_name, "(", (f + 1), "/", split_file, ") statistial info to",
                       output_complete_name)
+            #Removes file if it already exists prior to running the script
+            if i == 0 and os.path.exists(output_complete_name):
+                os.remove(output_complete_name)
             #Writes just the data to file if the file already exists, or both the data and headers if the file
             #doesn't exist yet
             if isfile(output_complete_name):
@@ -695,7 +698,7 @@ class JointAngleFile(object):
             split_s = int(len(angles[0, 0])/split_file)
 
         written_names = []
-        for f in range(split_file):
+        for i, f in enumerate(range(split_file)):
             ang = angles[:, :, (split_s * f):(split_s * (f + 1))]
             #Creates a dictionary of extracted statistical values for a given file part
             df = extract_stats_features(f_index=f, split_file=split_file, file_name=self.ja_short_file_name,
@@ -720,7 +723,9 @@ class JointAngleFile(object):
                 output_complete_name = dc_ja_output_dir + file_prefix + "_" + output_name + "_stats_features.csv"
                 print("Writing", file_prefix, self.ja_file_name, "(", (f+1), "/",
                       split_file, " ) statistial info to", output_complete_name)
-
+            #Removes file if it already exists prior to running the script
+            if i == 0 and os.path.exists(output_complete_name):
+                os.remove(output_complete_name)
             #Writes just the data to file if the file already exists, or both the data and headers if the file
             #doesn't exist yet
             if isfile(output_complete_name):
@@ -760,6 +765,9 @@ class JointAngleFile(object):
         else:
             output_complete_name = dc_ja_output_dir + file_prefix + "_" + output_name + ".csv"
             print("Writing", file_prefix, self.ja_file_name, "to", output_complete_name)
+        #Removes file if it already exists prior to running the script
+        if os.path.exists(output_complete_name):
+            os.remove(output_complete_name)
         if isfile(output_complete_name):
             with open(output_complete_name, 'a', newline='') as file:
                 df.to_csv(file, header=False)

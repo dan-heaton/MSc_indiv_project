@@ -3,7 +3,24 @@ import sys
 import os
 import scipy.io as sio
 import pandas as pd
-import numpy as np
+
+
+"""Section below encompasses all the required arguments for the script to run. Note that the default behaviour of the 
+script is to operate on complete files, rather than 'single-act' files produced by the 'mat_act_div.py' script; hence, 
+the optional '--single_act' argument must be specified if it wants to operate on those files to ensure the correct 
+files are retrieved."""
+parser = argparse.ArgumentParser()
+parser.add_argument("dir", help="Specifies which source directory to use so as to process the files contained within "
+                                "them accordingly. Must be one of '6minwalk-matfiles', '6MW-matFiles', "
+                                "'NSAA', or 'allmatfiles'.")
+parser.add_argument("fn", help="Specifies the short name (e.g. 'D11') of the file that we wish to extract the specified "
+                               "raw measurements. Specify 'all' for all the files available in the 'source_dir'.")
+parser.add_argument("measurements", help="Specifies the measurements to extract from the source .mat file. Separate "
+                                         "each measurement to extract by a comma, or provide 'all' for all measurements.")
+parser.add_argument("--single_act", type=bool, nargs="?", const=True,
+                    help="Specify if the files to operate on are 'single act' files.")
+args = parser.parse_args()
+
 
 #Note: CHANGE THIS to location of the 3 sub-directories' encompassing the user's downloaded .mat files
 source_dir = "C:\\msc_project_files\\"
@@ -37,21 +54,6 @@ measure_to_len_map = {"orientation": 23, "position": 23, "velocity": 23, "accele
 
 #Mapping used to select lists of labels names to use based on the length of the numbers contained in data array
 seg_join_sens_map = {len(segment_labels): segment_labels, len(joint_labels): joint_labels, len(sensor_labels): sensor_labels}
-
-"""Section below encompasses all the required arguments for the script to run. Note that the default behaviour of the 
-script is to operate on complete files, rather than 'single-act' files produced by the 'mat_act_div.py' script; hence, 
-the optional '--single_act' argument must be specified if it wants to operate on those files to ensure the correct 
-files are retrieved."""
-parser = argparse.ArgumentParser()
-parser.add_argument("dir", help="Specifies which source directory to use so as to process the files contained within "
-                                "them accordingly. Must be one of '6minwalk-matfiles', '6MW-matFiles' or 'NSAA'.")
-parser.add_argument("fn", help="Specifies the short name (e.g. 'D11') of the file that we wish to extract the specified "
-                               "raw measurements. Specify 'all' for all the files available in the 'source_dir'.")
-parser.add_argument("measurements", help="Specifies the measurements to extract from the source .mat file. Separate "
-                                         "each measurement to extract by a comma.")
-parser.add_argument("--single_act", type=bool, nargs="?", const=True,
-                    help="Specify if the files to operate on are 'single act' files.")
-args = parser.parse_args()
 
 
 #Sets 'source_dir' to the correct directory name, based on the argument passed in for 'dir' and whether or not the
@@ -104,13 +106,10 @@ else:
             sys.exit()
 
 #For each of the measurements to extract from the source file(s), create a unique subdirectory within 'source_dir'
-#with a name equal to the measurement name; if this already exists, instead just remove each file contained within it
+#with a name equal to the measurement name
 for measure in measures:
     if not os.path.exists(source_dir + measure):
         os.mkdir(source_dir + measure)
-    else:
-        for f in os.listdir(source_dir + measure):
-            os.remove(source_dir + measure + "\\" + f)
 
 #For each of the files that we wish to extract the raw measurements of (given as a short file name in 'fn' or all
 #available filenames if 'fn' is set as 'all'...
@@ -176,5 +175,8 @@ for full_file_name in full_file_names:
 
         new_file_name = source_dir + measure + "\\" + full_file_name.split("\\")[-1].split(".mat")[0] + \
                         "_" + measure + ".csv"
+        #If file already exists, remove it in preparation for new file being written
+        if os.path.exists(new_file_name):
+            os.remove(new_file_name)
         print("Writing '" + new_file_name + "' to '" + source_dir + measure + "\\'")
         measure_df.to_csv(new_file_name, header=headers)

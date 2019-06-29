@@ -11,6 +11,7 @@ from sklearn.metrics import r2_score
 from sklearn.metrics import confusion_matrix as cm
 import pyexcel as pe
 from matplotlib import pyplot as plt
+from math import floor
 
 #Does not print to display the many warnings that TensorFlow throws up (many about updating to next version or
 #deprecated functionality)
@@ -46,6 +47,11 @@ parser.add_argument("--seq_len", type=float, nargs="?", const=1,
 parser.add_argument("--seq_overlap", type=float, nargs="?", const=1,
                     help="Option to specify the proportion of overlap in divided up sequences. E.g. set to '0.75' to "
                          "have each of e.g. 742 sequences to overlap 75% of each other, resulting in 927 new sequences.")
+parser.add_argument("--discard_prop", type=float, nargs="?", const=1,
+                    help="Option to discard every nth element to reduce the size of the sequence length while keeping "
+                         "context high (e.g. if seq_len=180 and discard_prop=0.2, then it discards every 5th element of "
+                         "the sequences and is left with a sequence length of 144 but with the context window of the "
+                         "original sequence length of 180).")
 parser.add_argument("--write_settings", type=bool, nargs="?", const=True, default=False,
                     help="Option to write the hyperparameters of the RNN directly to the RNN results .csv file in "
                          "the appropriate row.")
@@ -70,6 +76,11 @@ if not args.seq_overlap:
 if args.seq_overlap == 1:
     print("Can't set overlap to be 100% of each sequence...")
     sys.exit()
+
+#If no optional argument given for '--discard_prop', defaults to discard_prop = 0, i.e. defaults to not discarding
+#any parts of the sequences
+if not args.discard_prop:
+    args.discard_prop = 0
 
 
 #Note: CHANGE THIS to location of the 3 sub-directories' encompassing directory local to the user.
@@ -112,6 +123,7 @@ if args.epochs:
     num_epochs = int(args.epochs)
 
 
+
 def preprocessing(test_ratio):
     """
         :return given a short file name for 'fn' command-line argument, finds the relevant file in 'source_dir' and
@@ -122,7 +134,8 @@ def preprocessing(test_ratio):
     """
     file_names = []
     x_data, y_data = [], []
-
+    #Declare 'sequence_length' as global to be able to modify later on if '--discard_prop' is set
+    global sequence_length
     #Appends the sub_dir name to 'source_dir' if it's one of the allowed names
     global source_dir
     if args.dir + "\\" in sub_dirs:
@@ -253,16 +266,31 @@ def preprocessing(test_ratio):
             #less than 'sequence_length'
             if end > len(data):
                 continue
+            #Discards every 'nth' row of a sequence if the user sets the optional '--discard_prop' argument to reduce
+            #the sequence size while keeping the original context window the same
+            split_data = data[start:end]
+            if args.discard_prop:
+                if args.discard_prop == 0:
+                    print("Cannot set '--discard_prop to '0' as would give a zero division error when trying to "
+                          "take the 'nth' element...")
+                    sys.exit()
+                if args.discard_prop <= 0.5:
+                    split_data = np.asarray([row for i, row in enumerate(split_data)
+                                             if i % floor(1/args.discard_prop) != 0])
+                else:
+                    split_data = np.asarray([row for i, row in enumerate(split_data)
+                                             if i % floor(1/round((1-args.discard_prop), 5)) == 0])
+
             if args.dir == "direct_csv" and choice == "dhc":
-                x_data.append(data[start:end, 1:])
+                x_data.append(split_data[:, 1:])
             elif args.dir == "direct_csv":
-                x_data.append(data[start:end, 19:])
+                x_data.append(split_data[:, 19:])
             elif source_dir.startswith(local_dir) and choice == "dhc" and args.dir != "NSAA":
-                x_data.append(data[start:end, 1:])
+                x_data.append(split_data[:, 1:])
             elif source_dir.startswith(local_dir) and "output_files" not in source_dir:
-                x_data.append(data[start:end, 19:])
+                x_data.append(split_data[:, 19:])
             else:
-                x_data.append(data[start:end, 21:])
+                x_data.append(split_data[:, 21:])
             y_data.append(y_label)
             #Note: overlap lengths are rounded DOWN via 'int'
             start += int(sequence_length*(1-args.seq_overlap))
@@ -273,6 +301,10 @@ def preprocessing(test_ratio):
     y_shape = np.shape(y_data)
     print("X shape =", x_shape)
     print("Y shape =", y_shape)
+    #Sets the global 'sequence_length' if '--discard_prop' is called to ensure RNN is setup with the correct
+    #placeholder variable shape
+    if args.discard_prop:
+        sequence_length = len(x_data[0])
 
     #Appends the arguments that were used to invoke the model and its sequence length to a file that stores
     #the sequence lengths (to be used by the 'model_predictor.py' script
@@ -280,7 +312,6 @@ def preprocessing(test_ratio):
     new_model_shape = model_shape.append(
         {"dir": args.dir, "ft": args.ft, "measure": args.choice, "seq_len": x_shape[1]}, ignore_index=True)
     new_model_shape.to_excel("..\\documentation\\model_shapes.xlsx", index=False)
-
 
     return train_test_split(x_data, y_data, shuffle=True, test_size=test_ratio)
 

@@ -5,6 +5,7 @@ import pandas as pd
 import numpy as np
 import tensorflow as tf
 from collections import Counter
+from matplotlib import pyplot as plt
 
 
 """Section below encompasses the three arguments that are required to be passed to the script. This arguments ensures 
@@ -12,11 +13,13 @@ that the right file is loaded in to be tested with the pre-trained models, along
 the script about which pre-trained model to select to test the file on."""
 parser = argparse.ArgumentParser()
 parser.add_argument("dir", help="Specifies which source directory the prediction file is contained in so as to process "
-                                "the file accordingly. Must be one of '6minwalk-matfiles', '6MW-matFiles' or 'NSAA'.")
+                                "the file accordingly. Must be one of '6minwalk-matfiles', '6MW-matFiles', "
+                                "'NSAA', or 'allmatfiles'.")
 parser.add_argument("ft", help="Specify type of .mat file that the .csv is to come from, being one of 'JA' (joint "
                                "angle), 'AD' (all data), or 'DC' (data cube). Alternatively, supply a name of a "
-                               "measurement (e.g. 'position', 'velocity', 'jointAngle', etc.) if the file is to be "
-                               "trained on raw measurements, or multiple 'ft's split by commas.")
+                               "measurement (e.g. 'position', 'velocity', 'jointAngle', etc.) if the file is being "
+                               "predicted is a raw measurement, or multiple raw measurements split by commas if the "
+                               "file is an 'AD' file and user wishes to test it on raw measurement models.")
 parser.add_argument("fn", help="Specify the short file name of a .csv to be the predictor from 'source_dir'; e.g. for file "
                                "'All_D2_stats_features.csv', enter 'D2'.")
 args = parser.parse_args()
@@ -34,7 +37,7 @@ batch_size = 64
 source_dir = local_dir + "output_files\\"
 output_dir = local_dir + "output_files\\RNN_outputs\\"
 model_dir = local_dir + "output_files\\rnn_models\\"
-sub_dirs = ["6minwalk-matfiles\\", "6MW-matFiles\\", "NSAA\\", "direct_csv\\"]
+sub_dirs = ["6minwalk-matfiles\\", "6MW-matFiles\\", "NSAA\\", "direct_csv\\", "allmatfiles\\"]
 sub_sub_dirs = ["AD\\", "JA\\", "DC\\"]
 file_types = ["AD", "position", "velocity", "acceleration", "angularVelocity", "angularAcceleration",
                 "sensorFreeAcceleration", "sensorMagneticField", "jointAngle", "jointAngleXZY"]
@@ -48,6 +51,11 @@ else:
           "'6minwalk-matfiles', '6MW-matFiles', 'NSAA', or 'direct_csv'.")
     sys.exit()
 
+#Ensures the corresponding second argument when dealing with files from 'allmatfiles'
+if args.dir == "allmatfiles" and args.ft != "jointAngle":
+    print("Second arg ('ft') must be 'jointAngle when 'dir' argument is \'allmatfiles\'")
+    sys.exit()
+
 fts, sds = [], []
 for ft in args.ft.split(","):
     fts.append(ft)
@@ -55,6 +63,8 @@ for ft in args.ft.split(","):
         sds.append(source_dir + ft + "\\")
     elif ft in file_types and args.dir == "NSAA":
         sds.append(local_dir + "NSAA\\matfiles\\" + ft + "\\")
+    elif args.dir == "allmatfiles":
+        sds.append(local_dir + "allmatfiles\\")
     else:
         print("Second arg ('ft') must be a name of a sub-subdirectory within source dir and must be one of \'AD\',"
               "\'JA', or \'DC\' (unless dir is give as 'NSAA', where 'ft' can be a measurement name), and each part "
@@ -63,10 +73,16 @@ for ft in args.ft.split(","):
 
 fns = []
 for sd in sds:
-    if any(args.fn == s.upper().split("-")[0] for s in os.listdir(sd)) \
-            or any(args.fn == s.upper().split("_")[2] for s in os.listdir(sd)):
+    if args.dir == "allmatfiles":
+        if any(args.fn.upper() == s.split("jointangle")[-1].split(".mat")[0].upper() for s in os.listdir(sd)):
+            fns.append([s for s in os.listdir(sd) if args.fn.upper() == s.split("jointangle")[-1].split(".mat")[0].upper()][0])
+        else:
+            print("Cannot find '" + str(args.fn) + "' in '" + sd + "'")
+            sys.exit()
+    elif any(args.fn.upper() == s.upper().split("-")[0] for s in os.listdir(sd)) \
+            or any(args.fn.upper() == s.upper().split("_")[2] for s in os.listdir(sd)):
         if sd.endswith("AD\\"):
-            fns.append([s for s in os.listdir(sd) if args.fn == s.split("_")[1]][0])
+            fns.append([s for s in os.listdir(sd) if args.fn.upper() == s.upper().split("_")[1]][0])
         else:
             fns.append([s for s in os.listdir(sd) if args.fn in s][0])
     else:
@@ -78,8 +94,11 @@ full_file_names = []
 for sd, fn in zip(sds, fns):
     if fn.startswith("AD"):
         full_file_names.append(sd + "FR_" + fn)
+    elif args.dir == "allmatfiles":
+        full_file_names.append(sd + "jointAngle\\" + fn.split(".")[0] + "_jointAngle.csv")
     else:
         full_file_names.append(sd + fn)
+
 
 #The models that are to be tested by the script are selected based on their names; e.g. if 'dir'=NSAA and 'ft'=position,
 #then 'NSAA_position_all_acts', 'NSAA_position_all_dhc', and 'NSAA_position_all_overall' will be loaded as directory
@@ -102,12 +121,15 @@ for inner_models in models:
         new_models.append(inner_models)
 models = new_models
 
+
 #Reads in the .xlsx file with the file shapes in them and extracts the sequence lengths from the most recent entry in
 #the tabel that corresponds to the model with a specific source dir, file type, and output type
 model_shape = pd.read_excel("..\\documentation\\model_shapes.xlsx")
 
+#Regardless of the input 'dir' type, use the models that are trained on files from 'NSAA' to test the file in question
+model_shape_dir = "NSAA"
 
-sequence_lengths = [[model_shape.loc[(model_shape["dir"] == args.dir) & (model_shape["ft"] == model.split("_")[1]) &
+sequence_lengths = [[model_shape.loc[(model_shape["dir"] == model_shape_dir) & (model_shape["ft"] == model.split("_")[1]) &
                                      (model_shape["measure"] == model.split("_")[-1])].iloc[-1, -1] if model else None
                      for model in inner_models] for inner_models in models]
 
@@ -132,10 +154,13 @@ def preprocessing(full_file_name, sequence_length):
     if args.dir != "direct_csv" and not source_dir.startswith(local_dir):
         y_label_dhc = 1 if full_file_name.split("\\")[-1].split("_")[2][0] == "D" else 0
     elif source_dir.startswith(local_dir):
-        y_label_dhc = 1 if full_file_name.split("\\")[-1].split("_")[0][0] == "D" else 0
+        if "FR_" in full_file_name:
+            y_label_dhc = 1 if full_file_name.split("\\")[-1].split("_")[2][0] == "D" else 0
+        else:
+            y_label_dhc = 1 if full_file_name.split("\\")[-1].split("_")[0][0] == "D" else 0
     else:
         y_label_dhc = 1 if full_file_name.split("\\")[-1].split("_")[1][0] == "D" else 0
-    y_index = df_y.index[df_y["ID"] == args.fn]
+    y_index = df_y.index[df_y["ID"] == args.fn.upper().split("-")[0]]
     y_label_overall = df_y.loc[y_index, "NSAA"].values[0]
     y_label_acts = [int(num) for num in df_y.iloc[y_index, 5:].values[0]]
 
@@ -163,6 +188,7 @@ def create_batch_generator(x, y=None, batch_size=64):
             yield x[ii:ii+batch_size]
 
 
+pred_overalls, true_overalls = [], []
 #Stores the strings to write AFTER all the models have run so all results are printed at the end, rather than some being
 #printed and then obscured by the model setup text
 output_strs = []
@@ -174,6 +200,7 @@ for i, inner_models in enumerate(models):
             output_type = model.split("_")[-1]
     preds = []
     y_label_dhc, y_label_overall, y_label_acts = (None,)*3
+    #For each measurement type (i.e. for every model name)
     for j, full_file_name in enumerate(full_file_names):
         #If there is a 'None' sequence length (i.e. a corresponding model for the output type and file type doesn't
         #exist), then skip over it
@@ -203,7 +230,14 @@ for i, inner_models in enumerate(models):
                 else:
                     inner_preds.append(sess.run('labels:0', feed_dict=feed))
         #Flatten these values to a 1D list
-        preds.append(np.concatenate(inner_preds))
+        inner_preds = np.concatenate(inner_preds)
+        #Gets rid of errant 'nan's in the predictions (cause unknown)
+        inner_preds = [ip for ip in inner_preds if "nan" not in str(ip)]
+        #Add these predictions to aggregate list of predictions for the output type in question
+        preds.append(inner_preds)
+        #Appends all predicted overall NSAA scores for a given model to the list containing the aggregated predicted scores
+        if output_type == "overall":
+            pred_overalls += inner_preds
     #Aggregate results for measurement over
     if output_type == "acts":
         preds = np.transpose(preds, (1, 2, 0))
@@ -220,8 +254,9 @@ for i, inner_models in enumerate(models):
     #Based on what type the model is, add output lines to 'output_strs' that gives info on the true 'y' label of the
     #file (e.g. true 'D' or 'HC' label, true overall NSAA score, or true single acts scores) and what the model predicted
     if output_type == "overall":
+        true_overalls = [y_label_overall for i in range(len(pred_overalls))]
         output_strs.append(str("True 'Overall NSAA Score' = " + str(y_label_overall)))
-        output_strs.append(str("Predicted 'Overall NSAA Score' = " + str(round(float(np.mean(preds)), 2))))
+        output_strs.append(str("Predicted 'Overall NSAA Score' = " + str(int(round(float(np.mean(preds)), 0)))))
     elif output_type == "dhc":
         true_label = "D" if y_label_dhc == 1 else "HC"
         pred_label = "D" if max(set(list(preds)), key=list(preds).count) == 1 else "HC"
@@ -233,11 +268,31 @@ for i, inner_models in enumerate(models):
     else:
         preds = np.transpose(preds)
         pred_acts = [Counter(preds[i]).most_common()[0][0] for i in range(len(preds))]
+        num_correct = 0
+        for i in range(len(y_label_acts)):
+            if y_label_acts[i] == pred_acts[i]:
+                num_correct += 1
+        perc_correct = round(((num_correct / 17)*100), 2)
         output_strs.append(str("True 'Acts Sequence' = " + str(y_label_acts)))
         output_strs.append(str("Predicted 'Acts Sequence' = " + str(pred_acts)))
+        output_strs.append(str("Percent of acts correctly predicted = " + str(perc_correct) + "%"))
     output_strs.append("")
 
 #Prints to the user all the output lines that were generated by testing on all the models
 print("\n")
 for output_str in output_strs:
     print(output_str)
+
+#Plot the predicted values against the true values for NSAA overall
+fig, ax = plt.subplots()
+ax.scatter(true_overalls, pred_overalls, alpha=0.03)
+plt.xlim(0, 34)
+plt.ylim(0, 34)
+x = np.linspace(*ax.get_xlim())
+ax.plot(x, x)
+plt.title("Plot of true overall NSAA scores against predicted overall NSAA scores")
+plt.xlabel("True overall NSAA scores")
+plt.ylabel("Predicted overall NSAA scores")
+plt.savefig("..\\documentation\\Graphs\\Model_predictor_" + args.dir + "_" + args.ft + "_" + args.fn)
+plt.gcf().set_size_inches(10, 10)
+plt.show()
