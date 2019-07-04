@@ -150,13 +150,12 @@ for full_file_name in full_file_names:
         col_names = None
 
     #Creates a DataFrame from the data extracted from the source '.mat' file in question, skipping the first 3 rows
-    #if it's a 'single-act' file (as these just correspond to 'setup' rows)
-    if args.dir == "allmatfiles":
-        df = pd.DataFrame(frame_data).iloc[:]
-    elif args.single_act:
-        df = pd.DataFrame(frame_data, columns=col_names).iloc[3:]
-    else:
+    #if it's not a 'single-act' file (as these just correspond to 'setup' rows)
+    if args.single_act:
         df = pd.DataFrame(frame_data, columns=col_names).iloc[:]
+    else:
+        df = pd.DataFrame(frame_data, columns=col_names).iloc[3:]
+
     #For each measurement to extract from the file, gets a list of names of features for that measurement (23 segments
     #labels, #22 joint labels, or 17 sensor labels), create a list of column names for each column of extracted
     #data from the file, gets the necessary columns from the DataFrame corresponding to the measurement in question,
@@ -170,7 +169,10 @@ for full_file_name in full_file_names:
             measure_data = frame_data
         else:
             measure_data = [list(data) for data in df.loc[:, measure].values]
-        short_file_name = full_file_name.split("\\")[-1].split("-")[0]
+        if full_file_name.split("\\")[-1].startswith("All"):
+            short_file_name = full_file_name.split("\\")[-1].split("-")[1]
+        else:
+            short_file_name = full_file_name.split("\\")[-1].split("-")[0]
         measure_df = pd.DataFrame(measure_data, index=[short_file_name for i in range(len(measure_data))])
 
         new_file_name = source_dir + measure + "\\" + full_file_name.split("\\")[-1].split(".mat")[0] + \

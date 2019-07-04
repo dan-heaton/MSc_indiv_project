@@ -60,6 +60,13 @@ parser.add_argument("--create_graph", type=bool, nargs="?", const=True, default=
                          "to the 'Graphs' subdirectory within the 'documentation' directory.")
 parser.add_argument("--epochs", type=int, nargs="?", const=1,
                     help="Option to set number of epochs to use in this run of the model.")
+parser.add_argument("--other_dir", type=str, nargs="?", const=True, default=False,
+                    help="Option to include an additional source directory as part of the data to train the model on. "
+                         "Must not be the same as 'dir' and must be one '6minwalk-matfiles', 6MW-matFiles', or 'NSAA'.")
+parser.add_argument("--leave_out", type=str, nargs="?", const=True, default=False,
+                    help="Option to specify the short file name of the file to leave out of the train and test set "
+                         "altogether, and thus use it reliably in 'model_predictor.py'. Note that it removes ALL files "
+                         "with a matching short name, so '--leave_out=D4' would exclude 'D4', 'd4' and 'D4v2' files.")
 args = parser.parse_args()
 
 #If no optional argument given for '--seq_len', defaults to seq_len = 10, i.e. defaults to splitting files into
@@ -87,8 +94,9 @@ if not args.discard_prop:
 local_dir = "C:\\msc_project_files\\"
 
 #Location at which to store the created model that will be used by 'model_predictor.py'
-model_path = local_dir + "output_files\\rnn_models\\" + args.dir + "_" + args.ft + "_" + \
-             args.fn + "_" + args.choice + "\\model.ckpt"
+#model_path = local_dir + "output_files\\rnn_models\\" + args.dir + "_" + args.ft + "_" + \
+#             args.fn + "_" + args.choice + "\\model.ckpt"
+model_path = local_dir + "output_files\\rnn_models\\" + '_'.join(sys.argv[1:]) + "\\model.ckpt"
 
 #Other locations and sub-dir nameswithin 'local_dir' that will contain the files we need, as dictated by assuming the
 #user has previously run the required scripts (e.g. 'comp_stat_vals', 'ext_raw_measures', etc.)
@@ -122,6 +130,13 @@ num_acts = 17
 if args.epochs:
     num_epochs = int(args.epochs)
 
+#If '--other_dir' is set, make sure it's a permitted name before continuing
+if args.other_dir:
+    if not args.other_dir + "\\" in sub_dirs or args.other_dir == args.dir:
+        print("Optional arg '--other_dir' must be one of '6minwalk-matfiles', '6MW-matFiles', 'NSAA', or 'direct_csv' and "
+              "must not be the same name as 'dir'....")
+        sys.exit()
+
 
 
 def preprocessing(test_ratio):
@@ -139,20 +154,37 @@ def preprocessing(test_ratio):
     #Appends the sub_dir name to 'source_dir' if it's one of the allowed names
     global source_dir
     if args.dir + "\\" in sub_dirs:
-        source_dir += args.dir.upper() + "\\"
+        source_dir += args.dir + "\\"
     else:
         print("First arg ('dir') must be a name of a subdirectory within source dir and must be one of "
               "'6minwalk-matfiles', '6MW-matFiles', 'NSAA', or 'direct_csv'.")
         sys.exit()
-
     #Change 'source_dir' to point to the directory of raw measurement files, single-act raw measurements files,
     #or another type of file (e.g. 'AD' or 'JA')
     if args.dir == "NSAA" and args.choice == "indiv" and args.ft in raw_measurements:
         source_dir = local_dir + "NSAA\\matfiles\\act_files\\" + args.ft + "\\"
-    elif args.ft + "\\" in sub_sub_dirs:
+    elif args.ft + "\\" in sub_sub_dirs and args.dir != "6MW-matFiles":
         source_dir += args.ft + "\\"
     elif args.dir == "NSAA" and args.ft in raw_measurements:
         source_dir = local_dir + "NSAA\\matfiles\\" + args.ft + "\\"
+    elif args.dir == "6minwalk-matfiles":
+        if args.ft == "AD" or args.ft == "JA":
+            source_dir += + args.ft + "\\"
+        elif args.ft in raw_measurements:
+            source_dir = local_dir + "6minwalk-matfiles\\all_data_mat_files\\" + args.ft + "\\"
+        else:
+            print("Second arg ('ft') must be a name of a sub-subdirectory within source dir and must be one of \'AD\',"
+                  "\'JA', or \'DC\' (unless dir is give as 'NSAA', where 'ft' can be a measurement name).")
+            sys.exit()
+    elif args.dir == "6MW-matFiles":
+        if args.ft == "AD":
+            source_dir = local_dir + "\\output_files\\" + args.dir + "\\AD\\"
+        elif args.ft in raw_measurements:
+            source_dir = local_dir + args.dir + "\\" + args.ft + "\\"
+        else:
+            print("Second arg ('ft') must be a name of a sub-subdirectory within source dir and must be one of \'AD\',"
+                  "\'JA', or \'DC\' (unless dir is give as 'NSAA', where 'ft' can be a measurement name).")
+            sys.exit()
     else:
         print("Second arg ('ft') must be a name of a sub-subdirectory within source dir and must be one of \'AD\',"
               "\'JA', or \'DC\' (unless dir is give as 'NSAA', where 'ft' can be a measurement name).")
@@ -164,7 +196,7 @@ def preprocessing(test_ratio):
         if any(args.fn == s.upper().split("-")[0] for s in os.listdir(source_dir)):
             file_names.append([s for s in os.listdir(source_dir) if args.fn in s][0])
         else:
-            print("Cannot find '" + str(args.fn) + "' in '" + source_dir + " '")
+            print("Cannot find '" + str(args.fn) + "' in '" + source_dir + "'")
             sys.exit()
     else:
         try:
@@ -190,6 +222,13 @@ def preprocessing(test_ratio):
     #we are concerned with is not within 'direct_csv')
     if args.dir != "direct_csv" and source_dir.startswith(local_dir + "output_files\\"):
         file_names = [fn for fn in file_names if fn.startswith("FR_")]
+    elif args.ft == "AD":
+        file_names = [fn for fn in file_names if fn.startswith("FR_")]
+
+
+    #Removes any file that contains in the name the optional argument '--leave_out'
+    if args.leave_out:
+        file_names = [fn for fn in file_names if args.leave_out not in fn]
 
     #For each file name that we are dealing with (all files names in 'source_dir' if 'fn' is 'all, else a single
     #file name), adds 'y' labels based on what type of model output we are training for and divide up both 'x' and 'y'
@@ -198,6 +237,7 @@ def preprocessing(test_ratio):
         print("Extracting '" + file_name + "' to x_data and y_data....")
         #Read in the data from the corresponding .csv
         data = pd.read_csv(source_dir + file_name)
+
         #If the model output type is 'overall', add the NSAA scores if they aren't included already,
         #and get the overall NSAA score from the first row's first cell in the file as the 'y_label'
         if choice == "overall":
@@ -217,13 +257,15 @@ def preprocessing(test_ratio):
         elif choice == "dhc":
             data = data.values
             if args.dir != "direct_csv" and not source_dir.startswith(local_dir):
-                y_label = 1 if file_name.split("_")[2][0] == "D" else 0
-            elif args.dir == "NSAA":
-                y_label = 1 if file_name.split("_")[2][0] == "D" else 0
-            elif source_dir.startswith(local_dir):
-                y_label = 1 if file_name.split("_")[0][0] == "D" else 0
+                y_label = 1 if file_name.split("_")[2][0].upper() == "D" else 0
+            elif args.ft == "AD":
+                y_label = 1 if file_name.split("_")[2][0].upper() == "D" else 0
+            elif file_name.startswith("All"):
+                y_label = 1 if file_name.split("_")[0].split("-")[1][0].upper() == "D" else 0
+            elif source_dir.startswith(local_dir) and args.ft != "AD":
+                y_label = 1 if file_name.split("_")[0][0].upper() == "D" else 0
             else:
-                y_label = 1 if file_name.split("_")[1][0] == "D" else 0
+                y_label = 1 if file_name.split("_")[1][0].upper() == "D" else 0
         #If the model output type is 'acts', add the NSAA scores if they aren't included already, and get the
         #individual NSAA activity scores from 17 cells in the first row of the data
         elif choice == "acts":
@@ -285,7 +327,7 @@ def preprocessing(test_ratio):
                 x_data.append(split_data[:, 1:])
             elif args.dir == "direct_csv":
                 x_data.append(split_data[:, 19:])
-            elif source_dir.startswith(local_dir) and choice == "dhc" and args.dir != "NSAA":
+            elif source_dir.startswith(local_dir) and choice == "dhc" and not args.ft == "AD":
                 x_data.append(split_data[:, 1:])
             elif source_dir.startswith(local_dir) and "output_files" not in source_dir:
                 x_data.append(split_data[:, 19:])
@@ -395,7 +437,7 @@ def create_batch_generator(x, y=None, batch_size=64):
 
 
 
-def write_to_csv(trues, preds, output_strs, open_file=True):
+def write_to_csv(trues, preds, output_strs, open_file=False):
     """
     :param 'trues', which are a list of 'true' values for each of the test sequences that have been tested on the model,
     'preds', which are the predicted values corresponding to each 'true' value, and 'output_strs' which are the strings
@@ -407,11 +449,12 @@ def write_to_csv(trues, preds, output_strs, open_file=True):
     print("\nWriting true and predicted values to .csv....")
     df = pd.DataFrame()
     df["Sequence Number"] = np.arange(1, len(trues)+1)
-    df["Trues"] = trues
     if choice != "acts":
         df["Predictions"] = preds
+        df["Trues"] = trues
     else:
         df["Predictions"] = ["[" + " ".join(str(num) for num in preds[i]) + "]" for i in range(len(preds))]
+        df["Trues"] = ["[" + " ".join(str(num) for num in trues[i]) + "]" for i in range(len(trues))]
     df["Results"] = ""
     df.iloc[0, -1] = ' '.join(sys.argv[1:])
     df.iloc[1, -1] = ", ".join(output_strs)
@@ -572,9 +615,24 @@ class RNN(object):
         return np.concatenate(preds)
 
 
-
-#Extracts the training and testing data, builds the RNN based on the hyperparameters initially set, and trains the model
+old_seq_len = sequence_length
+#Extracts the training and testing data
 x_train, x_test, y_train, y_test = preprocessing(test_ratio=test_ratio)
+
+#Repeats the preprocessing for 'other_dir' if specified by setting 'dir' to the value of 'other_dir' and then setting
+#it back to the original value after extracting the data from 'other_dir' and adding it to the 'dir' data
+if args.other_dir:
+    old_dir = args.dir
+    args.dir = args.other_dir
+    sequence_length = old_seq_len
+    new_x_train, new_x_test, new_y_train, new_y_test = preprocessing(test_ratio=test_ratio)
+    x_train = np.concatenate((x_train, new_x_train), axis=0)
+    x_test = np.concatenate((x_test, new_x_test), axis=0)
+    y_train = np.concatenate((y_train, new_y_train), axis=0)
+    y_test = np.concatenate((y_test, new_y_test), axis=0)
+    args.dir = old_dir
+
+#Builds the RNN based on the hyperparameters initially set, and trains the model
 rnn = RNN(features_length=len(x_train[0][0]), seq_len=sequence_length, lstm_size=num_lstm_cells,
                    num_layers=num_rnn_hidden_layers, batch_size=batch_size, learning_rate=learn_rate, num_acts=num_acts)
 
