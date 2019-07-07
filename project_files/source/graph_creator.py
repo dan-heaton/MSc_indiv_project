@@ -8,7 +8,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("start_exp", nargs="?", default=None,
                     help="Experiment number in 'RNN Results.xlsx' of the first experiment (inclusive) to have "
                          "the graph consist.")
-parser.add_argument("end_exp", nargs="?", default=None, type=int,
+parser.add_argument("end_exp", nargs="?", default=None,
                     help="Experiment number in 'RNN Results.xlsx' of the last experiment (inclusive) to have "
                          "the graph consist.")
 parser.add_argument("choice", nargs="?", default=None,
@@ -36,11 +36,11 @@ results_path = "..\\documentation\\RNN Results.xlsx"
 #Note: CHANGE THIS to location of the 3 sub-directories' encompassing directory local to the user so the
 #'RNN_trues_preds.csv' can be correctly sourced
 local_dir = "C:\\msc_project_files\\"
-
+source_dir = local_dir + "output_files\\"
 
 #Only executed if the first argument is provided as a file name within 'RNN_outputs', whereupon it loads the file,
 #reads in the predicted and true values, plots them, shows it to the user, and saves the image to the 'Graphs' directory
-if "_" in args.start_exp:
+if "_" in args.start_exp and args.choice != "model_preds":
     try:
         trues_preds = pd.read_csv(local_dir + "output_files\\RNN_outputs\\" + args.start_exp + ".csv")
         trues, preds = trues_preds["Trues"], trues_preds["Predictions"]
@@ -58,6 +58,73 @@ if "_" in args.start_exp:
         print("First arg ('start_exp') must be the name of a file within 'RNN_outputs' and cannot load '" +
               local_dir + "output_files\\RNN_outputs\\" + args.start_exp + "' ...")
         sys.exit()
+    #Exit the program after plotting the graph, as remainder of the program expects to see other arguments present
+    sys.exit()
+
+#Handles the case where we are graphing with the 'model_predictions.csv' file, i.e. the 'test_altdirs.py' output
+if args.choice == "model_preds":
+    model_preds = pd.read_csv("..\\documentation\\model_predictions.csv")
+    #Select the relevant rows from the file based on the args that we passed into 'graph_creator.py'
+    model_preds = model_preds.loc[(model_preds["Source dir"] == args.start_exp) &
+                                  (model_preds["Model trained dir(s)"] == ", ".join(args.end_exp.split(",")))]
+    model_train_dirs = args.end_exp.split(",")
+
+
+    cols = model_preds.columns.values.tolist()
+    #Gets the index positions of the separator columns (i.e. the cols like '------ NSAA Predictions ------')
+    model_dir_offsets = [cols.index(c) for c in cols if "------" in c]
+    #Gets the index positions of all the 'true overall NSAA' and 'predict overall NSAA' columns
+    tp_col_indices = np.ravel([[off + 8, off + 9] for off in model_dir_offsets]).tolist()
+    #Select only the true/pred columns and reassemble them into a dictionary with keys corresponding to model dir names
+    overall_tps = model_preds.iloc[:, tp_col_indices].values.T
+    overall_tps = [[overall_tps[i], overall_tps[i+1]] for i in range(0, len(overall_tps), 2)]
+    overall_tps_dict = {mtd: otp for mtd, otp in zip(model_train_dirs, overall_tps)}
+
+    #Plots true overall NSAA scores against predicted overall NSAA scores
+    for i, mtd in enumerate(overall_tps_dict):
+        fig, ax = plt.subplots()
+        ax.scatter(overall_tps_dict[mtd][0], overall_tps_dict[mtd][1], alpha=0.03)
+        x = np.linspace(*ax.get_xlim())
+        ax.plot(x, x)
+        plt.title("'model_predictions.csv', Source dir = " + args.start_exp + ", Model trained dir(s) = " +
+                  args.end_exp.split(",")[i] + "\n" +
+                  "Plot of true overall NSAA scores against predicted overall NSAA scores")
+        plt.xlabel("True overall NSAA scores")
+        plt.ylabel("Predicted overall NSAA scores")
+        plt.gcf().set_size_inches(10, 10)
+        #plt.savefig("..\\documentation\\Graphs\\" + args.start_exp)
+        plt.show()
+
+    #Plots distributions of the percentages of correctly predicted sequence D/HC labels
+    for i, md_off in enumerate(model_dir_offsets):
+        percents = []
+        for j, row in model_preds.iterrows():
+            #Based on the value within the 'True D/HC label' column, pick either the percentage of predicted 'D'
+            #sequences or predicted 'HC' sequences, remove the '%', round it to 0 decimal places, and append to
+            #percents as an int
+            if row[md_off+4] == "D":
+                percents.append(int(round(float(row[md_off+6].split("%")[0]))))
+            else:
+                percents.append(int(round(float(row[md_off+7].split("%")[0]))))
+        plt.hist(percents, 100)
+        plt.hist(percents, 100, histtype='step', cumulative=True)
+        plt.title("Distribution of percentage of correctly predicted sequence D/HC labels over files "
+                  "w/ " + args.end_exp.split(",")[i] + " model pred dir")
+        plt.xlabel("Percentage of correctly predicted sequence D/HC labels for given file")
+        plt.ylabel("Number of files")
+        plt.show()
+
+    #Plots distributions of the percentages of correctly predicted single acts for each file
+    for i, md_off in enumerate(model_dir_offsets):
+        percents = [int(round(float(row[md_off+3].split("%")[0]))) for j, row in model_preds.iterrows()]
+        plt.hist(percents, 100)
+        plt.hist(percents, 100, histtype='step', cumulative=True)
+        plt.title("Distribution of percentage of individual acts correctly predicted over files "
+                  "w/ " + args.end_exp.split(",")[i] + " model pred dir")
+        plt.xlabel("Percentage of correctly predicted sequence individual acts labels for given file")
+        plt.ylabel("Number of files")
+        plt.show()
+
     #Exit the program after plotting the graph, as remainder of the program expects to see other arguments present
     sys.exit()
 

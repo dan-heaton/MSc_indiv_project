@@ -22,6 +22,18 @@ parser.add_argument("ft", help="Specify type of .mat file that the .csv is to co
                                "file is an 'AD' file and user wishes to test it on raw measurement models.")
 parser.add_argument("fn", help="Specify the short file name of a .csv to be the predictor from 'source_dir'; e.g. for file "
                                "'All_D2_stats_features.csv', enter 'D2'.")
+parser.add_argument("--alt_dirs", type=str, nargs="?", const=True, default=False,
+                    help="Optional argument to use directory types other than 'dir' to predict from(e.g. if "
+                         "'dir'=allmatfiles, can specify '--other_dir'=NSAA,6minwalk-matfiles to predict the "
+                         "'allmatfile' file on models trained on 'NSAA' and '6minwalk-matfiles' files.")
+parser.add_argument("--show_graph", type=bool, nargs="?", const=True, default=False,
+                    help="Option to show the 'trues-preds' graph that is created and saved by the script.")
+parser.add_argument("--handle_dash", type=bool, nargs="?", const=True, default=False,
+                    help="Set this to add a dash ('-') to the beginning of the 'fn' arg; primarily used to get the "
+                         "correct short name of files within 'allmatfiles', as 'fn' can't start with a dash.")
+parser.add_argument("--file_num", type=str, nargs="?", const=True, default=False,
+                    help="Optional arg for 'test_altdirs' to use to write the file number as it appears in its "
+                         "source directory.")
 args = parser.parse_args()
 
 
@@ -71,6 +83,11 @@ for ft in args.ft.split(","):
               "must be separated by a comma for each measurement to use in the ensemble.")
         sys.exit()
 
+#Adds a dash to the beginning of the 'fn' argument input if the '--handle_dash' optional argument is set
+if args.handle_dash:
+    args.fn = "-" + args.fn
+
+
 fns = []
 for sd in sds:
     if args.dir == "allmatfiles":
@@ -99,19 +116,36 @@ for sd, fn in zip(sds, fns):
     else:
         full_file_names.append(sd + fn)
 
+#Specifies the directories (i.e. names of file groupings that can be used to train a model, e.g. 'NSAA' or
+#'6MW-matFiles') on which to test the file. If the 'alt_dirs' optional argument is not provided, then 'dir' is used
+#(i.e. the file in question is tested on the same directory type as it comes from).
+if args.alt_dirs:
+    search_dirs = args.alt_dirs.split("_")
+    if not all(sd + "\\" in sub_dirs for sd in search_dirs):
+        print("Optional arg ('--alt_dirs') must be directory names separated by commas and each must be one of "
+              "'NSAA', '6minwalk-matfiles', '6MW-matFiles', or 'direct_csv'.")
+        sys.exit()
+else:
+    search_dirs = [args.dir]
 
 #The models that are to be tested by the script are selected based on their names; e.g. if 'dir'=NSAA and 'ft'=position,
 #then 'NSAA_position_all_acts', 'NSAA_position_all_dhc', and 'NSAA_position_all_overall' will be loaded as directory
 #names containing the trained models
 models = []
-for ot in output_types:
+for sd in search_dirs:
     inner_models = []
-    for i, ft in enumerate(fts):
-        if any(fn for fn in os.listdir(model_dir) if fn.split("_")[-1] == ot and fn.split("_")[1] == ft):
-            inner_models.append([fn for fn in os.listdir(model_dir) if fn.split("_")[-1] == ot and fn.split("_")[1] == ft][0])
-        else:
-            inner_models.append(None)
+    for ot in output_types:
+        inner_inner_models = []
+        for i, ft in enumerate(fts):
+            if any(fn for fn in os.listdir(model_dir) if fn.split("_")[0] == sd and
+                                                         fn.split("_")[3] == ot and fn.split("_")[1] == ft):
+                inner_inner_models.append([fn for fn in os.listdir(model_dir) if fn.split("_")[0] == sd and
+                                     fn.split("_")[3] == ot and fn.split("_")[1] == ft][0])
+            else:
+                inner_inner_models.append(None)
+        inner_models.append(inner_inner_models)
     models.append(inner_models)
+
 
 #Removes empty 'inner_model' lists (i.e. ones only populated by 'Nones') in the case where all measurements don't have
 #a specific output type model
@@ -121,18 +155,14 @@ for inner_models in models:
         new_models.append(inner_models)
 models = new_models
 
-
 #Reads in the .xlsx file with the file shapes in them and extracts the sequence lengths from the most recent entry in
 #the tabel that corresponds to the model with a specific source dir, file type, and output type
 model_shape = pd.read_excel("..\\documentation\\model_shapes.xlsx")
 
-#Regardless of the input 'dir' type, use the models that are trained on files from 'NSAA' to test the file in question
-model_shape_dir = "NSAA"
-
-sequence_lengths = [[model_shape.loc[(model_shape["dir"] == model_shape_dir) & (model_shape["ft"] == model.split("_")[1]) &
-                                     (model_shape["measure"] == model.split("_")[-1])].iloc[-1, -1] if model else None
-                     for model in inner_models] for inner_models in models]
-
+sequence_lengths = [[[model_shape.loc[(model_shape["dir"] == model.split("_")[0]) &
+                                      (model_shape["ft"] == model.split("_")[1]) &
+                                     (model_shape["measure"] == model.split("_")[3])].iloc[-1, -1] if model else None
+                     for model in inner_inner_models] for inner_inner_models in inner_models] for inner_models in models]
 
 
 def preprocessing(full_file_name, sequence_length):
@@ -146,21 +176,34 @@ def preprocessing(full_file_name, sequence_length):
 
     x_data = [df_x[sequence_length*i:(sequence_length*(i+1)), :] for i in range(int(len(df_x)/sequence_length))]
 
+    #Handles the case where the '.mat' file doesn't even contain enough data for one sequence (i.e. the number of rows
+    #in the file is < 'sequence_length')
+    if len(x_data) == 0:
+        print(full_file_name.split("\\")[-1].split(".")[0], "too short in length to use, skipping....")
+        sys.exit()
+
     #Loads the file that contains information on each subject and their corresponding overall and individual NSAA scores,
     #and three 'true' labels for the file are extracted: 'y_label_dhc' gets 1 if the short name of the file (e.g. 'D11')
     #begins with a 'D', else it gets a 0; 'y_label_overall' gets an integer value between 0 and 34 of the overall NSAA score,
     #and 'y_label_acts' gets the 17 individiual NSAA acts as a list as scores between 0 and 2
     df_y = pd.read_excel("..\\documentation\\nsaa_6mw_info.xlsx")
     if args.dir != "direct_csv" and not source_dir.startswith(local_dir):
-        y_label_dhc = 1 if full_file_name.split("\\")[-1].split("_")[2][0] == "D" else 0
+        y_label_dhc = 1 if full_file_name.split("\\")[-1].split("_")[2][0].upper() == "D" else 0
     elif source_dir.startswith(local_dir):
         if "FR_" in full_file_name:
-            y_label_dhc = 1 if full_file_name.split("\\")[-1].split("_")[2][0] == "D" else 0
+            y_label_dhc = 1 if full_file_name.split("\\")[-1].split("_")[2][0].upper() == "D" else 0
+        elif full_file_name.split("\\")[-1].startswith("jointangle"):
+            y_label_dhc = 1 if full_file_name.split("\\")[-1].split("angle")[1][0].upper() == "D" else 0
         else:
-            y_label_dhc = 1 if full_file_name.split("\\")[-1].split("_")[0][0] == "D" else 0
+            y_label_dhc = 1 if full_file_name.split("\\")[-1].split("_")[0][0].upper() == "D" else 0
     else:
-        y_label_dhc = 1 if full_file_name.split("\\")[-1].split("_")[1][0] == "D" else 0
+        y_label_dhc = 1 if full_file_name.split("\\")[-1].split("_")[1][0].upper() == "D" else 0
     y_index = df_y.index[df_y["ID"] == args.fn.upper().split("-")[0]]
+    #Raises an exception
+    if len(y_index) == 0:
+        #raise FileExistsError
+        print(args.fn.upper().split("-")[0] + " not an entry in 'nsaa_6mw_info.xlsx' for " + full_file_name + ", skipping...")
+        sys.exit()
     y_label_overall = df_y.loc[y_index, "NSAA"].values[0]
     y_label_acts = [int(num) for num in df_y.iloc[y_index, 5:].values[0]]
 
@@ -192,107 +235,160 @@ pred_overalls, true_overalls = [], []
 #Stores the strings to write AFTER all the models have run so all results are printed at the end, rather than some being
 #printed and then obscured by the model setup text
 output_strs = []
+#For each directory type that we wish to assess on...
 for i, inner_models in enumerate(models):
-    #'output_type' contains one of 'acts', 'indiv', or 'dhc'`
-    output_type = None
-    for model in inner_models:
-        if model:
-            output_type = model.split("_")[-1]
-    preds = []
-    y_label_dhc, y_label_overall, y_label_acts = (None,)*3
-    #For each measurement type (i.e. for every model name)
-    for j, full_file_name in enumerate(full_file_names):
-        #If there is a 'None' sequence length (i.e. a corresponding model for the output type and file type doesn't
-        #exist), then skip over it
-        if not sequence_lengths[i][j]:
-            continue
-        x_data, y_label_dhc, y_label_overall, y_label_acts = preprocessing(full_file_name, sequence_lengths[i][j])
-        #Complete model path to the directory of the model in question
-        model_path = model_dir + inner_models[j]
-        inner_preds = []
-        with tf.Session(graph=tf.Graph()) as sess:
-            #Loads the model and restores from it's final checkpoint
-            new_saver = tf.train.import_meta_graph(model_path + "\\model.ckpt.meta", clear_devices=True)
-            new_saver.restore(sess, tf.train.latest_checkpoint(model_path))
-            #If there aren't enough sequences within the file being tested to make up a full batch (i.e. len(x_data)
-            #< batch_size), then replicate it until it's the size of at least batch size
-            new_x_data = []
-            while len(new_x_data) < batch_size:
-                new_x_data += x_data
-            x_data = new_x_data
-            #For each batch of the data from 'full_file_name', feed it through the trained model to get predictions based
-            #on the type of model (e.g. '1's or '0's if output_type == "dhc", ints between 0 and 34 if output_type ==
-            #"overall", and lists of 17 values between 0 and 1 if output_type == "dhc") and appends these to 'preds'
-            for ii, batch_x in enumerate(create_batch_generator(x_data, None, batch_size=batch_size), 1):
-                feed = {'tf_x:0': batch_x, 'tf_keepprob:0': 1.0}
-                if output_type == "overall":
-                    inner_preds.append(sess.run('logits_squeezed:0', feed_dict=feed))
-                else:
-                    inner_preds.append(sess.run('labels:0', feed_dict=feed))
-        #Flatten these values to a 1D list
-        inner_preds = np.concatenate(inner_preds)
-        #Gets rid of errant 'nan's in the predictions (cause unknown)
-        inner_preds = [ip for ip in inner_preds if "nan" not in str(ip)]
-        #Add these predictions to aggregate list of predictions for the output type in question
-        preds.append(inner_preds)
-        #Appends all predicted overall NSAA scores for a given model to the list containing the aggregated predicted scores
+    output_strs.append("\t\t ------ " + str(search_dirs[i]) + " Predictions ------ ")
+    #For each output type that we are training towards (e.g. 'overall', 'acts', etc.)...
+    for j, inner_inner_models in enumerate(inner_models):
+        #'output_type' contains one of 'acts', 'indiv', or 'dhc'`
+        output_type = None
+        for model in inner_inner_models:
+            if model:
+                output_type = model.split("_")[3]
+        preds = []
+        y_label_dhc, y_label_overall, y_label_acts = (None,)*3
+        #For each measurement type (i.e. for every model name, e.g. 'jointAngle' or 'AD')
+        for k, full_file_name in enumerate(full_file_names):
+            #If there is a 'None' sequence length (i.e. a corresponding model for the output type and file type doesn't
+            #exist), then skip over it
+            if not sequence_lengths[i][j][k]:
+                continue
+            x_data, y_label_dhc, y_label_overall, y_label_acts = preprocessing(full_file_name, sequence_lengths[i][j][k])
+            #Complete model path to the directory of the model in question
+            model_path = model_dir + inner_inner_models[k]
+            inner_preds = []
+            with tf.Session(graph=tf.Graph()) as sess:
+                #Loads the model and restores from it's final checkpoint
+                new_saver = tf.train.import_meta_graph(model_path + "\\model.ckpt.meta", clear_devices=True)
+                new_saver.restore(sess, tf.train.latest_checkpoint(model_path))
+                #If there aren't enough sequences within the file being tested to make up a full batch (i.e. len(x_data)
+                #< batch_size), then replicate it until it's the size of at least batch size
+                new_x_data = []
+                while len(new_x_data) < batch_size:
+                    new_x_data += x_data
+                x_data = new_x_data
+                #For each batch of the data from 'full_file_name', feed it through the trained model to get predictions based
+                #on the type of model (e.g. '1's or '0's if output_type == "dhc", ints between 0 and 34 if output_type ==
+                #"overall", and lists of 17 values between 0 and 1 if output_type == "dhc") and appends these to 'preds'
+                for ii, batch_x in enumerate(create_batch_generator(x_data, None, batch_size=batch_size), 1):
+                    feed = {'tf_x:0': batch_x, 'tf_keepprob:0': 1.0}
+                    if output_type == "overall":
+                        inner_preds.append(sess.run('logits_squeezed:0', feed_dict=feed))
+                    else:
+                        inner_preds.append(sess.run('labels:0', feed_dict=feed))
+            #Flatten these values to a 1D list
+            inner_preds = np.concatenate(inner_preds)
+            #Gets rid of errant 'nan's in the predictions (cause unknown)
+            inner_preds = [ip for ip in inner_preds if "nan" not in str(ip)]
+            #Add these predictions to aggregate list of predictions for the output type in question
+            preds.append(inner_preds)
+            #Appends all predicted overall NSAA scores for a given model to the list containing the aggregated predicted scores
+            if output_type == "overall":
+                pred_overalls += inner_preds
+
+
+        #Aggregate results for measurements
+        if output_type == "acts":
+            #Makes sure that each measurement's worth of predictions are the same length (e.g. if there are far
+            #fewer 'AD' predictions than 'jointAngle', then duplicate 'AD' predictions to be of the same length
+            preds_lens = [len(preds[m]) for m in range(len(preds))]
+            for m in range(len(preds)):
+                if len(preds[m]) < max(preds_lens):
+                    preds[m] *= int(max(preds_lens)/len(preds[m]))
+            preds = np.transpose(preds, (1, 2, 0))
+            preds = [[Counter(elems).most_common()[0][0] for elems in row] for row in preds]
+        elif output_type == "dhc":
+            preds = np.transpose(preds)
+            preds = [Counter(elems).most_common()[0][0] for elems in preds]
+        else:
+            preds = np.transpose(preds)
+            preds = [np.mean(elems) for elems in preds]
+
+
+
+        #Based on what type the model is, add output lines to 'output_strs' that gives info on the true 'y' label of the
+        #file (e.g. true 'D' or 'HC' label, true overall NSAA score, or true single acts scores) and what the model predicted
         if output_type == "overall":
-            pred_overalls += inner_preds
-    #Aggregate results for measurement over
-    if output_type == "acts":
-        preds = np.transpose(preds, (1, 2, 0))
-        preds = [[Counter(elems).most_common()[0][0] for elems in row] for row in preds]
-    elif output_type == "dhc":
-        preds = np.transpose(preds)
-        preds = [Counter(elems).most_common()[0][0] for elems in preds]
-    else:
-        preds = np.transpose(preds)
-        preds = [np.mean(elems) for elems in preds]
-
-
-
-    #Based on what type the model is, add output lines to 'output_strs' that gives info on the true 'y' label of the
-    #file (e.g. true 'D' or 'HC' label, true overall NSAA score, or true single acts scores) and what the model predicted
-    if output_type == "overall":
-        true_overalls = [y_label_overall for i in range(len(pred_overalls))]
-        output_strs.append(str("True 'Overall NSAA Score' = " + str(y_label_overall)))
-        output_strs.append(str("Predicted 'Overall NSAA Score' = " + str(int(round(float(np.mean(preds)), 0)))))
-    elif output_type == "dhc":
-        true_label = "D" if y_label_dhc == 1 else "HC"
-        pred_label = "D" if max(set(list(preds)), key=list(preds).count) == 1 else "HC"
-        d_percen = np.round((np.sum(preds)/len(preds)), 4)
-        output_strs.append(str("True 'D/HC Label' = " + true_label))
-        output_strs.append(str("Predicted 'D/HC Label' = " + pred_label))
-        output_strs.append(str("Percentage of predicted 'D' sequences = " + str(d_percen*100) + "%"))
-        output_strs.append(str("Percentage of predicted 'HC' sequences = " + str((1-d_percen)*100) + "%"))
-    else:
-        preds = np.transpose(preds)
-        pred_acts = [Counter(preds[i]).most_common()[0][0] for i in range(len(preds))]
-        num_correct = 0
-        for i in range(len(y_label_acts)):
-            if y_label_acts[i] == pred_acts[i]:
-                num_correct += 1
-        perc_correct = round(((num_correct / 17)*100), 2)
-        output_strs.append(str("True 'Acts Sequence' = " + str(y_label_acts)))
-        output_strs.append(str("Predicted 'Acts Sequence' = " + str(pred_acts)))
-        output_strs.append(str("Percent of acts correctly predicted = " + str(perc_correct) + "%"))
-    output_strs.append("")
+            true_overalls = [y_label_overall for m in range(len(pred_overalls))]
+            output_strs.append(str("True 'Overall NSAA Score' = " + str(y_label_overall)))
+            output_strs.append(str("Predicted 'Overall NSAA Score' = " + str(int(round(float(np.mean(preds)), 0)))))
+        elif output_type == "dhc":
+            true_label = "D" if y_label_dhc == 1 else "HC"
+            pred_label = "D" if max(set(list(preds)), key=list(preds).count) == 1 else "HC"
+            d_percen = np.round(((np.sum(preds)/len(preds))*100), 2)
+            hc_percen = np.round(100 - d_percen, 2)
+            output_strs.append(str("True 'D/HC Label' = " + true_label))
+            output_strs.append(str("Predicted 'D/HC Label' = " + pred_label))
+            output_strs.append(str("Percentage of predicted 'D' sequences = " + str(d_percen) + "%"))
+            output_strs.append(str("Percentage of predicted 'HC' sequences = " + str(hc_percen) + "%"))
+        else:
+            preds = np.transpose(preds)
+            pred_acts = [Counter(preds[i]).most_common()[0][0] for i in range(len(preds))]
+            num_correct = 0
+            for m in range(len(y_label_acts)):
+                if y_label_acts[m] == pred_acts[m]:
+                    num_correct += 1
+            perc_correct = round(((num_correct / 17)*100), 2)
+            output_strs.append(str("True 'Acts Sequence' = " + str(y_label_acts)))
+            output_strs.append(str("Predicted 'Acts Sequence' = " + str(pred_acts)))
+            output_strs.append(str("Percent of acts correctly predicted = " + str(perc_correct) + "%"))
+        output_strs.append("")
 
 #Prints to the user all the output lines that were generated by testing on all the models
 print("\n")
 for output_str in output_strs:
     print(output_str)
 
-#Plot the predicted values against the true values for NSAA overall
-fig, ax = plt.subplots()
-ax.scatter(true_overalls, pred_overalls, alpha=0.03)
-plt.xlim(0, 34)
-plt.ylim(0, 34)
-x = np.linspace(*ax.get_xlim())
-ax.plot(x, x)
-plt.title("Plot of true overall NSAA scores against predicted overall NSAA scores")
-plt.xlabel("True overall NSAA scores")
-plt.ylabel("Predicted overall NSAA scores")
-plt.savefig("..\\documentation\\Graphs\\Model_predictor_" + args.dir + "_" + args.ft + "_" + args.fn)
-plt.gcf().set_size_inches(10, 10)
-plt.show()
+#Plot the predicted values against the true values for NSAA overall (only if *not* run from 'test_altdirs.py'
+if not args.file_num:
+    fig, ax = plt.subplots()
+    ax.scatter(true_overalls, pred_overalls, alpha=0.03)
+    plt.xlim(0, 34)
+    plt.ylim(0, 34)
+    x = np.linspace(*ax.get_xlim())
+    ax.plot(x, x)
+    plt.title("Plot of true overall NSAA scores against predicted overall NSAA scores")
+    plt.xlabel("True overall NSAA scores")
+    plt.ylabel("Predicted overall NSAA scores")
+    plt.savefig("..\\documentation\\Graphs\\Model_predictor_" + args.dir + "_" + args.ft + "_" + args.fn)
+    plt.gcf().set_size_inches(10, 10)
+    if args.show_graph:
+        plt.show()
+
+
+#Creates a list of outputs of the model in a way more fitting of a .csv file (e.g. reducing writing "Percent correct = 10%"
+#to "10%" when writing it to a cell, while the corresponding header becomes "Percent correct")
+header, new_output_strs = [], []
+for out_str in output_strs:
+    if out_str == "":
+        pass
+    elif " = " in out_str:
+        header.append(out_str.split(" = ")[0])
+        new_output_strs.append(out_str.split(" = ")[1])
+    else:
+        header.append(out_str)
+        new_output_strs.append(out_str)
+
+
+#Adds in additional strings to the row that are based on the arguments based in to 'model_predictor' and also creates
+#additional corresponding header strings
+header = ["Short file name", "Source dir", "Model trained dir(s)", "Measurements tested"] + header
+new_output_strs = [args.fn, args.dir, ", ".join(args.alt_dirs.split("_")), args.ft] + new_output_strs
+
+#Adds a index name that is set to what number it corresponds to within 'dir' if passed from 'test_altdirs'
+#(e.g. '8/470') or 'N/A' if the optional '--file_num' arg is not provided
+ind_lab = args.file_num if args.file_num else "N/A"
+#Creates a single-line DataFrame from the predictions made by the model(s) with corresponding headers
+output_strs_df = pd.DataFrame([new_output_strs], columns=header, index=[ind_lab])
+
+model_pred_path = "..\\documentation\\model_predictions.csv"
+
+
+#Writes the single-line DataFrame to a new .csv file if it doesn't exist or, if it does exist, appends it to the end
+#of the existing one
+if not os.path.exists(model_pred_path):
+    with open(model_pred_path, 'w', newline='') as file:
+        output_strs_df.to_csv(file, header=header)
+else:
+    with open(model_pred_path, 'a', newline='') as file:
+        output_strs_df.to_csv(file, header=False)

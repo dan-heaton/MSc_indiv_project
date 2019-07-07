@@ -470,8 +470,7 @@ def write_to_csv(trues, preds, output_strs, open_file=False):
     if not os.path.exists(output_dir):
         os.mkdir(output_dir)
     file_index = 1
-    full_output_name = output_dir + args.dir + "_" + args.ft + "_" + args.choice + "_" + str(num_epochs) + \
-                       "_" + "RNN_trues_preds_" + str(file_index) + ".csv"
+    full_output_name = output_dir + '_'.join(sys.argv[1:]) + "_RNN_trues_preds" + str(file_index) + ".csv"
     while os.path.exists(full_output_name):
         file_index += 1
         full_output_name = "_".join(full_output_name.split("_")[:-1]) + "_" + str(file_index) + ".csv"
