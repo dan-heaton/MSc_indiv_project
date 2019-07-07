@@ -10,6 +10,7 @@ from sklearn.cluster import FeatureAgglomeration
 from sklearn.feature_selection import VarianceThreshold
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.feature_selection import SelectFromModel
+from settings import local_dir, source_dir, sub_dirs, sub_sub_dirs
 
 
 """Section below encompasses all the arguments that are required to setup and train the model. This includes the name 
@@ -38,16 +39,6 @@ parser.add_argument("--dis_kept_features", type=bool, nargs="?", const=True, def
                          "'pca', 'grp', or 'agglom').")
 args = parser.parse_args()
 
-
-#Note: CHANGE THESE to location of the 3 sub-directories' encompassing directory local to the user that's needed to
-#map to the .csvs containing the NSAA information
-local_dir = "C:\\msc_project_files\\"
-
-#Other locations and sub-dir nameswithin 'local_dir' that will contain the files we need, as dictated by assuming the
-#user has previously run the required scripts (e.g. 'comp_stat_vals', 'ext_raw_measures', etc.)
-source_dir = local_dir + "output_files\\"
-sub_dirs = ["6minwalk-matfiles\\", "6MW-matFiles\\", "NSAA\\", "direct_csv\\"]
-sub_sub_dirs = ["AD\\", "JA\\", "DC\\"]
 choices = ["pca", "grp", "agglom", "thresh", "rf"]
 
 #Default number of components to preserve with the feature selection/reduction options; overridden if
@@ -70,13 +61,6 @@ else:
           "\'JA', or \'DC\'.")
     sys.exit()
 
-"""
-#Removes existing files that contain reduced dimensionality versions of the source files so new files won't be
-#written on top of existing files
-for file in os.listdir(source_dir):
-    if "FR_" in file:
-        os.remove(source_dir + file)
-"""
 
 #Find the matching full file name in 'source_dir' given the 'fn' argument, otherwise use all file names in 'source_dir'
 #if 'fn' is 'all'
@@ -170,6 +154,7 @@ def ft_red_select(full_file_name):
     return new_x, y
 
 
+
 def add_nsaa_scores(file_df):
     """
     :param 'file_df', which contains the values in a 2D numpy array, to have the values NSAA scores appended on each
@@ -224,6 +209,8 @@ def add_nsaa_scores(file_df):
     for i in range(len(nsaa_act_labels)):
         file_df.insert(loc=(i + 1), column=nsaa_act_labels[i], value=label_sample_map[i])
     return file_df
+
+
 
 #For each of the full file names of the files that we wish to reduce the dimensions of, get the new 'x' and 'y'
 #components of their reduced form, concatenate them together, add the overall and single-act NSAA scores if possible

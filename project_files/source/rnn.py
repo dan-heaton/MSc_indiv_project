@@ -12,11 +12,14 @@ from sklearn.metrics import confusion_matrix as cm
 import pyexcel as pe
 from matplotlib import pyplot as plt
 from math import floor
+from settings import local_dir, source_dir, output_dir, sub_dirs, sub_sub_dirs, raw_measurements, batch_size
 
 #Does not print to display the many warnings that TensorFlow throws up (many about updating to next version or
 #deprecated functionality)
 tf.logging.set_verbosity(tf.logging.ERROR)
 
+#Necessary for imported variable to work as global
+source_dir = source_dir
 
 """Section below encompasses all the arguments that are required to setup and train the model. This includes the 
 name of the directory to source the files from to train the model, the type of files that this directory contains, 
@@ -90,27 +93,14 @@ if not args.discard_prop:
     args.discard_prop = 0
 
 
-#Note: CHANGE THIS to location of the 3 sub-directories' encompassing directory local to the user.
-local_dir = "C:\\msc_project_files\\"
-
 #Location at which to store the created model that will be used by 'model_predictor.py'
-#model_path = local_dir + "output_files\\rnn_models\\" + args.dir + "_" + args.ft + "_" + \
-#             args.fn + "_" + args.choice + "\\model.ckpt"
 model_path = local_dir + "output_files\\rnn_models\\" + '_'.join(sys.argv[1:]) + "\\model.ckpt"
 
-#Other locations and sub-dir nameswithin 'local_dir' that will contain the files we need, as dictated by assuming the
-#user has previously run the required scripts (e.g. 'comp_stat_vals', 'ext_raw_measures', etc.)
-source_dir = local_dir + "output_files\\"
-output_dir = local_dir + "output_files\\RNN_outputs\\"
-sub_dirs = ["6minwalk-matfiles\\", "6MW-matFiles\\", "NSAA\\", "direct_csv\\"]
-sub_sub_dirs = ["AD\\", "JA\\", "DC\\"]
 
 #Available choices of model outputs for 'choice' argument to take and available measurement names for 'ft' to take 
 #if not one of 'sub_sub_dirs'
 choices = ["dhc", "overall", "acts", "indiv"]
 choice = None
-raw_measurements = ["position", "velocity", "acceleration", "angularVelocity", "angularAcceleration",
-                "sensorFreeAcceleration", "sensorMagneticField", "jointAngle", "jointAngleXZY"]
 
 """RNN hyperparameters"""
 x_shape = None
@@ -118,7 +108,6 @@ y_shape = None
 sampling_rate = 60
 #Defines the number of sequences that correspond to one 'x' sample
 sequence_length = int(args.seq_len)
-batch_size = 64
 num_lstm_cells = 128
 num_rnn_hidden_layers = 2
 learn_rate = 0.001

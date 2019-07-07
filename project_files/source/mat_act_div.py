@@ -1,7 +1,7 @@
 #Note: for this to work, we must *first* download the google sheets and place in the 'NSAA' file directory that is
 #local to the user. Hence, the user must first download the google sheet at:
 #'https://docs.google.com/spreadsheets/d/1OvkGU6kwmMxD6zdZqXcNKUvur1uFbAx5IND7_dXibjE', place it in the location of
-#their NSAA directory, and change the global variable 'source_dir' below to reflect the path to their 'NSAA' directory
+#their NSAA directory, and change the global variable 'local_dir' below to reflect the path to their 'NSAA' directory
 
 import argparse
 import pandas as pd
@@ -9,6 +9,7 @@ import numpy as np
 import sys
 import os
 import scipy.io as sio
+from settings import local_dir
 
 """Section below encompasses all the required arguments for the script to run. Note there are only 2 arguments and they 
 are BOTH required."""
@@ -22,9 +23,7 @@ parser.add_argument("--detect_activities", help="Specify if wishing to use the s
                                                 "than using the Google sheet.")
 args = parser.parse_args()
 
-#Note: CHANGE THIS to the location of the NSAA subdirectory local to the user's downloaded .mat files
-source_dir = "C:\\msc_project_files\\NSAA\\"
-
+local_dir += "NSAA\\"
 
 
 def extract_act_times():
@@ -35,7 +34,7 @@ def extract_act_times():
     """
     #Reads in the downloaded Google sheet and makes a list of tuples, where each element in the list is a tuple of two
     #values: the name of an 'ID' cell and its index location within a different list of IDs
-    data = pd.read_excel(source_dir + "DMD Start_End Frames.xlsx")
+    data = pd.read_excel(local_dir + "DMD Start_End Frames.xlsx")
     patient_ids = data["Patient"].values.tolist()
     patient_ids = list(zip(patient_ids, np.arange(1, len(patient_ids)+1)))
 
@@ -91,31 +90,31 @@ def divide_mat_file(act_times_outer, ids):
     """
 
     #Appends the name of the relevant subdirectory within the 'NSAA' directory to correctly source the .mat files
-    global source_dir
-    source_dir += "matfiles\\"
+    global local_dir
+    local_dir += "matfiles\\"
 
     #Filters the file names within 'NSAA\matfiles\' by the chosen version
     if args.version == "V1":
-        version_fns = [fn for fn in os.listdir(source_dir) if not fn.endswith("2.mat")
+        version_fns = [fn for fn in os.listdir(local_dir) if not fn.endswith("2.mat")
                        and not fn.endswith("3.mat") and "V2" not in fn]
     else:
-        version_fns = [fn for fn in os.listdir(source_dir) if fn.endswith("2.mat") or "V2" in fn]
+        version_fns = [fn for fn in os.listdir(local_dir) if fn.endswith("2.mat") or "V2" in fn]
 
     #Filters down the list of files to split to either a list with one file name if 'fn' is a single name or a list
-    #of all .mat files within 'source_dir' to use if 'fn' is 'all'
+    #of all .mat files within 'local_dir' to use if 'fn' is 'all'
     if args.fn != "all":
         version_fns = [fn for fn in version_fns if args.fn in fn]
     else:
         version_fns = [fn for fn in version_fns if fn.endswith(".mat")]
 
-    #Make the relevant subdirectory within 'source_dir' to host the divided-up act files or, if it already exists,
+    #Make the relevant subdirectory within 'local_dir' to host the divided-up act files or, if it already exists,
     #then remove all currently-held .mat files within 'act_files'
-    if not os.path.exists(source_dir + "act_files\\"):
-        os.mkdir(source_dir + "act_files\\")
+    if not os.path.exists(local_dir + "act_files\\"):
+        os.mkdir(local_dir + "act_files\\")
     else:
-        for fn in os.listdir(source_dir + "act_files\\"):
+        for fn in os.listdir(local_dir + "act_files\\"):
             if fn.endswith(".mat"):
-                os.remove(source_dir + "act_files\\" + fn)
+                os.remove(local_dir + "act_files\\" + fn)
 
     #For each of the files we wish to split (either just one if 'fn' is single name or numerous if 'fn' is 'all')...
     for file_name in version_fns:
@@ -146,7 +145,7 @@ def divide_mat_file(act_times_outer, ids):
 
         #Load the .mat file in question
         print("Dividing up " + file_name + "...")
-        file = sio.loadmat(source_dir + file_name)
+        file = sio.loadmat(local_dir + file_name)
 
         #For each activity tuple of a start and end time, extract the table of data within the .mat file, take the rows
         #that are to be extracted (i.e. determined by the start- and end-time values within 'pair'), replaces the
@@ -159,14 +158,16 @@ def divide_mat_file(act_times_outer, ids):
             np.delete(file["tree"][0][0][6][0][0][10][0][0][2], 0)
             file["tree"][0][0][6][0][0][10][0][0][2] = [new_inner_table]
             new_file_name = str(file_name.split(".mat")[0]) + "_act" + str(i+1) + ".mat"
-            sio.savemat(source_dir + "act_files\\" + new_file_name, file)
+            sio.savemat(local_dir + "act_files\\" + new_file_name, file)
             file["tree"][0][0][6][0][0][10][0][0][2] = [inner_table]
 
-
+#TODO Insert the action detection function
+"""
 #Runs the script with the above-described two functions
 if not args.detect_activities:
     act_times, ids = extract_act_times()
 else:
     pass
-    #TODO Insert the action detection function
+"""
+act_times, ids = extract_act_times()
 divide_mat_file(act_times, ids)

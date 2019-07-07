@@ -12,40 +12,14 @@ from tkinter import*
 import os
 from os.path import isfile
 import argparse
+from settings import sampling_rate, local_dir, sub_dirs, source_dir, short_file_types, axis_labels, segment_labels, \
+    joint_labels, sensor_labels, measure_to_len_map, seg_join_sens_map
 
-sampling_rate = 60      #In Hz
 
-#Note: CHANGE THESE to location of the 3 sub-directories' encompassing directory local to the user
-source_dir = "C:\\msc_project_files\\"
-sub_dirs = ["6minwalk-matfiles\\", "6MW-matFiles\\", "NSAA\\"]
-output_dir = source_dir + "output_files\\"
-
-#Lists of constants that dictate the allowed source file types to analyse and the dimensions of the data
-file_types = ["JA", "AD", "DC"]
-axis_labels = ["X", "Y", "Z"]
-
-#Below 3 lists are labels for the 23 segments, 22 joints, and 17 sensors, as dictated by the 'MVN User Manual'
-segment_labels = ["Pelvis", "L5", "L3", "T12", "T8", "Neck", "Head", "RightShoulder", "RightUpperArm",
-                  "RightForeArm", "RightHand", "LeftShoulder", "LeftUpperArm", "LeftForeArm", "LeftHand",
-                  "RightUpperLeg", "RightLowerLeg", "RightFoot", "RightToe", "LeftUpperLeg", "LeftLowerLeg",
-                  "LeftFoot", "LeftToe"]
-
-joint_labels = ["jL5S1", "jL4L3", "jL1T12", "jT9T8", "jT1C7", "jC1Head", "jRightT4Shoulder", "jRightShoulder",
-                "jRightElbow", "jRightWrist", "jLeftT4Shoulder", "jLeftShoulder", "jLeftElbow", "jLeftWrist",
-                "jRightHip", "jRightKnee", "jRightAnkle", "jRightBallFoot", "jLeftHip", "jLeftKnee",
-                "jLeftAnkle", "jLeftBallFoot"]
-
-sensor_labels = ["Pelvis", "T8", "Head", "RightShoulder", "RightUpperArm", "RightForeArm", "RightHand",
-                 "LeftShoulder", "LeftUpperArm", "LeftForeArm", "LeftHand", "RightUpperLeg", "RightLowerLeg",
-                 "RightFoot", "LeftUpperLeg", "LegLowerLeg", "LeftFoot"]
-
-#Mapping used to map a given measurement name to the number of x/y/z values found in the .mat file
-measure_to_len_map = {"orientation": 23, "position": 23, "velocity": 23, "acceleration": 23, "angularVelocity": 23,
-                      "angularAcceleration": 23, "sensorFreeAcceleration": 17, "sensorMagneticField": 17,
-                      "sensorOrientation": 22, "jointAngle": 22, "jointAngleXZY": 22}
-
-#Mapping used to select lists of labels names to use based on the length of the numbers contained in data array
-seg_join_sens_map = {len(segment_labels): segment_labels, len(joint_labels): joint_labels, len(sensor_labels): sensor_labels}
+#Reassigns the name of 'source_dir' to 'output_dir' in this script, as what is used as the source for several
+#other scripts is what is used as the output directory in this script
+output_dir = source_dir
+file_types = short_file_types
 
 
 """
@@ -127,11 +101,10 @@ def mean_sum_abs_vals(nums):
 
 def cov_eigenvals(nums, i):
     """
-
-    :param list of values of 2D array of numbers of which we wish to find the eigenvals of covariance matrix, and an
-    index to indicate which of the eigenvals we wish to return
-    :return one of the two largest (rounded to 4 decimal places) eigenvalues of the covariance matrix of the
-    2D array of numbers (i.e. the top 2 of 3 eigenvals), depending on the index 'i'
+        :param list of values of 2D array of numbers of which we wish to find the eigenvals of covariance matrix, and an
+        index to indicate which of the eigenvals we wish to return
+        :return one of the two largest (rounded to 4 decimal places) eigenvalues of the covariance matrix of the
+        2D array of numbers (i.e. the top 2 of 3 eigenvals), depending on the index 'i'
     """
     vals = la.eig(covariance_round(nums))[0].tolist()
     vals = list(vals)
@@ -162,7 +135,6 @@ def prop_outside_mean_zone(nums, percen=0.1):
                 if not z_mean*(1-percen) < num[2] < z_mean*(1+percen):
                     nums_outside += 1
     return round(nums_outside/len(nums), 4)
-
 
 
 
@@ -261,6 +233,7 @@ def check_for_abnormality(file_names, error_margin=1, abnormality_threshold=0.3)
             if features_out_of_range / len(file_df.iloc[0]) > abnormality_threshold:
                 print(file_df.index.values[i], "outside", error_margin, "mean error margin for >",
                       (abnormality_threshold*100), "% of its features")
+
 
 
 
@@ -514,14 +487,14 @@ class DataCubeFile(object):
         self.dc_sub_dir = sub_dir
 
         try:
-            self.dc_table = pd.read_csv(source_dir + "data_cube_table.csv")
+            self.dc_table = pd.read_csv(local_dir + "data_cube_table.csv")
             self.dc_short_file_names = self.dc_table.values[:, 1]
             self.dc_file_names = self.dc_table.values[:, 2]
         except FileNotFoundError:
             print("Couldn't find the 'data_cube_table.csv file. Make sure to run the "
                   "'writetable(excel_table, \"data_cube_table.csv\") in matlab with data_cube.mat file open")
             sys.exit()
-        self.dc = sio.loadmat(source_dir + "data_cube_6mw", matlab_compatible=True)["data_cube"][0][0][2][0]
+        self.dc = sio.loadmat(local_dir + "data_cube_6mw", matlab_compatible=True)["data_cube"][0][0][2][0]
 
         self.ja_objs = []
         for i in range(len(self.dc_short_file_names)):
@@ -598,7 +571,7 @@ class JointAngleFile(object):
         self.is_dc_object = True if dc_object_index != -1 else False
         #Loads the JA data from the datacube file instead of the normal JA files if passed from DataCubeFile class
         if dc_object_index != -1:
-            self.ja_data = sio.loadmat(source_dir + "data_cube_6mw",
+            self.ja_data = sio.loadmat(local_dir + "data_cube_6mw",
                                   matlab_compatible=True)["data_cube"][0][0][2][0][dc_object_index]
         else:
             #'Try-except' clause included to handle some slight naming inconsistencies with the JA filename syntax
@@ -886,10 +859,10 @@ args = parser.parse_args()
 split_files = args.split_files if args.split_files else 1
 split_size = args.split_size if split_files == 1 else None
 
-#Section below sets 'source_dir' to the subdirectory that we shall be pulling .mat files from, along with setting
+#Section below sets 'local_dir' to the subdirectory that we shall be pulling .mat files from, along with setting
 #up 'file_names' to be either the names of the files in subdirectory or a string if we are working with the data cube.
 if args.dir + "\\" in sub_dirs:
-    source_dir += args.dir + "\\"
+    local_dir += args.dir + "\\"
 else:
     print("First arg ('dir') must be a name of a subdirectory within the source dir and must be one of "
           "'6minwalk-matfiles', '6MW-matFiles' or 'NSAA'.")
@@ -897,31 +870,31 @@ else:
 file_names = []
 if args.dir == "6minwalk-matfiles":
     if args.ft.upper() == "AD":
-        source_dir += "all_data_mat_files\\"
-        file_names = os.listdir(source_dir)
+        local_dir += "all_data_mat_files\\"
+        file_names = os.listdir(local_dir)
     elif args.ft.upper() == "JA":
-        source_dir += "joint_angles_only_matfiles\\"
-        file_names = os.listdir(source_dir)
+        local_dir += "joint_angles_only_matfiles\\"
+        file_names = os.listdir(local_dir)
     elif args.ft.upper() == "DC":
-        source_dir += "joint_angles_only_matfiles\\"
+        local_dir += "joint_angles_only_matfiles\\"
         file_names = "DC"
 elif args.dir == "6MW-matFiles":
     if args.ft.upper() == "AD":
-        file_names = [f for f in os.listdir(source_dir) if f.endswith(".mat")]
+        file_names = [f for f in os.listdir(local_dir) if f.endswith(".mat")]
     else:
         print("Second arg must be 'AD', as '6MW-matFiles' doesn't have joint angle or data cube files in them.")
         sys.exit()
 else:
     if args.ft.upper() == "AD":
         # Only 'matfiles' subdirectory of 'NSAA' applicable for analysis with this script
-        source_dir += "matfiles\\"
+        local_dir += "matfiles\\"
         if args.single_act:
             if args.dir == "NSAA":
-                source_dir += "act_files\\"
+                local_dir += "act_files\\"
             else:
                 print("Must be using 'NSAA\\AD' files when using '--single_act' optional argument...")
                 sys.exit()
-        file_names = [f for f in os.listdir(source_dir) if f.endswith(".mat")]
+        file_names = [f for f in os.listdir(local_dir) if f.endswith(".mat")]
     else:
         print("Second arg must be 'AD', as 'NSAA\matfiles' doesn't have joint angle or data cube files in them.")
         sys.exit()
@@ -934,11 +907,11 @@ if not args.dis_3d_pos and not args.dis_diff_plot and not args.dis_3d_angs:
         if file_names != "DC":
             #Handles the 'AD'/'JA' case when file name is NOT 'all' (i.e. just a single file)
             if any(args.fn in fn for fn in file_names):
-                file_name = source_dir + [fn for fn in file_names if args.fn in fn][0]
+                file_name = local_dir + [fn for fn in file_names if args.fn in fn][0]
                 names = class_selector(args.ft, file_name, fns=None, sub_dir=args.dir, is_all=False,
                                        split_files=split_files, is_extract_csv=args.extract_csv, split_size=split_size)
             elif args.fn == "all":
-                file_names = [source_dir + fn for fn in file_names]
+                file_names = [local_dir + fn for fn in file_names]
                 names = class_selector(args.ft, None, fns=file_names, sub_dir = args.dir, is_all=True,
                                        split_files=split_files, is_extract_csv=args.extract_csv, split_size=split_size)
             else:
@@ -988,7 +961,7 @@ elif args.dis_3d_pos:
         sys.exit()
     else:
         if any(args.fn in fn for fn in file_names):
-            file_name = source_dir + [fn for fn in file_names if args.fn in fn][0]
+            file_name = local_dir + [fn for fn in file_names if args.fn in fn][0]
             AllDataFile(file_name, args.dir).display_3d_positions()
         else:
             print("Third arg ('fn') must be the short name of an all data file (e.g. 'D2', 'HC5').")
@@ -999,7 +972,7 @@ elif args.dis_diff_plot:
         sys.exit()
     else:
         if any(args.fn in fn for fn in file_names):
-            file_name = source_dir + [fn for fn in file_names if args.fn in fn][0]
+            file_name = local_dir + [fn for fn in file_names if args.fn in fn][0]
             JointAngleFile(file_name, args.fn, args.dir).display_diffs_plot()
         else:
             print("Third arg ('fn') must be the short name of a joint angle file (e.g. 'D2').")
@@ -1010,7 +983,7 @@ elif args.dis_3d_angs:
         sys.exit()
     else:
         if any(args.fn in fn for fn in file_names):
-            file_name = source_dir + [fn for fn in file_names if args.fn in fn][0]
+            file_name = local_dir + [fn for fn in file_names if args.fn in fn][0]
             JointAngleFile(file_name, args.fn, args.dir).display_3d_angles()
         else:
             print("Third arg ('fn') must be the short name of a joint angle file (e.g. 'D2').")

@@ -3,6 +3,7 @@ import pandas as pd
 import sys
 import matplotlib.pyplot as plt
 import numpy as np
+from settings import results_path, local_dir
 
 parser = argparse.ArgumentParser()
 parser.add_argument("start_exp", nargs="?", default=None,
@@ -31,12 +32,7 @@ parser.add_argument("--x_log", type=bool, nargs="?", const=True,
                          "sequence lengths.")
 args = parser.parse_args()
 
-results_path = "..\\documentation\\RNN Results.xlsx"
 
-#Note: CHANGE THIS to location of the 3 sub-directories' encompassing directory local to the user so the
-#'RNN_trues_preds.csv' can be correctly sourced
-local_dir = "C:\\msc_project_files\\"
-source_dir = local_dir + "output_files\\"
 
 #Only executed if the first argument is provided as a file name within 'RNN_outputs', whereupon it loads the file,
 #reads in the predicted and true values, plots them, shows it to the user, and saves the image to the 'Graphs' directory
@@ -60,6 +56,7 @@ if "_" in args.start_exp and args.choice != "model_preds":
         sys.exit()
     #Exit the program after plotting the graph, as remainder of the program expects to see other arguments present
     sys.exit()
+
 
 #Handles the case where we are graphing with the 'model_predictions.csv' file, i.e. the 'test_altdirs.py' output
 if args.choice == "model_preds":
@@ -179,7 +176,6 @@ dirs, measures, seq_lens, seq_overs, results, features = [], [], [], [], [], []
 for i, row in exper_data.iterrows():
     dirs.append(row["'rnn' arguments"].split(" ")[2])
     measures.append(row["'rnn' arguments"].split(" ")[3])
-   # seq_lens.append(int(row[10].split(" ")[-1]))
     seq_lens.append(int(row["'rnn' arguments"].split("--seq_len=")[-1].split(" ")[0]))
     features.append(int(row[11].split(" ")[-1]))
     res_names = [j.split(" = ")[0] for j in row["Results"].split(", ")]

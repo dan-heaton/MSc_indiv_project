@@ -1,6 +1,8 @@
 import argparse
 import sys
 import os
+from settings import local_dir, sub_dirs, file_types
+
 
 """Section below specifies the arguments that are required to run the script, which needs a directory from which to 
 source the files to test, the directories that are used to train the models that we shall be testing on, and 
@@ -15,16 +17,6 @@ parser.add_argument("testdirs", help="Specifies the directories of files that ar
 parser.add_argument("ft", help="Specifies the measurements that will be used from the files in 'dir' to test on "
                                "the models sourced from 'testdirs'.")
 args = parser.parse_args()
-
-
-
-#Note: CHANGE THIS to location of the 3 sub-directories' encompassing directory local to the user.
-local_dir = "C:\\msc_project_files\\"
-source_dir = local_dir + "output_files\\"
-
-sub_dirs = ["6minwalk-matfiles\\", "6MW-matFiles\\", "NSAA\\", "direct_csv\\", "allmatfiles\\"]
-file_types = ["AD", "position", "velocity", "acceleration", "angularVelocity", "angularAcceleration",
-                "sensorFreeAcceleration", "sensorMagneticField", "jointAngle", "jointAngleXZY"]
 
 
 
@@ -71,7 +63,6 @@ elif args.dir == "NSAA":
 else:
     source_dir = local_dir + args.dir + "\\all_data_mat_files\\"
     short_file_names = [f.split("-")[1] for f in os.listdir(source_dir) if f.endswith(".mat")]
-
 
 
 

@@ -6,6 +6,8 @@ import numpy as np
 import tensorflow as tf
 from collections import Counter
 from matplotlib import pyplot as plt
+from settings import local_dir, batch_size, source_dir, output_dir, \
+    model_dir, sub_dirs, sub_sub_dirs, file_types, output_types, model_pred_path
 
 
 """Section below encompasses the three arguments that are required to be passed to the script. This arguments ensures 
@@ -37,23 +39,6 @@ parser.add_argument("--file_num", type=str, nargs="?", const=True, default=False
 args = parser.parse_args()
 
 
-#Note: CHANGE THIS to location of the 3 sub-directories' encompassing directory local to the user.
-local_dir = "C:\\msc_project_files\\"
-
-#Note: must match the batch size of the models that have been trained (default is 64)
-batch_size = 64
-
-
-#Other locations and sub-dir nameswithin 'local_dir' that will contain the files we need, as dictated by assuming the
-#user has previously run the required scripts (e.g. 'comp_stat_vals', 'ext_raw_measures', etc.)
-source_dir = local_dir + "output_files\\"
-output_dir = local_dir + "output_files\\RNN_outputs\\"
-model_dir = local_dir + "output_files\\rnn_models\\"
-sub_dirs = ["6minwalk-matfiles\\", "6MW-matFiles\\", "NSAA\\", "direct_csv\\", "allmatfiles\\"]
-sub_sub_dirs = ["AD\\", "JA\\", "DC\\"]
-file_types = ["AD", "position", "velocity", "acceleration", "angularVelocity", "angularAcceleration",
-                "sensorFreeAcceleration", "sensorMagneticField", "jointAngle", "jointAngleXZY"]
-output_types = ["acts", "dhc", "overall"]
 
 #Appends the sub_dir name to 'source_dir' if it's one of the allowed names
 if args.dir + "\\" in sub_dirs:
@@ -305,7 +290,6 @@ for i, inner_models in enumerate(models):
             preds = [np.mean(elems) for elems in preds]
 
 
-
         #Based on what type the model is, add output lines to 'output_strs' that gives info on the true 'y' label of the
         #file (e.g. true 'D' or 'HC' label, true overall NSAA score, or true single acts scores) and what the model predicted
         if output_type == "overall":
@@ -380,8 +364,6 @@ new_output_strs = [args.fn, args.dir, ", ".join(args.alt_dirs.split("_")), args.
 ind_lab = args.file_num if args.file_num else "N/A"
 #Creates a single-line DataFrame from the predictions made by the model(s) with corresponding headers
 output_strs_df = pd.DataFrame([new_output_strs], columns=header, index=[ind_lab])
-
-model_pred_path = "..\\documentation\\model_predictions.csv"
 
 
 #Writes the single-line DataFrame to a new .csv file if it doesn't exist or, if it does exist, appends it to the end
