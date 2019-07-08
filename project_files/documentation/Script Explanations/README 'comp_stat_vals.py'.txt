@@ -1,8 +1,8 @@
 
 
----------------------		matfiles_analysis.py Overview and explanation		---------------------
+---------------------		comp_stat_vals.py Overview and explanation		---------------------
 
-The basic operation of the 'matfiles_analysis.py' script can be summarized as follows:
+The basic operation of the 'comp_stat_vals.py' script can be summarized as follows:
 
 1.) Read in a certain .mat file (either a joint angle file, an all-data file, or a datacube object) into Python
 
