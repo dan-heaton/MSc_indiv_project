@@ -16,6 +16,10 @@ pip install pyexcel=0.5.13
 
 
 REM run the necessary scripts to setup the files necessary for the RNN and the model predictor
+python file_renamer.py NSAA
+python file_renamer.py 6minwalk-matfiles
+python file_renamer.py 6MW-matFiles
+python file_renamer.py allmatfiles
 python comp_stat_vals.py NSAA AD all --split_size=1
 python comp_stat_vals.py 6minwalk-matfiles AD all --split_size=1
 python comp_stat_vals.py 6minwalk-matfiles DC all --extract_csv 

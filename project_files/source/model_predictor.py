@@ -124,8 +124,14 @@ for sd in search_dirs:
         for i, ft in enumerate(fts):
             if any(fn for fn in os.listdir(model_dir) if fn.split("_")[0] == sd and
                                                          fn.split("_")[3] == ot and fn.split("_")[1] == ft):
-                inner_inner_models.append([fn for fn in os.listdir(model_dir) if fn.split("_")[0] == sd and
-                                     fn.split("_")[3] == ot and fn.split("_")[1] == ft][0])
+                #Gets the first inner model directory that match the file type, directory name, and output type, with
+                #additional preference of model trained on 'left out file' if one exists in 'model_dir
+                match_dirs = [fn for fn in os.listdir(model_dir) if fn.split("_")[0] == sd and
+                                     fn.split("_")[3] == ot and fn.split("_")[1] == ft]
+                if any(args.fn in md for md in match_dirs):
+                    inner_inner_models.append([md for md in match_dirs if args in md][0])
+                else:
+                    inner_inner_models.append(match_dirs[0])
             else:
                 inner_inner_models.append(None)
         inner_models.append(inner_inner_models)
