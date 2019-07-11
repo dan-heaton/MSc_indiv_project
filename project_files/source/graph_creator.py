@@ -4,6 +4,7 @@ import sys
 import matplotlib.pyplot as plt
 import numpy as np
 from settings import results_path, local_dir
+from sklearn.metrics import mean_absolute_error
 
 parser = argparse.ArgumentParser()
 parser.add_argument("start_exp", nargs="?", default=None,
@@ -49,7 +50,8 @@ if "_" in args.start_exp and args.choice != "model_preds":
         plt.ylabel("Predicted overall NSAA scores")
         plt.savefig("..\\documentation\\Graphs\\" + args.start_exp)
         plt.gcf().set_size_inches(10, 10)
-        plt.show()
+        if not args.no_display:
+            plt.show()
     except FileNotFoundError:
         print("First arg ('start_exp') must be the name of a file within 'RNN_outputs' and cannot load '" +
               local_dir + "output_files\\RNN_outputs\\" + args.start_exp + "' ...")
@@ -63,7 +65,7 @@ if args.choice == "model_preds":
     model_preds = pd.read_csv("..\\documentation\\model_predictions.csv")
     #Select the relevant rows from the file based on the args that we passed into 'graph_creator.py'
     model_preds = model_preds.loc[(model_preds["Source dir"] == args.start_exp) &
-                                  (model_preds["Model trained dir(s)"] == ", ".join(args.end_exp.split(",")))]
+                                  (model_preds["Model trained dir(s)"] == str(args.end_exp.split(",")))]
     model_train_dirs = args.end_exp.split(",")
 
 
@@ -89,8 +91,11 @@ if args.choice == "model_preds":
         plt.xlabel("True overall NSAA scores")
         plt.ylabel("Predicted overall NSAA scores")
         plt.gcf().set_size_inches(10, 10)
-        #plt.savefig("..\\documentation\\Graphs\\" + args.start_exp)
-        plt.show()
+        plt.savefig("..\\documentation\\Graphs\\Model_predictions_" + args.start_exp + "_" + args.end_exp + "_" +
+                    args.end_exp.split(",")[i] + "_true_pred_overall_NSAA")
+        if not args.no_display:
+            plt.show()
+        plt.close()
 
     #Plots distributions of the percentages of correctly predicted sequence D/HC labels
     for i, md_off in enumerate(model_dir_offsets):
@@ -109,7 +114,12 @@ if args.choice == "model_preds":
                   "w/ " + args.end_exp.split(",")[i] + " model pred dir")
         plt.xlabel("Percentage of correctly predicted sequence D/HC labels for given file")
         plt.ylabel("Number of files")
-        plt.show()
+        plt.gcf().set_size_inches(10, 10)
+        plt.savefig("..\\documentation\\Graphs\\Model_predictions_" + args.start_exp + "_" + args.end_exp + "_" +
+                    args.end_exp.split(",")[i] + "_distrib_seq_labels")
+        if not args.no_display:
+            plt.show()
+        plt.close()
 
     #Plots distributions of the percentages of correctly predicted single acts for each file
     for i, md_off in enumerate(model_dir_offsets):
@@ -120,7 +130,49 @@ if args.choice == "model_preds":
                   "w/ " + args.end_exp.split(",")[i] + " model pred dir")
         plt.xlabel("Percentage of correctly predicted sequence individual acts labels for given file")
         plt.ylabel("Number of files")
-        plt.show()
+        plt.gcf().set_size_inches(10, 10)
+        plt.savefig("..\\documentation\\Graphs\\Model_predictions_" + args.start_exp + "_" + args.end_exp + "_" +
+                    args.end_exp.split(",")[i] + "_distrib_perc_indiv_acts")
+        if not args.no_display:
+            plt.show()
+        plt.close()
+
+    #Computes and prints MAE between true and predicted NSAA scores over files
+    for i, md_off in enumerate(model_dir_offsets):
+        mae = round(mean_absolute_error(model_preds.iloc[:, md_off+8].tolist(),
+                                        model_preds.iloc[:, md_off+9].tolist()), 2)
+        print("MAE between true and predicted NSAA scores over files (" +
+              args.end_exp.split(",")[i] + ") = " + str(mae))
+    print("\n")
+
+    #Computes and prints percentage of correct predicted file D/HC label
+    for i, md_off in enumerate(model_dir_offsets):
+        correct_labels = 0
+        for j, row in model_preds.iterrows():
+            correct_labels += 1 if row[md_off+4] == row[md_off+5] else 0
+        print("Percentage of correct predicted file D/HC label (" + args.end_exp.split(",")[i] + ") = " +
+              str(round(((correct_labels/len(model_preds))*100), 2)) + "%")
+    print("\n")
+
+    #Computes and prints MAE of percentage predicted wrong sequence D/HC classifcation over files
+    for i, md_off in enumerate(model_dir_offsets):
+        pred_percents = []
+        for j, row in model_preds.iterrows():
+            if row[md_off+4] == "D":
+                pred_percents.append(float(row[md_off+6][:-1]))
+            else:
+                pred_percents.append(float(row[md_off+7][:-1]))
+        mae = round(mean_absolute_error(pred_percents, [100.0 for k in range(len(pred_percents))]), 2)
+        print("MAE of percentage predicted wrong sequence D/HC classifcation over files (" +
+              args.end_exp.split(",")[i] + ") = " + str(mae))
+    print("\n")
+
+    #Computes and prints average percentage of single acts correctly predicted over files
+    for i, md_off in enumerate(model_dir_offsets):
+        pred_percents = [float(row[md_off+3][:-1]) for j, row in model_preds.iterrows()]
+        mean_perc = round(np.mean(pred_percents), 2)
+        print("Average percentage of single acts correctly predicted over files (" +
+              args.end_exp.split(",")[i] + ") = " + str(mean_perc) + "%")
 
     #Exit the program after plotting the graph, as remainder of the program expects to see other arguments present
     sys.exit()

@@ -70,7 +70,8 @@ if match_fns:
 else:
     if args.fn == "all":
         match_fns = [s for s in os.listdir(source_dir)]
-        full_file_names = [source_dir + match_fns[i] for i in range(len(match_fns)) if "FR_" not in match_fns[i]]
+        full_file_names = [source_dir + match_fns[i] for i in range(len(match_fns)) if "FR_" not in match_fns[i]
+                           and match_fns[i].endswith(".csv")]
     else:
         print("Third arg ('fn') must be the short name of a file (e.g. 'D2' or 'all') within", source_dir)
         sys.exit()

@@ -20,23 +20,21 @@ python file_renamer.py NSAA
 python file_renamer.py 6minwalk-matfiles
 python file_renamer.py 6MW-matFiles
 python file_renamer.py allmatfiles
+python mat_act_div.py V1 all
 python comp_stat_vals.py NSAA AD all --split_size=1
+python comp_stat_vals.py NSAA AD all --split_size=1 --single_act
 python comp_stat_vals.py 6minwalk-matfiles AD all --split_size=1
-python comp_stat_vals.py 6minwalk-matfiles DC all --extract_csv 
+python comp_stat_vals.py 6minwalk-matfiles DC all --extract_csv
 python comp_stat_vals.py 6minwalk-matfiles JA all --extract_csv
 python comp_stat_vals.py 6MW-matFiles AD all --split_size=1
-python mat_act_div.py V1 all
 python ext_raw_measures.py NSAA all all
 python ext_raw_measures.py NSAA all all --single_act
 python ext_raw_measures.py 6minwalk-matfiles all all
-python ext_raw_measures.py 6minwalk-matfiles all all --single_act
 python ext_raw_measures.py 6MW-matFiles all all
-python ext_raw_measures.py 6MW-matFiles all all --single_act
 python ext_raw_measures.py allmatfiles all jointAngle
-python ext_raw_measures.py allmatfiles all jointAngle --single_act
 python ft_sel_red.py NSAA AD all pca --num_features=30 --no_normalize
 python ft_sel_red.py 6minwalk-matfiles AD all pca --num_features=30 --no_normalize 
-python ft_sel_red.py 6MW-matFiles AD all pca --num_features=30 --no_normalize 
+python ft_sel_red.py 6MW-matFiles AD all pca --num_features=30 --no_normalize
 
 
 @echo ---------- Setup successfully completed ----------

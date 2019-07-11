@@ -39,7 +39,8 @@ if dir == "allmatfiles":
             files_to_delete.append(f)
         else:
             files_kept.append(f)
-
+else:
+    files_kept = file_names
 
 #Creates new 'target' file names for each of the old file names based on sets of regexes for each 'dir'
 new_file_names = []
@@ -64,6 +65,8 @@ elif dir == "6minwalk-matfiles":
     for fn in files_kept:
         f = sub("All-", "", fn)
         f = sub("^d", "D", f)
+        # Removes extra string parts after '6MinWalk' or '6MW' (e.g. '6MinWalk-SensorDropped.mat' becomes '6MinWalk.mat')
+        f = sub("6MinWalk.*\.mat", "6MinWalk.mat", f)
         new_file_names.append(f)
 elif dir =="6MW-matFiles":
     for fn in files_kept:
@@ -72,6 +75,7 @@ elif dir =="6MW-matFiles":
         #Removes extra string parts after '6MinWalk' or '6MW' (e.g. '6MinWalk-SensorDropped.mat' becomes '6MinWalk.mat')
         f = sub("6MinWalk.*\.mat", "6MinWalk.mat", f)
         f = sub("6MWT.*\.mat", "6MW.mat", f)
+        f = sub("6MW.mat", "6MinWalk.mat", f)
         new_file_names.append(f)
 else:
     for fn in files_kept:
@@ -94,11 +98,13 @@ else:
 
 #Removes any of the files within 'allmatfiles' that we don't want to keep (i.e. discards 'AllTasks' or 'New-Session' files)
 if files_to_delete:
-    for file in files_to_delete:
-        os.remove(local_dir + file)
+    print(files_to_delete)
+    choice = input("Delete all above files?")
+    if choice == "y":
+        for file in files_to_delete:
+            os.remove(local_dir + file)
 
 
 #Takes the new file names that have been created in the predefined format and replaces the original file names with them
 for nfn, fn in zip(new_file_names, files_kept):
     os.rename(local_dir + fn, local_dir + nfn)
-

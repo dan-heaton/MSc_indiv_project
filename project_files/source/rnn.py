@@ -128,7 +128,7 @@ if args.other_dir:
 
 
 
-def preprocessing(test_ratio):
+def preprocessing():
     """
         :return given a short file name for 'fn' command-line argument, finds the relevant file in 'source_dir' and
         adds it to 'file_names' (or set 'file_names' to all file names in 'source_dir'), reads in each file name in
@@ -605,7 +605,7 @@ class RNN(object):
 
 old_seq_len = sequence_length
 #Extracts the training and testing data
-x_train, x_test, y_train, y_test = preprocessing(test_ratio=test_ratio)
+x_train, x_test, y_train, y_test = preprocessing()
 
 #Repeats the preprocessing for 'other_dir' if specified by setting 'dir' to the value of 'other_dir' and then setting
 #it back to the original value after extracting the data from 'other_dir' and adding it to the 'dir' data
@@ -613,7 +613,7 @@ if args.other_dir:
     old_dir = args.dir
     args.dir = args.other_dir
     sequence_length = old_seq_len
-    new_x_train, new_x_test, new_y_train, new_y_test = preprocessing(test_ratio=test_ratio)
+    new_x_train, new_x_test, new_y_train, new_y_test = preprocessing()
     x_train = np.concatenate((x_train, new_x_train), axis=0)
     x_test = np.concatenate((x_test, new_x_test), axis=0)
     y_train = np.concatenate((y_train, new_y_train), axis=0)

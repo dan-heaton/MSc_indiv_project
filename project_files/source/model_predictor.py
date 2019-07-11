@@ -36,8 +36,21 @@ parser.add_argument("--handle_dash", type=bool, nargs="?", const=True, default=F
 parser.add_argument("--file_num", type=str, nargs="?", const=True, default=False,
                     help="Optional arg for 'test_altdirs' to use to write the file number as it appears in its "
                          "source directory.")
+parser.add_argument("--use_seen", type=bool, nargs="?", const=True, default=False,
+                    help="Specify this if, given a file name, the script should seek out models to use which correspond "
+                         "to the given arguments but specifically have seen the corresponding file name before; i.e. the "
+                         "models are being assessed on subjects from data it has already seen.")
+parser.add_argument("--single_act", type=int, nargs="?", const=True, default=False,
+                    help="Specify this is intending to use the single-act files that are produced by 'mat_act_div' to "
+                         "predict with. Only able to be used when 'dir'=NSAA.")
 args = parser.parse_args()
 
+
+#Ensures 'dir'=NSAA when '--single_acts' is set
+if args.single_act and args.dir != "NSAA":
+    print("First arg ('dir') must be 'NSAA' when '--single_acts' is set, as there are only single acts files from "
+          "the files from the 'NSAA' directory.")
+    sys.exit()
 
 
 #Appends the sub_dir name to 'source_dir' if it's one of the allowed names
@@ -56,10 +69,14 @@ if args.dir == "allmatfiles" and args.ft != "jointAngle":
 fts, sds = [], []
 for ft in args.ft.split(","):
     fts.append(ft)
-    if ft + "\\" in sub_sub_dirs:
+    if ft + "\\" in sub_sub_dirs and not args.single_act:
         sds.append(source_dir + ft + "\\")
-    elif ft in file_types and args.dir == "NSAA":
+    elif ft + "\\" in sub_sub_dirs and args.single_act:
+        sds.append(source_dir + ft + "\\act_files\\")
+    elif ft in file_types and args.dir == "NSAA" and not args.single_act:
         sds.append(local_dir + "NSAA\\matfiles\\" + ft + "\\")
+    elif ft in file_types and args.dir == "NSAA" and args.single_act:
+        sds.append(local_dir + "NSAA\\matfiles\\act_files\\" + ft + "\\")
     elif args.dir == "allmatfiles":
         sds.append(local_dir + "allmatfiles\\")
     else:
@@ -82,11 +99,18 @@ for sd in sds:
             print("Cannot find '" + str(args.fn) + "' in '" + sd + "'")
             sys.exit()
     elif any(args.fn.upper() == s.upper().split("-")[0] for s in os.listdir(sd)) \
-            or any(args.fn.upper() == s.upper().split("_")[2] for s in os.listdir(sd)):
-        if sd.endswith("AD\\"):
-            fns.append([s for s in os.listdir(sd) if args.fn.upper() == s.upper().split("_")[1]][0])
+            or any(args.fn.upper() == s.upper().split("_")[2] for s in os.listdir(sd) if s.endswith(".csv")):
+        if "AD\\" in sd:
+            if not args.single_act:
+                fns.append([s for s in os.listdir(sd) if args.fn.upper() == s.upper().split("_")[1]][0])
+            else:
+                fns.append([s for s in os.listdir(sd) if args.fn.upper() == s.upper().split("_")[1]
+                            and "act" + str(args.single_act) + "_" in s][0])
         else:
-            fns.append([s for s in os.listdir(sd) if args.fn in s][0])
+            if not args.single_act:
+                fns.append([s for s in os.listdir(sd) if args.fn in s][0])
+            else:
+                fns.append([s for s in os.listdir(sd) if args.fn in s and "act" + str(args.single_act) + "_" in s][0])
     else:
         print("Cannot find '" + str(args.fn) + "' in '" + sd + "'")
         sys.exit()
@@ -129,7 +153,11 @@ for sd in search_dirs:
                 match_dirs = [fn for fn in os.listdir(model_dir) if fn.split("_")[0] == sd and
                                      fn.split("_")[3] == ot and fn.split("_")[1] == ft]
                 if any(args.fn in md for md in match_dirs):
-                    inner_inner_models.append([md for md in match_dirs if args in md][0])
+                    #If 'use_seen' is set, specifically don't use ones that have '--leave_out='fn''
+                    if args.use_seen:
+                        inner_inner_models.append([md for md in match_dirs if args.fn not in md][0])
+                    else:
+                        inner_inner_models.append([md for md in match_dirs if args.fn in md][0])
                 else:
                     inner_inner_models.append(match_dirs[0])
             else:
@@ -363,7 +391,16 @@ for out_str in output_strs:
 #Adds in additional strings to the row that are based on the arguments based in to 'model_predictor' and also creates
 #additional corresponding header strings
 header = ["Short file name", "Source dir", "Model trained dir(s)", "Measurements tested"] + header
-new_output_strs = [args.fn, args.dir, ", ".join(args.alt_dirs.split("_")), args.ft] + new_output_strs
+#Appends a short string to the file name being written to file if the models have already seen the file name in training
+if args.use_seen:
+    args.fn += " (already seen)"
+if args.single_act:
+    args.fn += " (act " + str(args.single_act) + ")"
+if args.alt_dirs:
+    new_output_strs = [args.fn, args.dir, args.alt_dirs.split("_"), args.ft.split(",")] + new_output_strs
+else:
+    #If same directory is used for training models as is used for assessing, add a 'N/A' to the column
+    new_output_strs = [args.fn, args.dir, "N/A", args.ft.split(",")] + new_output_strs
 
 #Adds a index name that is set to what number it corresponds to within 'dir' if passed from 'test_altdirs'
 #(e.g. '8/470') or 'N/A' if the optional '--file_num' arg is not provided
