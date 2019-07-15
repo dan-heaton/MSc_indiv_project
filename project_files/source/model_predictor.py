@@ -40,6 +40,9 @@ parser.add_argument("--use_seen", type=bool, nargs="?", const=True, default=Fals
                     help="Specify this if, given a file name, the script should seek out models to use which correspond "
                          "to the given arguments but specifically have seen the corresponding file name before; i.e. the "
                          "models are being assessed on subjects from data it has already seen.")
+parser.add_argument("--use_balanced", type=str, nargs="?", const=True, default=False,
+                    help="Specify this if, given a file name, the script should seek out models to use which correspond "
+                         "to the given arguments but specifically are from a model trained on a 'class balanced' dataset.")
 parser.add_argument("--single_act", type=int, nargs="?", const=True, default=False,
                     help="Specify this is intending to use the single-act files that are produced by 'mat_act_div' to "
                          "predict with. Only able to be used when 'dir'=NSAA.")
@@ -65,6 +68,12 @@ else:
 if args.dir == "allmatfiles" and args.ft != "jointAngle":
     print("Second arg ('ft') must be 'jointAngle when 'dir' argument is \'allmatfiles\'")
     sys.exit()
+
+#Ensures that, if '--balance' is set, it is either 'up' to upsample the data or 'down' to downsample the data
+if args.balance:
+    if not args.balance == "up" and not args.balance == "down":
+        print("Optional arg ('--balance') must be set to either 'up' or 'down'.")
+        sys.exit()
 
 fts, sds = [], []
 for ft in args.ft.split(","):
@@ -153,15 +162,33 @@ for sd in search_dirs:
                 match_dirs = [fn for fn in os.listdir(model_dir) if fn.split("_")[0] == sd and
                                      fn.split("_")[3] == ot and fn.split("_")[1] == ft]
                 if any(args.fn in md for md in match_dirs):
-                    #If 'use_seen' is set, specifically don't use ones that have '--leave_out='fn''
-                    if args.use_seen:
-                        inner_inner_models.append([md for md in match_dirs if args.fn not in md][0])
+                    #If 'use_balanced' is set, specifically use ones which have '--balance' in directory name
+                    if args.use_balanced and args.use_balanced == "up":
+                        if not args.use_seen:
+                            #If 'use_seen' is not set, specifically use ones that have '--leave_out='fn'' in directory name
+                            inner_inner_models.append([md for md in match_dirs
+                                                       if "--balance=up" in md and "--leave_out=" + args.fn in md][0])
+                        else:
+                            inner_inner_models.append([md for md in match_dirs
+                                                       if "--balance=up" in md and "--leave_out=" not in md][0])
+                    elif args.use_balanced and args.use_balanced == "down":
+                        if not args.use_seen:
+                            #If 'use_seen' is not set, specifically use ones that have '--leave_out='fn'' in directory name
+                            inner_inner_models.append([md for md in match_dirs
+                                                       if "--balance=down" in md and "--leave_out=" + args.fn in md][0])
+                        else:
+                            inner_inner_models.append([md for md in match_dirs
+                                                       if "--balance=down" in md and "--leave_out=" not in md][0])
                     else:
-                        inner_inner_models.append([md for md in match_dirs if args.fn in md][0])
+                        if not args.use_seen:
+                            inner_inner_models.append([md for md in match_dirs if "--leave_out=" + args.fn in md][0])
+                        else:
+                            inner_inner_models.append([md for md in match_dirs if "--leave_out=" not in md][0])
                 else:
                     inner_inner_models.append(match_dirs[0])
             else:
                 inner_inner_models.append(None)
+            print("Using model: '" + str(inner_inner_models[-1]) + "'...")
         inner_models.append(inner_inner_models)
     models.append(inner_models)
 
@@ -396,6 +423,10 @@ if args.use_seen:
     args.fn += " (already seen)"
 if args.single_act:
     args.fn += " (act " + str(args.single_act) + ")"
+if args.use_balance and args.use_balance == "down":
+    args.fn += " (downsampled)"
+elif args.use_balance and args.use_balance == "up":
+    args.fn += " (upsampled)"
 if args.alt_dirs:
     new_output_strs = [args.fn, args.dir, args.alt_dirs.split("_"), args.ft.split(",")] + new_output_strs
 else:

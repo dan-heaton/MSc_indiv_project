@@ -12,7 +12,10 @@ from sklearn.metrics import confusion_matrix as cm
 import pyexcel as pe
 from matplotlib import pyplot as plt
 from math import floor
+import data_balancer
 from settings import local_dir, source_dir, output_dir, sub_dirs, sub_sub_dirs, raw_measurements, batch_size
+
+
 
 #Does not print to display the many warnings that TensorFlow throws up (many about updating to next version or
 #deprecated functionality)
@@ -70,6 +73,10 @@ parser.add_argument("--leave_out", type=str, nargs="?", const=True, default=Fals
                     help="Option to specify the short file name of the file to leave out of the train and test set "
                          "altogether, and thus use it reliably in 'model_predictor.py'. Note that it removes ALL files "
                          "with a matching short name, so '--leave_out=D4' would exclude 'D4', 'd4' and 'D4v2' files.")
+parser.add_argument("--balance", type=str, nargs="?", const=True, default=False,
+                    help="Option to balance the data based on overall NSAA scores. Set as 'up' to upsample samples with "
+                         "overall NSAA y-labels to that of the most frequent value or 'down' to downsample to that of "
+                         "the least frequent value.")
 args = parser.parse_args()
 
 #If no optional argument given for '--seq_len', defaults to seq_len = 10, i.e. defaults to splitting files into
@@ -92,6 +99,12 @@ if args.seq_overlap == 1:
 if not args.discard_prop:
     args.discard_prop = 0
 
+#Ensures that, if '--balance' is set, it is either 'up' to upsample the data or 'down' to downsample the data
+if args.balance:
+    if not args.balance == "up" and not args.balance == "down":
+        print("Optional arg ('--balance') must be set to either 'up' or 'down'.")
+        sys.exit()
+
 
 #Location at which to store the created model that will be used by 'model_predictor.py'
 model_path = local_dir + "output_files\\rnn_models\\" + '_'.join(sys.argv[1:]) + "\\model.ckpt"
@@ -101,6 +114,9 @@ model_path = local_dir + "output_files\\rnn_models\\" + '_'.join(sys.argv[1:]) +
 #if not one of 'sub_sub_dirs'
 choices = ["dhc", "overall", "acts", "indiv"]
 choice = None
+
+#Global variable to hold strings that should be printed at the end of 'rnn' running if '--balance' is set
+balance_strs = []
 
 """RNN hyperparameters"""
 x_shape = None
@@ -142,6 +158,8 @@ def preprocessing():
     global sequence_length
     #Appends the sub_dir name to 'source_dir' if it's one of the allowed names
     global source_dir
+    #Sets 'y_value_balance' and 'y_data_balance' to be used in function scope if '--balance' is set
+    y_label_balance, y_data_balance = None, []
     if args.dir + "\\" in sub_dirs:
         source_dir += args.dir + "\\"
     else:
@@ -284,6 +302,11 @@ def preprocessing():
             data = data.values
             y_label = data[0][int(file_name.split(".")[0].split("_")[1].split("act")[1])]
 
+        #If the '--balance' optional argument is set, then set the 'y_label_balance' to overall NSAA score for the file,
+        #regardless of the 'choice' arg, to use as a means to balance the data
+        if args.balance:
+           y_label_balance = data_balancer.ext_label_dist(file_name=file_name)
+
         #Determine the number of data splits needed based on the size of the data file and the desired sequence length,
         #including rounding it down and accounting for the sequence overlap proportion)
         num_data_splits = int(len(data) / sequence_length)
@@ -323,6 +346,9 @@ def preprocessing():
             else:
                 x_data.append(split_data[:, 21:])
             y_data.append(y_label)
+            #If we wish to balance the data, append the overall NSAA score to a separate list used to balance the data
+            if args.balance:
+                y_data_balance.append(y_label_balance)
             #Note: overlap lengths are rounded DOWN via 'int'
             start += int(sequence_length*(1-args.seq_overlap))
 
@@ -336,6 +362,20 @@ def preprocessing():
     #placeholder variable shape
     if args.discard_prop:
         sequence_length = len(x_data[0])
+
+    #Rebalances the data based on the value of 'args.balance'
+    if args.balance:
+        if args.balance == "up":
+            x_data, y_data, balance_s = data_balancer.upsample(x_data, y_data, y_data_balance)
+        else:
+            x_data, y_data, balance_s = data_balancer.downsample(x_data, y_data, y_data_balance)
+        #Sets the global variable to print out balance strings at a later point
+        global balance_strs
+        balance_strs = balance_s
+        x_shape = np.shape(x_data)
+        y_shape = np.shape(y_data)
+        print("Balanced X shape =", x_shape)
+        print("Balanced Y shape =", y_shape)
 
     #Appends the arguments that were used to invoke the model and its sequence length to a file that stores
     #the sequence lengths (to be used by the 'model_predictor.py' script
@@ -656,5 +696,10 @@ else:
 print("\n\n")
 for output_str in output_strs:
     print(output_str)
+
+#Prints to the console the before and after shapes of the data if the '--balance' optional arg is set
+if args.balance:
+    for balance_str in balance_strs:
+        print(balance_str)
 
 write_to_csv(trues=y_true, preds=preds, output_strs=output_strs)

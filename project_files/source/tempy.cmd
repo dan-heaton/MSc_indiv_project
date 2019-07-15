@@ -1,0 +1,16 @@
+python model_predictor.py NSAA position,sensorMagneticField,jointAngle,jointAngleXZY D11 --single_act=2
+python model_predictor.py NSAA position,sensorMagneticField,jointAngle,jointAngleXZY D11 --single_act=3
+python model_predictor.py NSAA position,sensorMagneticField,jointAngle,jointAngleXZY D11 --single_act=4
+python model_predictor.py NSAA position,sensorMagneticField,jointAngle,jointAngleXZY D11 --single_act=5
+python model_predictor.py NSAA position,sensorMagneticField,jointAngle,jointAngleXZY D11 --single_act=6
+python model_predictor.py NSAA position,sensorMagneticField,jointAngle,jointAngleXZY D11 --single_act=7
+python model_predictor.py NSAA position,sensorMagneticField,jointAngle,jointAngleXZY D11 --single_act=8
+python model_predictor.py NSAA position,sensorMagneticField,jointAngle,jointAngleXZY D11 --single_act=9
+python model_predictor.py NSAA position,sensorMagneticField,jointAngle,jointAngleXZY D11 --single_act=10
+python model_predictor.py NSAA position,sensorMagneticField,jointAngle,jointAngleXZY D11 --single_act=11
+python model_predictor.py NSAA position,sensorMagneticField,jointAngle,jointAngleXZY D11 --single_act=12
+python model_predictor.py NSAA position,sensorMagneticField,jointAngle,jointAngleXZY D11 --single_act=13
+python model_predictor.py NSAA position,sensorMagneticField,jointAngle,jointAngleXZY D11 --single_act=14
+python model_predictor.py NSAA position,sensorMagneticField,jointAngle,jointAngleXZY D11 --single_act=15
+python model_predictor.py NSAA position,sensorMagneticField,jointAngle,jointAngleXZY D11 --single_act=16
+python model_predictor.py NSAA position,sensorMagneticField,jointAngle,jointAngleXZY D11 --single_act=17
