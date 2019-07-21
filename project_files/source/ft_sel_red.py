@@ -173,6 +173,11 @@ def add_nsaa_scores(file_df):
     nsaa_6mw_cols = nsaa_6mw_tab[["ID", "NSAA"]]
     nsaa_overall_dict = dict(pd.Series(nsaa_6mw_cols.NSAA.values, index=nsaa_6mw_cols.ID).to_dict())
 
+    # If the first column's names begins with "jointangle", remove this part
+    if file_df.iloc[0, 0].startswith("jointangle"):
+        for i, row in file_df.iterrows():
+            row[0] = row[0].split("jointangle")[1]
+
     #Adds column of overall NSAA scores at position 0 of every row of the data values, with the NSAA score being
     #appended determined by the short file name of the data as found at the beginning of each row of the data
     nss = [nsaa_overall_dict[i.upper()[:-2] if i.upper().endswith("V2") else i.upper()]

@@ -70,8 +70,8 @@ if args.dir == "allmatfiles" and args.ft != "jointAngle":
     sys.exit()
 
 #Ensures that, if '--balance' is set, it is either 'up' to upsample the data or 'down' to downsample the data
-if args.balance:
-    if not args.balance == "up" and not args.balance == "down":
+if args.use_balanced:
+    if not args.use_balanced == "up" and not args.use_balanced == "down":
         print("Optional arg ('--balance') must be set to either 'up' or 'down'.")
         sys.exit()
 
@@ -423,9 +423,9 @@ if args.use_seen:
     args.fn += " (already seen)"
 if args.single_act:
     args.fn += " (act " + str(args.single_act) + ")"
-if args.use_balance and args.use_balance == "down":
+if args.use_balanced and args.use_balanced == "down":
     args.fn += " (downsampled)"
-elif args.use_balance and args.use_balance == "up":
+elif args.use_balanced and args.use_balanced == "up":
     args.fn += " (upsampled)"
 if args.alt_dirs:
     new_output_strs = [args.fn, args.dir, args.alt_dirs.split("_"), args.ft.split(",")] + new_output_strs

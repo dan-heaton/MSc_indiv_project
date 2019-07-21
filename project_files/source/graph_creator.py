@@ -7,10 +7,11 @@ from settings import results_path, local_dir
 from sklearn.metrics import mean_absolute_error
 
 parser = argparse.ArgumentParser()
-parser.add_argument("choice", nargs="?", default=None,
+parser.add_argument("choice",
                     help="Choice of graph creator mode. Must be one of: 'trues_preds' to call the 'plot_trues_preds()' "
-                         "function, 'model_preds_altdirs' to call the 'plot_model_preds_altdirs()' function, or"
-                         "'rnn_results' to call the 'plot_rnn_results() function.")
+                         "function, 'model_preds_altdirs' to call the 'plot_model_preds_altdirs()' function, "
+                         "'model_preds_single_acts' for 'plot_model_preds_single_acts()', or 'rnn_results' to call "
+                         "the 'plot_rnn_results() function.")
 parser.add_argument("arg_one", nargs="?", default=None,
                     help="Arg based on 'choice' that is specified. If choice='trues_preds', 'arg_one' is the name of "
                          "the file to load from 'RNN_outputs' (not inc. file extension) to plot the trues and preds "
@@ -221,7 +222,7 @@ def plot_model_preds_single_acts():
             act_dict[act_num].append(float(line[1].iloc[11][:-1]))
         else:
             act_dict[act_num].append(float(line[1].iloc[12][:-1]))
-        act_dict[act_num].append(line[1].loc["Predicted 'Overall NSAA Score'"])
+        act_dict[act_num].append(abs(line[1].loc["Predicted 'Overall NSAA Score'"] - line[1].loc["True 'Overall NSAA Score'"]))
 
     #Constructs the subplots for the 3 types of output type metrics for the single act numbers using the
     #entries in 'act_dict'
@@ -233,7 +234,7 @@ def plot_model_preds_single_acts():
     axes[0].set_ylim(bottom=0, top=100)
     axes[1].set(xlabel="Act Number", ylabel="Percent of predicted \ncorrect D/HC sequences")
     axes[1].set_ylim(bottom=0, top=100)
-    axes[2].set(xlabel="Act Number", ylabel="Predicted 'Overall \nNSAA Score'")
+    axes[2].set(xlabel="Act Number", ylabel="Absolute error between true\n and predicted overall NSAA score")
     axes[2].set_ylim(bottom=0, top=34)
 
     plt.suptitle("Plots of '" + args.arg_one + "' single activities performance for 'acts', 'dhc', and "

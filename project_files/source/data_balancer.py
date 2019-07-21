@@ -1,5 +1,6 @@
 from collections import OrderedDict
 import pandas as pd
+from random import shuffle
 from random import randint
 
 
@@ -52,7 +53,7 @@ def downsample(x_data, y_data, y_data_balance):
     #Shuffles the zipped 'x' and 'y' data so they both get shuffled in the same way so the samples that we remove are
     #completely randomised within the sample
     Z = list(zip(x_data, y_data, y_data_balance))
-    random.shuffle(Z)
+    shuffle(Z)
     x_data, y_data, y_data_balance = zip(*Z)
 
     #Gets the lowest frequency of a given overall NSAA score; this is the frequency of each overall NSAA scores'
