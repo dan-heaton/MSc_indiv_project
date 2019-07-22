@@ -17,6 +17,9 @@ along with using TensorFlow extensively to implement, train, and load RNN models
 various machine learning tools and techniques, and using pandas and numpy for processing data
 
 ## Repo Layout
+
+![alt text](https://raw.githubusercontent.com/dan-heaton/MSc_indiv_project/tree/master/project_files/source/Script%pipeline%diagram.png)
+
 The following provides a brief overview of how the repo is organized, the significance of the individual directories, etc.
 
 * **background_research**: this folder contains some preparatory programs that were written (with help from sources cited in the scripts themselves) to familiarize oneself with the building of RNNs/CRFs with the chosen libraries in order to make using them for the actual project later that much easier; hence, these aren't used by the rest of the project at all and are included for historical documentation reasons only.

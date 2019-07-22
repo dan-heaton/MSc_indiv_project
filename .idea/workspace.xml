@@ -1,7 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="6269803a-5c93-4fe7-8214-f3bd850e9b27" name="Default Changelist" comment="Added program on using CRF for sequence labelling, and reorganized directory structure." />
+    <list default="true" id="6269803a-5c93-4fe7-8214-f3bd850e9b27" name="Default Changelist" comment="Added program on using CRF for sequence labelling, and reorganized directory structure.">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plans_and_presentations/Experiments and Results Discussion.docx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/plans_and_presentations/MSc Initial Report.docx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/plans_and_presentations/MSc Initial Report.pdf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/plans_and_presentations/MSc Project Plan.ods" beforeDir="false" afterPath="$PROJECT_DIR$/plans_and_presentations/MSc Project Plan.ods" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plans_and_presentations/Progress Made 22-05 to 04-06.pptx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/plans_and_presentations/Progress Made 24-04 to 07-05.pptx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/plans_and_presentations/Project Summary presentation.pptx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/plans_and_presentations/RNN_CRF_presentation.pptx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/plans_and_presentations/intro_presentation.pptx" beforeDir="false" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -118,7 +129,7 @@
         <entry file="file://$PROJECT_DIR$/project_files/source/rnn.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="138">
-              <caret line="372" column="14" lean-forward="true" selection-start-line="372" selection-start-column="14" selection-end-line="372" selection-end-column="14" />
+              <caret line="372" column="14" selection-start-line="372" selection-start-column="14" selection-end-line="372" selection-end-column="14" />
               <folding>
                 <element signature="e#0#10#0" expanded="true" />
                 <marker date="1563803994768" expanded="true" signature="9175:9176" ph="..." />
@@ -155,7 +166,7 @@
         <entry file="file://$PROJECT_DIR$/project_files/source/model_predictor.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="323">
-              <caret line="19" column="89" lean-forward="true" selection-start-line="19" selection-start-column="89" selection-end-line="19" selection-end-column="90" />
+              <caret line="19" column="89" selection-start-line="19" selection-start-column="89" selection-end-line="19" selection-end-column="90" />
               <folding>
                 <element signature="e#0#15#0" expanded="true" />
               </folding>
@@ -310,7 +321,7 @@
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
+  <component name="ProjectFrameBounds" extendedState="7">
     <option name="x" value="-15" />
     <option name="y" value="-15" />
     <option name="width" value="3875" />
@@ -525,7 +536,7 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-6" y="-6" width="1549" height="837" extended-state="6" />
+    <frame x="-6" y="-6" width="1549" height="837" extended-state="7" />
     <editor active="true" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" sideWeight="0.64503044" weight="0.3295905" />
@@ -716,7 +727,7 @@
     <entry file="file://$PROJECT_DIR$/project_files/source/model_predictor.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="323">
-          <caret line="19" column="89" lean-forward="true" selection-start-line="19" selection-start-column="89" selection-end-line="19" selection-end-column="90" />
+          <caret line="19" column="89" selection-start-line="19" selection-start-column="89" selection-end-line="19" selection-end-column="90" />
           <folding>
             <element signature="e#0#15#0" expanded="true" />
           </folding>
@@ -746,7 +757,7 @@
     <entry file="file://$PROJECT_DIR$/project_files/source/rnn.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="138">
-          <caret line="372" column="14" lean-forward="true" selection-start-line="372" selection-start-column="14" selection-end-line="372" selection-end-column="14" />
+          <caret line="372" column="14" selection-start-line="372" selection-start-column="14" selection-end-line="372" selection-end-column="14" />
           <folding>
             <element signature="e#0#10#0" expanded="true" />
             <marker date="1563803994768" expanded="true" signature="9175:9176" ph="..." />
