@@ -18,7 +18,7 @@ various machine learning tools and techniques, and using pandas and numpy for pr
 
 ## Repo Layout
 
-![Script pipeline diagram](https://raw.githubusercontent.com/dan-heaton/MSc_indiv_project/blob/master/plans_and_presentations/Report%20stuff/Script%20pipeline%20diagram.PNG)
+![Script pipeline diagram](plans_and_presentations/Report%20stuff/Script%20pipeline%20diagram.PNG)
 
 The following provides a brief overview of how the repo is organized, the significance of the individual directories, etc.
 
