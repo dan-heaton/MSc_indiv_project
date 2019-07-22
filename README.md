@@ -16,9 +16,11 @@ extraction, data visualization, feature selection and reduction, and model train
 along with using TensorFlow extensively to implement, train, and load RNN models, using scikit-learn for
 various machine learning tools and techniques, and using pandas and numpy for processing data
 
-## Repo Layout
+## Script pipeline diagram
 
 ![Script pipeline diagram](plans_and_presentations/Report%20stuff/Script%20pipeline%20diagram.PNG)
+
+## Repo Layout
 
 The following provides a brief overview of how the repo is organized, the significance of the individual directories, etc.
 
