@@ -11,7 +11,7 @@ local_dir = "C:\\msc_project_files\\"
 source_dir = local_dir + "output_files\\"
 output_dir = local_dir + "output_files\\RNN_outputs\\"
 model_dir = local_dir + "output_files\\rnn_models\\"
-sub_dirs = ["6minwalk-matfiles\\", "6MW-matFiles\\", "NSAA\\", "direct_csv\\", "allmatfiles\\"]
+sub_dirs = ["6minwalk-matfiles\\", "6MW-matFiles\\", "NSAA\\", "direct_csv\\", "allmatfiles\\", "left-out\\"]
 sub_sub_dirs = ["AD\\", "JA\\", "DC\\"]
 
 #Other paths to documentation files that are referenced in several locations within 'source'

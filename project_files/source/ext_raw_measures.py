@@ -29,7 +29,7 @@ args = parser.parse_args()
 if args.dir + "\\" in sub_dirs:
     if args.dir == "6minwalk-matfiles":
         local_dir += args.dir + "\\all_data_mat_files\\"
-    elif args.dir == "6MW-matFiles" or args.dir == "allmatfiles":
+    elif args.dir == "6MW-matFiles" or args.dir == "allmatfiles" or args.dir == "left-out":
         local_dir += args.dir + "\\"
     else:
         local_dir += args.dir + "\\matfiles\\"

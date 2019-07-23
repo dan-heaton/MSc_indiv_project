@@ -856,7 +856,7 @@ if args.dir + "\\" in sub_dirs:
     local_dir += args.dir + "\\"
 else:
     print("First arg ('dir') must be a name of a subdirectory within the source dir and must be one of "
-          "'6minwalk-matfiles', '6MW-matFiles' or 'NSAA'.")
+          "'6minwalk-matfiles', '6MW-matFiles', 'NSAA', 'direct_csv', 'allmatfiles', or 'left-out'.")
     sys.exit()
 file_names = []
 if args.dir == "6minwalk-matfiles":
@@ -875,6 +875,8 @@ elif args.dir == "6MW-matFiles":
     else:
         print("Second arg must be 'AD', as '6MW-matFiles' doesn't have joint angle or data cube files in them.")
         sys.exit()
+elif args.dir == "left-out":
+    file_names = [f for f in os.listdir(local_dir)]
 else:
     if args.ft.upper() == "AD":
         # Only 'matfiles' subdirectory of 'NSAA' applicable for analysis with this script

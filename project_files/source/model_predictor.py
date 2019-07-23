@@ -16,7 +16,7 @@ the script about which pre-trained model to select to test the file on."""
 parser = argparse.ArgumentParser()
 parser.add_argument("dir", help="Specifies which source directory the prediction file is contained in so as to process "
                                 "the file accordingly. Must be one of '6minwalk-matfiles', '6MW-matFiles', "
-                                "'NSAA', or 'allmatfiles'.")
+                                "'NSAA', 'allmatfiles', or 'left-out'.")
 parser.add_argument("ft", help="Specify type of .mat file that the .csv is to come from, being one of 'JA' (joint "
                                "angle), 'AD' (all data), or 'DC' (data cube). Alternatively, supply a name of a "
                                "measurement (e.g. 'position', 'velocity', 'jointAngle', etc.) if the file is being "
@@ -61,7 +61,7 @@ if args.dir + "\\" in sub_dirs:
     source_dir += args.dir.upper() + "\\"
 else:
     print("First arg ('dir') must be a name of a subdirectory within source dir and must be one of "
-          "'6minwalk-matfiles', '6MW-matFiles', 'NSAA', or 'direct_csv'.")
+          "'6minwalk-matfiles', '6MW-matFiles', 'NSAA', 'direct_csv', 'allmatfiles', or 'left-out'.")
     sys.exit()
 
 #Ensures the corresponding second argument when dealing with files from 'allmatfiles'
@@ -78,7 +78,11 @@ if args.use_balanced:
 fts, sds = [], []
 for ft in args.ft.split(","):
     fts.append(ft)
-    if ft + "\\" in sub_sub_dirs and not args.single_act:
+    if args.dir == "left-out" and ft == "AD":
+        sds.append(local_dir + "output_files\\left-out\\AD\\")
+    elif args.dir == "left-out" and ft in file_types:
+        sds.append(local_dir + "left-out\\" + ft + "\\")
+    elif ft + "\\" in sub_sub_dirs and not args.single_act:
         sds.append(source_dir + ft + "\\")
     elif ft + "\\" in sub_sub_dirs and args.single_act:
         sds.append(source_dir + ft + "\\act_files\\")
@@ -107,6 +111,8 @@ for sd in sds:
         else:
             print("Cannot find '" + str(args.fn) + "' in '" + sd + "'")
             sys.exit()
+    elif args.dir == "left-out":
+        fns.append([s for s in os.listdir(sd) if args.fn.split("-")[0]in s][0])
     elif any(args.fn.upper() == s.upper().split("-")[0] for s in os.listdir(sd)) \
             or any(args.fn.upper() == s.upper().split("_")[2] for s in os.listdir(sd) if s.endswith(".csv")):
         if "AD\\" in sd:
@@ -155,7 +161,13 @@ for sd in search_dirs:
     for ot in output_types:
         inner_inner_models = []
         for i, ft in enumerate(fts):
-            if any(fn for fn in os.listdir(model_dir) if fn.split("_")[0] == sd and
+            #Handles the special case when we're using NSAA files that are placed in the 'left-out' source dir
+            if args.dir == "left-out":
+                inner_inner_models.append([md for md in os.listdir(model_dir) if md.split("_")[0] == "NSAA"
+                                           and md.split("_")[1] == ft and md.split("_")[3] == ot
+                                           and "--leave_out" not in md and "--balance" not in md
+                                           and "--other_dir" not in md][0])
+            elif any(fn for fn in os.listdir(model_dir) if fn.split("_")[0] == sd and
                                                          fn.split("_")[3] == ot and fn.split("_")[1] == ft):
                 #Gets the first inner model directory that match the file type, directory name, and output type, with
                 #additional preference of model trained on 'left out file' if one exists in 'model_dir

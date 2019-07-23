@@ -223,7 +223,11 @@ def add_nsaa_scores(file_df):
 #to do so (otherwise, don't continue with this file), and write this to the same directory it was sourced from as a
 #.csv file with the same name except with a 'FR_' at the front of the file name
 for full_file_name in full_file_names:
-    new_x, y = ft_red_select(full_file_name)
+    try:
+        new_x, y = ft_red_select(full_file_name)
+    except ValueError:
+        print("'" + full_file_name + "': number of rows too few for number of features, skipping...")
+        continue
 
     #Recombine the now-reduced 'x' data with the source file name and label columns
     new_df = pd.DataFrame(np.concatenate((y, new_x), axis=1))
