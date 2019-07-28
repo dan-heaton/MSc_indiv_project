@@ -180,7 +180,7 @@ def plot_model_preds_altdirs():
               str(round(((correct_labels/len(model_preds))*100), 2)) + "%")
     print("\n")
 
-    #Computes and prints MAE of percentage predicted wrong sequence D/HC classifcation over files
+    #Computes and prints MAE of percentage predicted wrong sequence D/HC classification over files
     for i, md_off in enumerate(model_dir_offsets):
         pred_percents = []
         for j, row in model_preds.iterrows():
@@ -189,7 +189,7 @@ def plot_model_preds_altdirs():
             else:
                 pred_percents.append(float(row[md_off+7][:-1]))
         mae = round(mean_absolute_error(pred_percents, [100.0 for k in range(len(pred_percents))]), 2)
-        print("MAE of percentage predicted wrong sequence D/HC classifcation over files (" +
+        print("MAE of percentage predicted wrong sequence D/HC classification over files (" +
               args.arg_two.split(",")[i] + ") = " + str(mae))
     print("\n")
 

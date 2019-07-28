@@ -26,7 +26,7 @@ parser.add_argument("fn", help="Specify the short file name of a .csv to be the 
                                "'All_D2_stats_features.csv', enter 'D2'.")
 parser.add_argument("--alt_dirs", type=str, nargs="?", const=True, default=False,
                     help="Optional argument to use directory types other than 'dir' to predict from(e.g. if "
-                         "'dir'=allmatfiles, can specify '--other_dir'=NSAA,6minwalk-matfiles to predict the "
+                         "'dir'=allmatfiles, can specify '--alt_dirs'=NSAA,6minwalk-matfiles to predict the "
                          "'allmatfile' file on models trained on 'NSAA' and '6minwalk-matfiles' files.")
 parser.add_argument("--show_graph", type=bool, nargs="?", const=True, default=False,
                     help="Option to show the 'trues-preds' graph that is created and saved by the script.")
