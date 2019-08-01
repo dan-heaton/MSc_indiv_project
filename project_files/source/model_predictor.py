@@ -46,12 +46,25 @@ parser.add_argument("--use_balanced", type=str, nargs="?", const=True, default=F
 parser.add_argument("--single_act", type=int, nargs="?", const=True, default=False,
                     help="Specify this is intending to use the single-act files that are produced by 'mat_act_div' to "
                          "predict with. Only able to be used when 'dir'=NSAA.")
+parser.add_argument("--single_act_concat", type=int, nargs="?", const=True, default=False,
+                    help="Specify this is intending to use the single-act-concat files that are produced by "
+                         "'mat_act_div' to predict with. Only able to be used when 'dir'=NSAA.")
+parser.add_argument("--use_frc", type=bool, nargs="?", const=True, default=False,
+                    help="Option to use the 'FRC_' files for 'AD' files instead of 'FR_' files, i.e. use files where "
+                         "dimensionality reduction has been applied the same way over all files rather than on a "
+                         "file-by-file basis.")
 args = parser.parse_args()
 
 
 #Ensures 'dir'=NSAA when '--single_acts' is set
 if args.single_act and args.dir != "NSAA":
     print("First arg ('dir') must be 'NSAA' when '--single_acts' is set, as there are only single acts files from "
+          "the files from the 'NSAA' directory.")
+    sys.exit()
+
+#Ensures 'dir'=NSAA when '--single_acts_concat' is set
+if args.single_act_concat and args.dir != "NSAA":
+    print("First arg ('dir') must be 'NSAA' when '--single_acts_concat' is set, as there are only single acts files from "
           "the files from the 'NSAA' directory.")
     sys.exit()
 
@@ -82,14 +95,20 @@ for ft in args.ft.split(","):
         sds.append(local_dir + "output_files\\left-out\\AD\\")
     elif args.dir == "left-out" and ft in file_types:
         sds.append(local_dir + "left-out\\" + ft + "\\")
-    elif ft + "\\" in sub_sub_dirs and not args.single_act:
+    elif ft + "\\" in sub_sub_dirs and not args.single_act and not args.single_act_concat:
         sds.append(source_dir + ft + "\\")
     elif ft + "\\" in sub_sub_dirs and args.single_act:
         sds.append(source_dir + ft + "\\act_files\\")
+    elif ft + "\\" in sub_sub_dirs and args.single_act_concat:
+        sds.append(source_dir + ft + "\\act_files_concat\\")
     elif ft in file_types and args.dir == "NSAA" and not args.single_act:
         sds.append(local_dir + "NSAA\\matfiles\\" + ft + "\\")
     elif ft in file_types and args.dir == "NSAA" and args.single_act:
         sds.append(local_dir + "NSAA\\matfiles\\act_files\\" + ft + "\\")
+    elif ft in file_types and args.dir == "NSAA" and not args.single_act_concat:
+        sds.append(local_dir + "NSAA\\matfiles\\" + ft + "\\")
+    elif ft in file_types and args.dir == "NSAA" and args.single_act_concat:
+        sds.append(local_dir + "NSAA\\matfiles\\act_files_concat\\" + ft + "\\")
     elif args.dir == "allmatfiles":
         sds.append(local_dir + "allmatfiles\\")
     else:
@@ -134,7 +153,10 @@ for sd in sds:
 full_file_names = []
 for sd, fn in zip(sds, fns):
     if fn.startswith("AD"):
-        full_file_names.append(sd + "FR_" + fn)
+        if not args.use_frc:
+            full_file_names.append(sd + "FR_" + fn)
+        else:
+            full_file_names.append(sd + "FRC_" + fn)
     elif args.dir == "allmatfiles":
         full_file_names.append(sd + "jointAngle\\" + fn.split(".")[0] + "_jointAngle.csv")
     else:
@@ -185,12 +207,18 @@ for sd in search_dirs:
                                                        if "--balance=up" in md and "--leave_out=" not in md][0])
                     elif args.use_balanced and args.use_balanced == "down":
                         if not args.use_seen:
-                            #If 'use_seen' is not set, specifically use ones that have '--leave_out='fn'' in directory name
                             inner_inner_models.append([md for md in match_dirs
                                                        if "--balance=down" in md and "--leave_out=" + args.fn in md][0])
                         else:
                             inner_inner_models.append([md for md in match_dirs
                                                        if "--balance=down" in md and "--leave_out=" not in md][0])
+                    elif args.use_frc:
+                        if not args.use_seen:
+                            inner_inner_models.append([md for md in match_dirs
+                                                       if "--use_frc" in md and "--leave_out=" + args.fn in md][0])
+                        else:
+                            inner_inner_models.append([md for md in match_dirs
+                                                       if "--use_frc" in md and "--leave_out=" not in md][0])
                     else:
                         if not args.use_seen:
                             inner_inner_models.append([md for md in match_dirs if "--leave_out=" + args.fn in md][0])
@@ -248,7 +276,7 @@ def preprocessing(full_file_name, sequence_length):
     if args.dir != "direct_csv" and not source_dir.startswith(local_dir):
         y_label_dhc = 1 if full_file_name.split("\\")[-1].split("_")[2][0].upper() == "D" else 0
     elif source_dir.startswith(local_dir):
-        if "FR_" in full_file_name:
+        if "FR_" in full_file_name or "FRC_" in full_file_name:
             y_label_dhc = 1 if full_file_name.split("\\")[-1].split("_")[2][0].upper() == "D" else 0
         elif full_file_name.split("\\")[-1].startswith("jointangle"):
             y_label_dhc = 1 if full_file_name.split("\\")[-1].split("angle")[1][0].upper() == "D" else 0
@@ -435,6 +463,10 @@ if args.use_seen:
     args.fn += " (already seen)"
 if args.single_act:
     args.fn += " (act " + str(args.single_act) + ")"
+if args.single_act_concat:
+    args.fn += " (concat acts)"
+if args.use_frc:
+    args.fn += " (FRC)"
 if args.use_balanced and args.use_balanced == "down":
     args.fn += " (downsampled)"
 elif args.use_balanced and args.use_balanced == "up":

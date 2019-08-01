@@ -391,7 +391,7 @@ class AllDataFile(object):
         # Extracts values of the various measurements in different layout so 'f_d_s_data' now has shape:
         # (# measurements (e.g. 3 for position, accel, and megnet field) x # of features (e.g. 23 for segments)
         # x # of dimensions (e.g. 3 for x,y,z position values) x # of samples (~22K))
-        if args.single_act:
+        if args.single_act or args.single_act_concat:
             extract_data = self.df.loc[:, measurement_names].values
             f_d_s_data = np.zeros((len(measurement_names),
                                    max(len(segment_labels), len(joint_labels), len(sensor_labels)), 3,
@@ -436,6 +436,8 @@ class AllDataFile(object):
             ad_output_dir += "AD\\"
             if args.single_act:
                 ad_output_dir += "act_files\\"
+            elif args.single_act_concat:
+                ad_output_dir += "act_files_concat\\"
             if not os.path.exists(ad_output_dir):
                 os.mkdir(ad_output_dir)
 
@@ -443,7 +445,10 @@ class AllDataFile(object):
             #an 'all' .csv or a .csv determined by the name of the writing file
             af = "_" + self.ad_file_name.split(".")[0].split("_")[-1] if args.single_act else ""
             if not output_name:
-                output_complete_name = ad_output_dir + "AD_" + self.ad_short_file_name + af + "_stats_features.csv"
+                if not args.single_act_concat:
+                    output_complete_name = ad_output_dir + "AD_" + self.ad_short_file_name + af + "_stats_features.csv"
+                else:
+                    output_complete_name = ad_output_dir + "AD_" + self.ad_short_file_name.split(".")[0] + af + "_stats_features.csv"
                 print("Writing AD", self.ad_file_name, "(", (f+1), "/", split_file, ") statistial info to",
                       output_complete_name)
             else:
@@ -843,6 +848,8 @@ parser.add_argument("--combine_all", type=bool, nargs="?", const=True,
                     help="Combines all the written files into a single file with sub-title containing '_ALL'")
 parser.add_argument("--single_act", type=bool, nargs="?", const=True,
                     help="Specify if the files to operate on are 'single act' files.")
+parser.add_argument("--single_act_concat", type=bool, nargs="?", const=True,
+                    help="Specify if the files to operate on are 'single act concat' files.")
 args = parser.parse_args()
 
 
@@ -886,6 +893,12 @@ else:
                 local_dir += "act_files\\"
             else:
                 print("Must be using 'NSAA\\AD' files when using '--single_act' optional argument...")
+                sys.exit()
+        elif args.single_act_concat:
+            if args.dir == "NSAA":
+                local_dir += "act_files_concat\\"
+            else:
+                print("Must be using 'NSAA\\AD' files when using '--single_act_concat' optional argument...")
                 sys.exit()
         file_names = [f for f in os.listdir(local_dir) if f.endswith(".mat")]
     else:

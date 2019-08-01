@@ -32,7 +32,8 @@ percentage of sequence overlap between train/test samples, the number of epochs 
 settings to the output results file (these go to default values if not specified)."""
 parser = argparse.ArgumentParser()
 parser.add_argument("dir", help="Specifies which source directory to use so as to process the files contained within "
-                                "them accordingly. Must be one of '6minwalk-matfiles', '6MW-matFiles' or 'NSAA'.")
+                                "them accordingly. Must be one of '6minwalk-matfiles', '6MW-matFiles' or 'NSAA'. "
+                                "Alternatively, specify 'cnn_data' if building models from the data used for 'cnn' project.")
 parser.add_argument("ft", help="Specify type of .mat file that the .csv is to come from, being one of 'JA' (joint "
                                "angle), 'AD' (all data), or 'DC' (data cube). Alternatively, supply a name of a "
                                "measurement (e.g. 'position', 'velocity', 'jointAngle', etc.) if the file is to be "
@@ -77,6 +78,13 @@ parser.add_argument("--balance", type=str, nargs="?", const=True, default=False,
                     help="Option to balance the data based on overall NSAA scores. Set as 'up' to upsample samples with "
                          "overall NSAA y-labels to that of the most frequent value or 'down' to downsample to that of "
                          "the least frequent value.")
+parser.add_argument("--use_frc", type=bool, nargs="?", const=True, default=False,
+                    help="Option to use the 'FRC_' files for 'AD' files instead of 'FR_' files, i.e. use files where "
+                         "dimensionality reduction has been applied the same way over all files rather than on a "
+                         "file-by-file basis.")
+parser.add_argument("--use_sac", type=bool, nargs="?", const=True, default=False,
+                    help="Option to use the concatenated files for 'single-act' files over all activities per subject "
+                         "instead of separate files for each activity.")
 args = parser.parse_args()
 
 #If no optional argument given for '--seq_len', defaults to seq_len = 10, i.e. defaults to splitting files into
@@ -160,6 +168,11 @@ def preprocessing():
     global source_dir
     #Sets 'y_value_balance' and 'y_data_balance' to be used in function scope if '--balance' is set
     y_label_balance, y_data_balance = None, []
+    #If 'dir'=cnn, call the 'cnn_preprocessing' function instead and return the x/y train/test splits that the
+    #function returns
+    if args.dir == "cnn_data":
+        return cnn_preprocessing()
+
     if args.dir + "\\" in sub_dirs:
         source_dir += args.dir + "\\"
     else:
@@ -170,6 +183,12 @@ def preprocessing():
     #or another type of file (e.g. 'AD' or 'JA')
     if args.dir == "NSAA" and args.choice == "indiv" and args.ft in raw_measurements:
         source_dir = local_dir + "NSAA\\matfiles\\act_files\\" + args.ft + "\\"
+    elif args.dir == "NSAA" and args.choice == "indiv" and args.ft in raw_measurements and args.use_sac:
+        source_dir = local_dir + "NSAA\\matfiles\\act_files_concat\\" + args.ft + "\\"
+    elif args.dir == "NSAA" and args.choice == "indiv" and args.ft + "\\" in sub_sub_dirs:
+        source_dir += args.ft + "\\act_files\\"
+    elif args.dir == "NSAA" and args.choice == "indiv" and args.ft + "\\" in sub_sub_dirs and args.use_sac:
+        source_dir += args.ft + "\\act_files_concat\\"
     elif args.ft + "\\" in sub_sub_dirs and args.dir != "6MW-matFiles":
         source_dir += args.ft + "\\"
     elif args.dir == "allmatfiles" and args.ft in raw_measurements:
@@ -230,9 +249,15 @@ def preprocessing():
     #Ensures that only the written files from feature select/reduct script are used if present (i.e. if the directory
     #we are concerned with is not within 'direct_csv')
     if args.dir != "direct_csv" and source_dir.startswith(local_dir + "output_files\\"):
-        file_names = [fn for fn in file_names if fn.startswith("FR_")]
+        if not args.use_frc:
+            file_names = [fn for fn in file_names if fn.startswith("FR_")]
+        else:
+            file_names = [fn for fn in file_names if fn.startswith("FRC_")]
     elif args.ft == "AD":
-        file_names = [fn for fn in file_names if fn.startswith("FR_")]
+        if not args.use_frc:
+            file_names = [fn for fn in file_names if fn.startswith("FR_")]
+        else:
+            file_names = [fn for fn in file_names if fn.startswith("FRC_")]
 
 
     #Removes any file that contains in the name the optional argument '--leave_out'
@@ -387,6 +412,116 @@ def preprocessing():
     new_model_shape.to_excel("..\\documentation\\model_shapes.xlsx", index=False)
 
     return train_test_split(x_data, y_data, shuffle=True, test_size=test_ratio)
+
+
+
+def cnn_preprocessing():
+    """
+        :return:given the name for a 'left-out' file (i.e. the subject to be used as a testing set) via the '--left_out'
+        optional argument (required here), the relevant training and testing .csv files (one for each) are loaded in
+        and sequences are extracted from this and given corresponding 'y' labels based on the 'choice' arg, followed by
+        shuffling these sets are passing them along to the calling 'preprocessing' function, which terminates with the
+        returned data from this function
+    """
+
+    global sequence_length
+    cnn_data_dir = local_dir + "cnn_data\\"
+
+    train_test_data = [[[], []], [[], []]]
+    if any(dir for dir in os.listdir(cnn_data_dir) if dir.startswith(args.leave_out)):
+        leave_out_dir = [dir for dir in os.listdir(local_dir + "cnn_data\\") if dir.startswith(args.leave_out)][0]
+    else:
+        print("Must provide '--leave_out' arg as name of subject to leave out of training...")
+        sys.exit()
+
+    global choice
+    if args.choice == "dhc":
+        choice = "dhc"
+    elif args.choice == "overall":
+        choice = "overall"
+    else:
+        print("For 'dir'=cnn, the 'choice' arg must be one of 'overall' or 'dhc'...")
+        sys.exit()
+
+
+
+    for i, t_t in enumerate(("train", "test")):
+        file_name = cnn_data_dir + leave_out_dir + "\\" + t_t + ".csv"
+        file_data = pd.read_csv(file_name)
+        print("\n" + t_t.title() + " file '" + file_name + "' of shape: " + str(np.shape(file_data)))
+        print("Extracting '" + file_name + "' data...")
+        x_data = file_data.iloc[:, 1:29].values
+        if choice == "dhc":
+            y_data = file_data.iloc[:, 29].values
+        else:
+            y_data = file_data.iloc[:, 30].values
+
+        #Determine the number of data splits needed based on the size of the data file and the desired sequence length,
+        #including rounding it down and accounting for the sequence overlap proportion)
+        num_data_splits = int(len(x_data) / sequence_length)
+        num_data_splits = int(num_data_splits * (1 / (1 - args.seq_overlap)))
+
+        print("Splitting '" + file_name + "' into sequences....")
+        start, end = 0, 0
+        # For each desired sequence, determine the start and end positions of the sequence in 'data', extract this from
+        # the body of 'data', append this to 'x_data', and append the previously-determined 'y_label' to 'y_data'
+        for j in range(num_data_splits):
+            end = start + sequence_length
+            # Prevents moving window from 'clipping' the end of the data rows and getting a number of rows of
+            # less than 'sequence_length'
+            if end > len(x_data):
+                continue
+            # Discards every 'nth' row of a sequence if the user sets the optional '--discard_prop' argument to reduce
+            # the sequence size while keeping the original context window the same
+            split_data = x_data[start:end]
+            if args.discard_prop:
+                if args.discard_prop == 0:
+                    print("Cannot set '--discard_prop to '0' as would give a zero division error when trying to "
+                          "take the 'nth' element...")
+                    sys.exit()
+                if args.discard_prop <= 0.5:
+                    split_data = np.asarray([row for j, row in enumerate(split_data)
+                                             if j % floor(1 / args.discard_prop) != 0])
+                else:
+                    split_data = np.asarray([row for j, row in enumerate(split_data)
+                                             if j % floor(1 / round((1 - args.discard_prop), 5)) == 0])
+
+            train_test_data[i][0].append(split_data)
+            #Appends the label that corresponds to the label of the middle row of the sequence
+            train_test_data[i][1].append(y_data[int((end + start)/2)])
+            # If we wish to balance the data, append the overall NSAA score to a separate list used to balance the data
+            if args.balance:
+                y_data_balance.append(y_label_balance)
+            # Note: overlap lengths are rounded DOWN via 'int'
+            start += int(sequence_length * (1 - args.seq_overlap))
+
+
+    global x_shape
+    global y_shape
+    x_shape = np.shape(np.concatenate((train_test_data[0][0], train_test_data[1][0]), axis=0))
+    y_shape = np.shape(np.concatenate((train_test_data[0][1], train_test_data[1][1]), axis=0))
+
+    print("\n")
+    print("X train shape =", np.shape(train_test_data[0][0]))
+    print("Y train shape =", np.shape(train_test_data[0][1]))
+    print("X test shape =", np.shape(train_test_data[1][0]))
+    print("Y test shape =", np.shape(train_test_data[1][1]))
+
+    # Sets the global 'sequence_length' if '--discard_prop' is called to ensure RNN is setup with the correct
+    # placeholder variable shape
+    if args.discard_prop:
+        sequence_length = len(train_test_data[0][0][0])
+
+    #Shuffles the training and testing data sets, as it isn't automatically done in this 'preprocessing' function
+    #due to not using the 'train_test_split' function
+    z = list(zip(train_test_data[0][0], train_test_data[0][1]))
+    np.random.shuffle(z)
+    x_train, y_train = zip(*z)
+    z = list(zip(train_test_data[1][0], train_test_data[1][1]))
+    np.random.shuffle(z)
+    x_test, y_test = zip(*z)
+
+    return x_train, x_test, y_train, y_test
 
 
 

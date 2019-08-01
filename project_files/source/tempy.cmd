@@ -65,6 +65,32 @@ REM python rnn.py allmatfiles jointAngle all acts --seq_len=600 --seq_overlap=0.
 
 
 
-python model_predictor.py NSAA position,sensorMagneticField,jointAngle,jointAngleXZY,AD D3 --use_balanced=down
-python model_predictor.py NSAA position,sensorMagneticField,jointAngle,jointAngleXZY,AD D3 --use_balanced=up
-python model_predictor.py allmatfiles jointAngle D11-004
+REM python model_predictor.py NSAA position,sensorMagneticField,jointAngle,jointAngleXZY,AD D3 --use_balanced=down
+REM python model_predictor.py NSAA position,sensorMagneticField,jointAngle,jointAngleXZY,AD D3 --use_balanced=up
+REM python model_predictor.py allmatfiles jointAngle D11-004
+
+
+
+REM python rnn.py NSAA position all dhc --seq_len=600 --seq_overlap=0.9 --discard_prop=0.9 --epochs=20 --leave_out=D3 --use_frc
+REM python rnn.py NSAA position all overall --seq_len=600 --seq_overlap=0.9 --discard_prop=0.9 --epochs=20 --leave_out=D3 --use_frc
+REM python rnn.py NSAA position all acts --seq_len=600 --seq_overlap=0.9 --discard_prop=0.9 --epochs=20 --leave_out=D3 --use_frc
+REM python rnn.py NSAA sensorMagneticField all dhc --seq_len=600 --seq_overlap=0.9 --discard_prop=0.9 --epochs=20 --leave_out=D3 --use_frc
+REM python rnn.py NSAA sensorMagneticField all overall --seq_len=600 --seq_overlap=0.9 --discard_prop=0.9 --epochs=20 --leave_out=D3 --use_frc
+REM python rnn.py NSAA sensorMagneticField all acts --seq_len=600 --seq_overlap=0.9 --discard_prop=0.9 --epochs=20 --leave_out=D3 --use_frc
+REM python rnn.py NSAA jointAngle all dhc --seq_len=600 --seq_overlap=0.9 --discard_prop=0.9 --epochs=20 --leave_out=D3 --use_frc
+REM python rnn.py NSAA jointAngle all overall --seq_len=600 --seq_overlap=0.9 --discard_prop=0.9 --epochs=20 --leave_out=D3 --use_frc
+REM python rnn.py NSAA jointAngle all acts --seq_len=600 --seq_overlap=0.9 --discard_prop=0.9 --epochs=20 --leave_out=D3 --use_frc
+REM python rnn.py NSAA jointAngleXZY all dhc --seq_len=600 --seq_overlap=0.9 --discard_prop=0.9 --epochs=20 --leave_out=D3 --use_frc
+REM python rnn.py NSAA jointAngleXZY all overall --seq_len=600 --seq_overlap=0.9 --discard_prop=0.9 --epochs=20 --leave_out=D3 --use_frc
+REM python rnn.py NSAA jointAngleXZY all acts --seq_len=600 --seq_overlap=0.9 --discard_prop=0.9 --epochs=20 --leave_out=D3 --use_frc
+python rnn.py NSAA AD all dhc --seq_len=10 --seq_overlap=0.9 --epochs=100 --leave_out=D3 --use_frc
+python rnn.py NSAA AD all overall --seq_len=10 --seq_overlap=0.9 --epochs=100 --leave_out=D3 --use_frc
+python rnn.py NSAA AD all acts --seq_len=10 --seq_overlap=0.9 --epochs=100 --leave_out=D3 --use_frc
+
+python rnn.py NSAA AD all dhc --seq_len=10 --seq_overlap=0.9 --epochs=100 --leave_out=D11 --use_frc
+python rnn.py NSAA AD all overall --seq_len=10 --seq_overlap=0.9 --epochs=100 --leave_out=D11 --use_frc
+python rnn.py NSAA AD all acts --seq_len=10 --seq_overlap=0.9 --epochs=100 --leave_out=D11 --use_frc
+
+
+python model_predictor.py NSAA AD D3 --use_frc
+python model_predictor.py NSAA AD D11 --use_frc

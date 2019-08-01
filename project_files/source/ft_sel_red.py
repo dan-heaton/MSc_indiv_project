@@ -37,6 +37,10 @@ parser.add_argument("--dis_kept_features", type=bool, nargs="?", const=True, def
                     help="Specify this if user wishes to print to console the kept features after a feature selection "
                          "choice is made. Has no impact if an unsupervised feature reduction choice is made (e.g. "
                          "'pca', 'grp', or 'agglom').")
+parser.add_argument("--combine_files", type=bool, nargs="?", const=True, default=False,
+                    help="Specify this to concatenate all the files before reducing them, to then reduce the features "
+                         "on this combined set before separating them to write them to output files as standard. "
+                         "Ensures that all files are reduced in the same way.")
 args = parser.parse_args()
 
 choices = ["pca", "grp", "agglom", "thresh", "rf"]
@@ -90,19 +94,12 @@ else:
 
 
 
-def ft_red_select(full_file_name):
+def ft_red_select(x, y):
     """
     :param 'full_file_name', which is the full path name to the file in question that we wish to do dimensionality
     reduction on
     :return: the new reduced 'x' and 'y' components of the file to be later written to a new file
     """
-    print("Reducing dims of " + full_file_name + "...")
-    df = pd.read_csv(full_file_name)
-    col_names = df.columns.values[2:]
-    #Splits the loaded file into the 'y' parts (the original .mat source file column and file label) and 'x' parts (all
-    #the statistical values extracted via 'comp_stat_vals.py')
-    x = df.iloc[:, 2:].values
-    y = df.iloc[:, :2].values
 
     #Normalize the data
     if not args.no_normalize:
@@ -120,17 +117,18 @@ def ft_red_select(full_file_name):
     if choice == "pca":
         pca = PCA(n_components=num_components)
         new_x = pca.fit_transform(x)
+        print("Explained variance = " + str(round(sum(pca.explained_variance_)*100, 2)) + "%" )
     elif choice == "grp":
         grp = GaussianRandomProjection(n_components=num_components)
         new_x = grp.fit_transform(x)
     elif choice == "agglom":
-        #Find out
         agg = FeatureAgglomeration(n_clusters=num_components)
         new_x = agg.fit_transform(x)
     elif choice == "thresh":
         #Below threshold gives ~26 components upon application
         vt = VarianceThreshold(threshold=0.00015)
         new_x = vt.fit_transform(x)
+        print("Explained variance = " + str(round(sum(vt.variances_)*100, 2)) + "%")
         kept_features = list(vt.get_support(indices=True))
         if args.dis_kept_features:
             print("Kept features: ")
@@ -218,31 +216,85 @@ def add_nsaa_scores(file_df):
 
 
 
+#Sets the scope of variables set within the 'if args.combine_files:' statement
+x_combine_files, y_combine_files = None, None
+empty_arrays = True
+file_lens = []
+
 #For each of the full file names of the files that we wish to reduce the dimensions of, get the new 'x' and 'y'
 #components of their reduced form, concatenate them together, add the overall and single-act NSAA scores if possible
 #to do so (otherwise, don't continue with this file), and write this to the same directory it was sourced from as a
-#.csv file with the same name except with a 'FR_' at the front of the file name
+#.csv file with the same name except with a 'FR_' at the front of the file name. If the 'args.commbine_files' argument
+#was set, however, just concatenate all the data along axis 0 to prepare for further processing
+
 for full_file_name in full_file_names:
-    try:
-        new_x, y = ft_red_select(full_file_name)
-    except ValueError:
-        print("'" + full_file_name + "': number of rows too few for number of features, skipping...")
-        continue
+    print("Extracting data of " + full_file_name + "...")
+    df = pd.read_csv(full_file_name)
+    col_names = df.columns.values[2:]
+    # Splits the loaded file into the 'y' parts (the original .mat source file column and file label) and 'x' parts (all
+    # the statistical values extracted via 'comp_stat_vals.py')
+    x = df.iloc[:, 2:].values
+    y = df.iloc[:, :2].values
+    if not args.combine_files:
+        print("Reducing dims of " + full_file_name + "...")
+        try:
+            new_x, new_y = ft_red_select(x, y)
+        except ValueError:
+            print("'" + full_file_name + "': number of rows too few for number of features, skipping...")
+            continue
+        #Recombine the now-reduced 'x' data with the source file name and label columns
+        new_df = pd.DataFrame(np.concatenate((new_y, new_x), axis=1))
 
-    #Recombine the now-reduced 'x' data with the source file name and label columns
-    new_df = pd.DataFrame(np.concatenate((y, new_x), axis=1))
+        #Add a column of NSAA scores to the DataFrame by referencing the external .csvs
+        try:
+            new_df_nsaa = add_nsaa_scores(new_df)
+        except KeyError:
+            print(full_file_name + " not found as entry in either 'nsaa_6mw_info', skipping...")
+            continue
 
-    #Add a column of NSAA scores to the DataFrame by referencing the external .csvs
-    try:
-        new_df_nsaa = add_nsaa_scores(new_df)
-    except KeyError:
-        print(full_file_name + " not found as entry in either 'nsaa_6mw_info', skipping...")
-        continue
+        #Writes the new data to the same directory as before with the same name except with 'FR_' on the front
+        split_full_file_name = full_file_name.split("\\")
+        split_full_file_name[-1] = "FR_" + split_full_file_name[-1]
+        new_full_file_name = "\\".join(split_full_file_name)
+        if os.path.exists(new_full_file_name):
+            os.remove(new_full_file_name)
+        new_df_nsaa.to_csv(new_full_file_name)
+    #Creates a new data storage table if it doesn't exist; otherwise, appends to existing table, along with adding the
+    #length of the file to the list of file lengths used to separate the file data after dimensionality reduction
+    else:
+        file_lens.append(len(x))
+        if empty_arrays:
+            x_combine_files = x
+            y_combine_files = y
+            empty_arrays = False
+        else:
+            x_combine_files = np.append(x_combine_files, x, axis=0)
+            y_combine_files = np.append(y_combine_files, y, axis=0)
 
-    #Writes the new data to the same directory as before with the same name except with 'FR_' on the front
-    split_full_file_name = full_file_name.split("\\")
-    split_full_file_name[-1] = "FR_" + split_full_file_name[-1]
-    new_full_file_name = "\\".join(split_full_file_name)
-    if os.path.exists(new_full_file_name):
-        os.remove(new_full_file_name)
-    new_df_nsaa.to_csv(new_full_file_name)
+
+#If we're combining the files for dimensionality reduction, take the concatenated data table of all the files, reduce
+#the dimensions using the chosen technique and, for each of the source file names and their corresponding file lengths,
+#extract the first 'file_len' rows from the table, remove these rows from the table, and write these rows to a new
+#file name with 'FRC_' appended at the front
+if args.combine_files:
+    print("\nReducing dims of all files...\n")
+    x_total, y_total = ft_red_select(x_combine_files, y_combine_files)
+    for full_file_name, file_len in zip(full_file_names, file_lens):
+        new_x, new_y = x_total[:file_len], y_total[:file_len]
+        x_total, y_total = x_total[file_len:], y_total[file_len:]
+        #Recombine the now-reduced 'x' data with the source file name and label columns
+        new_df = pd.DataFrame(np.concatenate((new_y, new_x), axis=1))
+        #Add a column of NSAA scores to the DataFrame by referencing the external .csvs
+        try:
+            new_df_nsaa = add_nsaa_scores(new_df)
+        except KeyError:
+            print(full_file_name + " not found as entry in either 'nsaa_6mw_info', skipping...")
+            continue
+
+        #Writes the new data to the same directory as before with the same name except with 'FRC_' on the front
+        split_full_file_name = full_file_name.split("\\")
+        split_full_file_name[-1] = "FRC_" + split_full_file_name[-1]
+        new_full_file_name = "\\".join(split_full_file_name)
+        if os.path.exists(new_full_file_name):
+            os.remove(new_full_file_name)
+        new_df_nsaa.to_csv(new_full_file_name)

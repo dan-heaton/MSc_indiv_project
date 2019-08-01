@@ -21,11 +21,13 @@ parser.add_argument("measurements", help="Specifies the measurements to extract 
                                          "each measurement to extract by a comma, or provide 'all' for all measurements.")
 parser.add_argument("--single_act", type=bool, nargs="?", const=True,
                     help="Specify if the files to operate on are 'single act' files.")
+parser.add_argument("--single_act_concat", type=bool, nargs="?", const=True,
+                    help="Specify if the files to operate on are 'single act concat' files.")
 args = parser.parse_args()
 
 
 #Sets 'local_dir' to the correct directory name, based on the argument passed in for 'dir' and whether or not the
-#optional argument '--single_act' was set or not.
+#optional arguments '--single_act' or '--single_act_concat' were set or not.
 if args.dir + "\\" in sub_dirs:
     if args.dir == "6minwalk-matfiles":
         local_dir += args.dir + "\\all_data_mat_files\\"
@@ -35,6 +37,8 @@ if args.dir + "\\" in sub_dirs:
         local_dir += args.dir + "\\matfiles\\"
         if args.single_act:
             local_dir += "act_files\\"
+        elif args.single_act_concat:
+            local_dir += "act_files_concat\\"
 else:
     print("First arg ('dir') must be a name of a subdirectory within source dir and must be one of "
           "'6minwalk-matfiles', '6MW-matFiles', 'NSAA', or 'allmatfiles'.")
@@ -119,7 +123,7 @@ for full_file_name in full_file_names:
 
     #Creates a DataFrame from the data extracted from the source '.mat' file in question, skipping the first 3 rows
     #if it's not a 'single-act' file (as these just correspond to 'setup' rows)
-    if args.single_act:
+    if args.single_act or args.single_act_concat:
         df = pd.DataFrame(frame_data, columns=col_names).iloc[:]
     else:
         df = pd.DataFrame(frame_data, columns=col_names).iloc[3:]
