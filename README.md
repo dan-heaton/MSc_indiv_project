@@ -18,7 +18,7 @@ various machine learning tools and techniques, and using pandas and numpy for pr
 
 ## Script pipeline diagram
 
-![Script pipeline diagram](report%20stuff/Script%20pipeline%20diagram.PNG)
+![Script pipeline diagram](report_stuff/Script_pipeline_diagram.PNG)
 
 ## Repo Layout
 
