@@ -9,6 +9,7 @@ from sklearn.metrics import mean_squared_error
 from sklearn.metrics import mean_absolute_error
 from sklearn.metrics import r2_score
 from sklearn.metrics import confusion_matrix as cm
+from sklearn.preprocessing import StandardScaler
 import pyexcel as pe
 from matplotlib import pyplot as plt
 from math import floor
@@ -85,6 +86,12 @@ parser.add_argument("--use_frc", type=bool, nargs="?", const=True, default=False
 parser.add_argument("--use_sac", type=bool, nargs="?", const=True, default=False,
                     help="Option to use the concatenated files for 'single-act' files over all activities per subject "
                          "instead of separate files for each activity.")
+parser.add_argument("--standardize", type=bool, nargs="?", const=True, default=False,
+                    help="Option to standardize all the data (i.e. so each feature column of the total data set "
+                         "(following splitting into sequences) is N(0, 1).")
+parser.add_argument("--noise", type=bool, nargs="?", const=True, default=False,
+                    help="Option to add Gaussian-distributed noise to each of the features. As this noise is "
+                         "distributed as N(0, 1), this arg first standardizes the data before adding the noise.")
 args = parser.parse_args()
 
 #If no optional argument given for '--seq_len', defaults to seq_len = 10, i.e. defaults to splitting files into
@@ -404,6 +411,21 @@ def preprocessing():
         print("Balanced X shape =", x_shape)
         print("Balanced Y shape =", y_shape)
 
+    #If the '--standardize' or '--noise' optional argument is given, reshape the 'x' data into a 2D array, standardize
+    #each of the features, and reshape it back into its original shape (note: np.concatenate and np.reshape aren't used
+    #in order to ensure the data is written back as we would expect with the same number of lines)
+    if args.standardize or args.noise:
+        x_data = [sample for sequence in x_data for sample in sequence]
+        print("Standardizing the data set...")
+        x_data = StandardScaler().fit_transform(x_data)
+        x_data = [[x_data[i*x_shape[1] + j] for j in range(x_shape[1])] for i in range(x_shape[0])]
+        #If the '--noise' argument is given, add N(0, 1) noise to every feature of every sample of every sequence
+        #in the data set
+        if args.noise:
+            print("Adding Gaussian noise to the data set...")
+            x_data += np.random.normal(0, 1, x_shape)
+        sys.exit()
+
     #Appends the arguments that were used to invoke the model and its sequence length to a file that stores
     #the sequence lengths (to be used by the 'model_predictor.py' script
     model_shape = pd.read_excel("..\\documentation\\model_shapes.xlsx")
@@ -489,9 +511,6 @@ def cnn_preprocessing():
             train_test_data[i][0].append(split_data)
             #Appends the label that corresponds to the label of the middle row of the sequence
             train_test_data[i][1].append(y_data[int((end + start)/2)])
-            # If we wish to balance the data, append the overall NSAA score to a separate list used to balance the data
-            if args.balance:
-                y_data_balance.append(y_label_balance)
             # Note: overlap lengths are rounded DOWN via 'int'
             start += int(sequence_length * (1 - args.seq_overlap))
 
@@ -506,6 +525,22 @@ def cnn_preprocessing():
     print("Y train shape =", np.shape(train_test_data[0][1]))
     print("X test shape =", np.shape(train_test_data[1][0]))
     print("Y test shape =", np.shape(train_test_data[1][1]))
+
+    # Rebalances the data based on the value of 'args.balance'
+    if args.balance:
+        if args.balance == "up":
+            train_test_data[0][0], train_test_data[0][1], balance_s = \
+                data_balancer.upsample(train_test_data[0][0], train_test_data[0][1], train_test_data[0][1])
+        else:
+            train_test_data[0][0], train_test_data[0][1], balance_s = \
+                data_balancer.downsample(train_test_data[0][0], train_test_data[0][1], train_test_data[0][1])
+        # Sets the global variable to print out balance strings at a later point
+        global balance_strs
+        balance_strs = balance_s
+        x_shape = np.shape(train_test_data[0][0])
+        y_shape = np.shape(train_test_data[0][1])
+        print("Balanced X train shape =", x_shape)
+        print("Balanced Y train shape =", y_shape)
 
     # Sets the global 'sequence_length' if '--discard_prop' is called to ensure RNN is setup with the correct
     # placeholder variable shape

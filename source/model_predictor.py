@@ -53,6 +53,12 @@ parser.add_argument("--use_frc", type=bool, nargs="?", const=True, default=False
                     help="Option to use the 'FRC_' files for 'AD' files instead of 'FR_' files, i.e. use files where "
                          "dimensionality reduction has been applied the same way over all files rather than on a "
                          "file-by-file basis.")
+parser.add_argument("--standardize", type=bool, nargs="?", const=True, default=False,
+                    help="Option to use models that have the '--standardize' argument set. Selects the relevant models "
+                         "from the 'rnn_models' directory along with standardizing the file's data.")
+parser.add_argument("--noise", type=bool, nargs="?", const=True, default=False,
+                    help="Option to use models that have the '--noise' argument set, which selects the relevant models "
+                         "from the 'rnn_models' directory, but does not add noise to the data now being predicted.")
 args = parser.parse_args()
 
 
@@ -219,7 +225,25 @@ for sd in search_dirs:
                         else:
                             inner_inner_models.append([md for md in match_dirs
                                                        if "--use_frc" in md and "--leave_out=" not in md][0])
+                    elif args.standardize:
+                        if not args.use_seen:
+                            inner_inner_models.append([md for md in match_dirs
+                                                       if "--standardize" in md and "--leave_out=" + args.fn in md][0])
+                        else:
+                            inner_inner_models.append([md for md in match_dirs
+                                                       if "--standardize" in md and "--leave_out=" not in md][0])
+                    elif args.noise:
+                        if not args.use_seen:
+                            inner_inner_models.append([md for md in match_dirs
+                                                       if "--noise" in md and "--leave_out=" + args.fn in md][0])
+                        else:
+                            inner_inner_models.append([md for md in match_dirs
+                                                       if "--noise" in md and "--leave_out=" not in md][0])
                     else:
+                        option_args = ["--balance=up", "--balance=down", "--use_frc", "--use_frc",
+                                       "--standardize", "--noise"]
+                        filtered_match_dirs = [md for md in match_dirs
+                                               if not any(opt_arg in md for opt_arg in option_args)]
                         if not args.use_seen:
                             inner_inner_models.append([md for md in match_dirs if "--leave_out=" + args.fn in md][0])
                         else:
