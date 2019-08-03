@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="6269803a-5c93-4fe7-8214-f3bd850e9b27" name="Default Changelist" comment="Added program on using CRF for sequence labelling, and reorganized directory structure." />
+    <list default="true" id="6269803a-5c93-4fe7-8214-f3bd850e9b27" name="Default Changelist" comment="Added program on using CRF for sequence labelling, and reorganized directory structure.">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/documentation/model_shapes.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/documentation/model_shapes.xlsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/source/batch_files/tempy.cmd" beforeDir="false" afterPath="$PROJECT_DIR$/source/batch_files/tempy.cmd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/source/rnn.py" beforeDir="false" afterPath="$PROJECT_DIR$/source/rnn.py" afterDir="false" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -38,7 +43,7 @@
           <entry key="D2_D3_stats_features" value="1" />
           <entry key="cmd" value="18" />
           <entry key="csv" value="231" />
-          <entry key="py" value="82" />
+          <entry key="py" value="83" />
           <entry key="txt" value="7" />
         </counts>
       </usages-collector>
@@ -46,7 +51,7 @@
         <counts>
           <entry key="CSV" value="226" />
           <entry key="PLAIN_TEXT" value="31" />
-          <entry key="Python" value="82" />
+          <entry key="Python" value="83" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
@@ -54,25 +59,25 @@
           <entry key="Python Console" value="1168" />
           <entry key="cmd" value="216" />
           <entry key="dummy" value="86" />
-          <entry key="py" value="269623" />
+          <entry key="py" value="270028" />
           <entry key="txt" value="645" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="PLAIN_TEXT" value="947" />
-          <entry key="Python" value="270791" />
+          <entry key="Python" value="271196" />
         </counts>
       </usages-collector>
     </session>
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/source/rnn.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-929">
-              <caret line="358" column="40" selection-start-line="358" selection-start-column="40" selection-end-line="358" selection-end-column="40" />
+            <state relative-caret-position="175">
+              <caret line="586" column="12" selection-start-line="586" selection-start-column="12" selection-end-line="586" selection-end-column="12" />
               <folding>
                 <element signature="e#0#10#0" expanded="true" />
               </folding>
@@ -80,10 +85,16 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/source/settings.py">
+          <provider selected="true" editor-type-id="text-editor" />
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/source/model_predictor.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-595">
+            <state relative-caret-position="170">
+              <caret line="60" column="39" lean-forward="true" selection-start-line="60" selection-start-column="39" selection-end-line="60" selection-end-column="39" />
               <folding>
                 <element signature="e#0#15#0" expanded="true" />
               </folding>
@@ -102,15 +113,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>single_act_concat</find>
-      <find>act_files_concat</find>
-      <find>args.choice</find>
-      <find>single_</find>
-      <find>use_</find>
-      <find>single_act</find>
-      <find>use_sac</find>
-      <find>&quot;FR</find>
-      <find>model_predictions</find>
       <find>model_pred_path</find>
       <find>Percent</find>
       <find>full_file</find>
@@ -132,6 +134,15 @@
       <find>nsaa_6mw_info</find>
       <find>add_nsaa</find>
       <find>model_path</find>
+      <find>model_shapes</find>
+      <find>model_shap</find>
+      <find>model_shape</find>
+      <find>_path</find>
+      <find>xlsx</find>
+      <find>csv</find>
+      <find>.csv</find>
+      <find>.ods</find>
+      <find>args.batch</find>
     </findStrings>
     <replaceStrings>
       <replace>pend_magnet_data</replace>
@@ -208,7 +219,7 @@
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="7">
+  <component name="ProjectFrameBounds" extendedState="6">
     <option name="x" value="-15" />
     <option name="y" value="-15" />
     <option name="width" value="3875" />
@@ -438,9 +449,9 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-6" y="-6" width="1549" height="837" extended-state="7" />
+    <frame x="-6" y="-6" width="1549" height="837" extended-state="6" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.64503044" visible="true" weight="0.16050199" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.64503044" visible="true" weight="0.16050199" />
       <window_info id="Structure" order="1" sideWeight="0.35496956" side_tool="true" weight="0.16116248" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -451,7 +462,7 @@
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" sideWeight="0.4993395" weight="0.32956153" />
       <window_info anchor="bottom" id="Version Control" order="7" sideWeight="0.49867898" weight="0.3286119" />
-      <window_info anchor="bottom" id="Terminal" order="8" sideWeight="0.4953765" visible="true" weight="0.2733711" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="8" sideWeight="0.4953765" visible="true" weight="0.5509915" />
       <window_info anchor="bottom" id="Event Log" order="9" sideWeight="0.50462353" side_tool="true" weight="0.2549575" />
       <window_info anchor="bottom" id="Python Console" order="10" sideWeight="0.49603698" weight="0.28045326" />
       <window_info active="true" anchor="bottom" id="SVN Repositories" order="11" visible="true" weight="0.21074964" />
@@ -490,7 +501,6 @@
     <option name="LAST_COMMIT_MESSAGE" value="Added program on using CRF for sequence labelling, and reorganized directory structure." />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/project_files/output_files/NSAA/AD/FR_AD_D18_stats_features.csv" />
     <entry file="file://$PROJECT_DIR$/project_files/output_files/NSAA/AD/FR_AD_D19_stats_features.csv" />
     <entry file="file://$PROJECT_DIR$/project_files/output_files/NSAA/AD/FR_AD_D20_stats_features.csv" />
     <entry file="file://$PROJECT_DIR$/project_files/output_files/NSAA/AD/FR_AD_HC6_stats_features.csv" />
@@ -673,21 +683,25 @@
     <entry file="file://$PROJECT_DIR$/source/comp_stat_vals.py">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/source/rnn.py">
+    <entry file="file://$PROJECT_DIR$/source/model_predictor.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-929">
-          <caret line="358" column="40" selection-start-line="358" selection-start-column="40" selection-end-line="358" selection-end-column="40" />
+        <state relative-caret-position="170">
+          <caret line="60" column="39" lean-forward="true" selection-start-line="60" selection-start-column="39" selection-end-line="60" selection-end-column="39" />
           <folding>
-            <element signature="e#0#10#0" expanded="true" />
+            <element signature="e#0#15#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/source/model_predictor.py">
+    <entry file="file://$PROJECT_DIR$/source/settings.py">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/source/rnn.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-595">
+        <state relative-caret-position="175">
+          <caret line="586" column="12" selection-start-line="586" selection-start-column="12" selection-end-line="586" selection-end-column="12" />
           <folding>
-            <element signature="e#0#15#0" expanded="true" />
+            <element signature="e#0#10#0" expanded="true" />
           </folding>
         </state>
       </provider>

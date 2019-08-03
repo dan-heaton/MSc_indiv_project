@@ -92,6 +92,9 @@ parser.add_argument("--standardize", type=bool, nargs="?", const=True, default=F
 parser.add_argument("--noise", type=bool, nargs="?", const=True, default=False,
                     help="Option to add Gaussian-distributed noise to each of the features. As this noise is "
                          "distributed as N(0, 1), this arg first standardizes the data before adding the noise.")
+parser.add_argument("--batch", type=bool, nargs="?", const=True, default=False,
+                    help="Option that is only set if the script is run from a batch file to access the external files "
+                         "in a correct way.")
 args = parser.parse_args()
 
 #If no optional argument given for '--seq_len', defaults to seq_len = 10, i.e. defaults to splitting files into
@@ -157,7 +160,9 @@ if args.other_dir:
               "must not be the same name as 'dir'....")
         sys.exit()
 
-
+#Sets the paths for external files based on the whether the script was called from a batch file or not
+nsaa_6mw_path = "..\\..\\documentation\\nsaa_6mw_info.xlsx" if args.batch else "..\\documentation\\nsaa_6mw_info.xlsx"
+model_shapes_path = "..\\..\\documentation\\model_shapes.xlsx" if args.batch else "..\\documentation\\model_shapes.xlsx"
 
 def preprocessing():
     """
@@ -428,10 +433,10 @@ def preprocessing():
 
     #Appends the arguments that were used to invoke the model and its sequence length to a file that stores
     #the sequence lengths (to be used by the 'model_predictor.py' script
-    model_shape = pd.read_excel("..\\documentation\\model_shapes.xlsx")
+    model_shape = pd.read_excel(model_shapes_path)
     new_model_shape = model_shape.append(
         {"dir": args.dir, "ft": args.ft, "measure": args.choice, "seq_len": x_shape[1]}, ignore_index=True)
-    new_model_shape.to_excel("..\\documentation\\model_shapes.xlsx", index=False)
+    new_model_shape.to_excel(model_shapes_path, index=False)
 
     return train_test_split(x_data, y_data, shuffle=True, test_size=test_ratio)
 
@@ -573,7 +578,7 @@ def add_nsaa_scores(file_df):
     #For the table of data that we have on the subjects, load in the table, find the columns with ID and
     #overall NSAA scores, and create a dictionary of matching values, e.g. {'D4': 15, 'D11: 28,...}, with all values
     #from each table
-    nsaa_6mw_tab = pd.read_excel("..\\documentation\\nsaa_6mw_info.xlsx")
+    nsaa_6mw_tab = pd.read_excel(nsaa_6mw_path)
     nsaa_6mw_cols = nsaa_6mw_tab[["ID", "NSAA"]]
     nsaa_overall_dict = dict(pd.Series(nsaa_6mw_cols.NSAA.values, index=nsaa_6mw_cols.ID).to_dict())
 
