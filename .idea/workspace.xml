@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="6269803a-5c93-4fe7-8214-f3bd850e9b27" name="Default Changelist" comment="Added program on using CRF for sequence labelling, and reorganized directory structure.">
-      <change beforePath="$PROJECT_DIR$/.idea/indiv_proj.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/indiv_proj.iml" afterDir="false" />
-    </list>
+    <list default="true" id="6269803a-5c93-4fe7-8214-f3bd850e9b27" name="Default Changelist" comment="Added program on using CRF for sequence labelling, and reorganized directory structure." />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -74,7 +72,7 @@
         <entry file="file://$PROJECT_DIR$/source/rnn.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="-929">
-              <caret line="358" column="40" lean-forward="true" selection-start-line="358" selection-start-column="40" selection-end-line="358" selection-end-column="40" />
+              <caret line="358" column="40" selection-start-line="358" selection-start-column="40" selection-end-line="358" selection-end-column="40" />
               <folding>
                 <element signature="e#0#10#0" expanded="true" />
               </folding>
@@ -85,7 +83,7 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/source/model_predictor.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-1020">
+            <state relative-caret-position="-595">
               <folding>
                 <element signature="e#0#15#0" expanded="true" />
               </folding>
@@ -210,7 +208,7 @@
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
+  <component name="ProjectFrameBounds" extendedState="7">
     <option name="x" value="-15" />
     <option name="y" value="-15" />
     <option name="width" value="3875" />
@@ -440,10 +438,9 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-6" y="-6" width="1549" height="837" extended-state="6" />
-    <editor active="true" />
+    <frame x="-6" y="-6" width="1549" height="837" extended-state="7" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.64503044" weight="0.16050199" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.64503044" visible="true" weight="0.16050199" />
       <window_info id="Structure" order="1" sideWeight="0.35496956" side_tool="true" weight="0.16116248" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -679,7 +676,7 @@
     <entry file="file://$PROJECT_DIR$/source/rnn.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-929">
-          <caret line="358" column="40" lean-forward="true" selection-start-line="358" selection-start-column="40" selection-end-line="358" selection-end-column="40" />
+          <caret line="358" column="40" selection-start-line="358" selection-start-column="40" selection-end-line="358" selection-end-column="40" />
           <folding>
             <element signature="e#0#10#0" expanded="true" />
           </folding>
@@ -688,7 +685,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/source/model_predictor.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1020">
+        <state relative-caret-position="-595">
           <folding>
             <element signature="e#0#15#0" expanded="true" />
           </folding>
