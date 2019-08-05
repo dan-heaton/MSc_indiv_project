@@ -50,4 +50,32 @@ the models that will be predicting from in 'model_predictor.py'.
 
 
 
+------      Model prediction set scripts      ------
+
+In an effort to make the execution of the model predictions sets easier (which often require numerous new 
+models to be created with 'rnn.py' and many separate file predictions to be made with 'model_predictor.py'), 
+we have created batch scripts to automate this process. This also holds the additonal benefit where any user 
+can inspect what arguments we have run each script with and also enables them to run them for themselves to 
+see if comparable results can be obtained (obviously requiring the setup of all other files via 
+'comp_stat_vals.py' and other necessary scripts beforehand).
+
+The idea is that, for each model prediction set that we are running, all that is needed is therefore to 
+just run the specified '.cmd' script. This will build the requisite models though sometimes it won't build 
+any new models but will instead rely on models built by previous '.cmd' scripts; hence, it's recommended 
+that each model prediction set batch file is to be run in numerical ascending order. Once a given model 
+prediction set batch file has been run, with the necessary models built and file predictions made, the 
+results will appear in 'model_predictions.csv' as the final rows in the table. It's also worth noting the 
+time discrepancies between some of the '.cmd' files: some will only be calling 'model_predictor.py' multiple 
+times, which is comparatively quite quick to execute. However, those that call 'rnn.py' many times will take 
+a lot longer; for example, 'model_predictions_set_3.cmd' needs to build 60 separate RNN models, each of 
+which may take 10-15 minutes to run (assuming the user is building using a GPU), which could take 10-15 hours 
+in total to execute the script.
+
+Finally, the scripts don't take any arguments, as the Python script parameters have been decided in advance. 
+For example, prior to executing model predictions sets 3 and up, we decided to test the models on the 
+left-out subjects D3, D9, D11, D17, and HC6 (see the experiments results discussion set for an overview as 
+to why these subjects were chosen). Hence, any changes that would be made to these '.cmd' scripts must 
+modify each instance of the Python script that is called by the batch script in order to correctly alter 
+these chosen script parameters.
+
 

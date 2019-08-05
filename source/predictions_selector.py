@@ -20,6 +20,10 @@ parser.add_argument("--best", type=str, nargs="?", const=True, default=False,
 parser.add_argument("--worst", type=str, nargs="?", const=True, default=False,
                     help="Identical to '--best', except the second part of the arg is used to select the worst "
                          "performing rows according to the selected output metric.")
+parser.add_argument("--str_filt", type=str, nargs="?", const=True, default=False,
+                    help="Specify this with a string to filter rows to only those containing this string within "
+                         "the 'Short file name' cell. Separate by commas if wishes to have more than one filter (note: "
+                         "it acts as an 'OR' of comma-separate values, i.e. row can contain just one of the parts).")
 args = parser.parse_args()
 
 #Loads in the 'model_predictions.csv' file
@@ -30,17 +34,23 @@ metrics = ["pacp", "ppcs", "overall"]
 
 #Filters the rows based on the 'sfn' arg if it isn't 'all'
 if not args.sfn == "all":
-    model_preds = model_preds.loc[model_preds["Short file name"].str.contains(args.sfn)]
-    if len(model_preds.index) == 0:
-        print("No row names matching the first arg ('" + args.sfn + "') for the 'Short file name' column....")
-        sys.exit()
+    try:
+        model_preds = model_preds.loc[int(args.sfn)-2:int(args.sd), :]
+    except ValueError:
+        model_preds = model_preds.loc[model_preds["Short file name"].str.contains(args.sfn)]
+        if len(model_preds.index) == 0:
+            print("No row names matching the first arg ('" + args.sfn + "') for the 'Short file name' column....")
+            sys.exit()
 
-if args.sd + "\\" not in sub_dirs:
+if args.sd + "\\" not in sub_dirs and not args.sd.isdigit():
     print("Second arg ('" + args.sd + "') must be one of '6minwalk-matfiles', '6MW-matFiles', 'NSAA', 'direct_csv', " +
           "'allmatfiles', or 'left-out'...")
     sys.exit()
 else:
-    model_preds = model_preds.loc[model_preds["Source dir"] == args.sd]
+    try:
+        test_sd = int(args.sd)
+    except ValueError:
+        model_preds = model_preds.loc[model_preds["Source dir"] == args.sd]
 
 if args.mtd:
     altdirs = args.mtd.split(",")
@@ -52,6 +62,15 @@ if args.mtd:
         else:
             model_preds = model_preds.loc[model_preds["Model trained dir(s)"].str.contains(altdir, na=False)]
 
+#If the '--str_filt' optional argument is given, reduces 'model_preds' to contain just the rows that have at least
+#one part (separated by commas) of the '--str_file' argument in the 'Shot file name' column
+if args.str_filt:
+    new_model_preds = []
+    for str_f in args.str_filt.split(","):
+        for i, row in model_preds.iterrows():
+            if str_f in row["Short file name"]:
+                new_model_preds.append(row)
+    model_preds = pd.DataFrame(new_model_preds)
 
 selected_rows = [[], []]
 best_worst_rows = [0, 0]
@@ -129,8 +148,7 @@ for i in range(len(col_names)):
     if selected_rows[i]:
         col_names[i] += ["Short file name", "Source dir", "Model trained dir(s)", "Measurements tested"]
         for j in range(len(offsets)):
-            met_col = "(" + args.mtd.split(",")[j] + ") : " + metric_dict[best_worst_metrics[i]] if args.mtd else \
-                "(" + args.sd + ") : " + metric_dict[best_worst_metrics[i]]
+            met_col = metric_dict[best_worst_metrics[i]]
             col_names[i].append(met_col)
 
 
@@ -146,26 +164,45 @@ for i in range(len(selected_rows)):
         df = pd.DataFrame(selected_rows[i], columns=col_names[i])
         #The rows are now sorted in either ascending or descending order (based on the metrics recorded in the rows),
         #with priority given to first ordering by the 5th column and secondary ordering importance to the 6th column
-        if best_worst_metrics[i] == "pacp" or best_worst_metrics[i] == "ppcs":
-            df = df.sort_values(by=[col_names[i][4], col_names[i][5]], ascending=False)
+        if args.mtd and len(args.mtd.split(",")) == 2:
+            if best_worst_metrics[i] == "pacp" or best_worst_metrics[i] == "ppcs":
+                df = df.sort_values(by=[col_names[i][4], col_names[i][5]], ascending=False)
+            else:
+                df = df.sort_values(by=[col_names[i][4], col_names[i][5]], ascending=True)
         else:
-            df = df.sort_values(by=[col_names[i][4], col_names[i][5]], ascending=True)
-
+            if best_worst_metrics[i] == "pacp" or best_worst_metrics[i] == "ppcs":
+                df = df.sort_values(by=[col_names[i][4]], ascending=False)
+            else:
+                df = df.sort_values(by=[col_names[i][4]], ascending=True)
         #Prints either the top or bottom 'best_worst_rows[i]' rows of the DataFrame, depending on the if it's printing
         #for '--best' or '--worst'
-        if i == 0:
-            print("\nBest performing " + str(best_worst_rows[i]) + "rows by " + col_names[i][4] +
-                  " and " + col_names[i][5] + "...\n")
-            df = df.iloc[:best_worst_rows[i], :]
-            print(df)
+        print(df[["Diff true/pred overall NSAA score"]].mean(axis=0))
+        if args.mtd and len(args.mtd.split(",")) == 2:
+            if i == 0:
+                print("\nBest performing " + str(best_worst_rows[i]) + " rows by " + col_names[i][4] +
+                      " and " + col_names[i][5] + "...\n")
+                df = df.iloc[:best_worst_rows[i], :]
+                print(df)
 
+            else:
+                print("\nWorst performing " + str(best_worst_rows[i]) + " rows by " + col_names[i][4] +
+                      " and " + col_names[i][5] + "...\n")
+                df = df.iloc[(best_worst_rows[i]*-1):, :]
+                #Reverses the order so the worst rows appear first
+                df = df.iloc[::-1]
+                print(df)
         else:
-            print("\nWorst performing " + str(best_worst_rows[i]) + "rows by " + col_names[i][4] +
-                  " and " + col_names[i][5] + "...\n")
-            df = df.iloc[(best_worst_rows[i]*-1):, :]
-            #Reverses the order so the worst rows appear first
-            df = df.iloc[::-1]
-            print(df)
+            if i == 0:
+                print("\nBest performing " + str(best_worst_rows[i]) + " rows by " + col_names[i][4] + "...\n")
+                df = df.iloc[:best_worst_rows[i], :]
+                print(df)
+
+            else:
+                print("\nWorst performing " + str(best_worst_rows[i]) + " rows by " + col_names[i][4] + "...\n")
+                df = df.iloc[(best_worst_rows[i] * -1):, :]
+                #Reverses the order so the worst rows appear first
+                df = df.iloc[::-1]
+                print(df)
 
 
 

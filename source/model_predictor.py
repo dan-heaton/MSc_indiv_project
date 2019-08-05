@@ -46,8 +46,8 @@ parser.add_argument("--use_balanced", type=str, nargs="?", const=True, default=F
 parser.add_argument("--single_act", type=int, nargs="?", const=True, default=False,
                     help="Specify this is intending to use the single-act files that are produced by 'mat_act_div' to "
                          "predict with. Only able to be used when 'dir'=NSAA.")
-parser.add_argument("--single_act_concat", type=int, nargs="?", const=True, default=False,
-                    help="Specify this is intending to use the single-act-concat files that are produced by "
+parser.add_argument("--single_act_concat", type=bool, nargs="?", const=True, default=False,
+                    help="Specify this if intending to use the single-act-concat files that are produced by "
                          "'mat_act_div' to predict with. Only able to be used when 'dir'=NSAA.")
 parser.add_argument("--use_frc", type=bool, nargs="?", const=True, default=False,
                     help="Option to use the 'FRC_' files for 'AD' files instead of 'FR_' files, i.e. use files where "
@@ -59,6 +59,15 @@ parser.add_argument("--standardize", type=bool, nargs="?", const=True, default=F
 parser.add_argument("--noise", type=bool, nargs="?", const=True, default=False,
                     help="Option to use models that have the '--noise' argument set, which selects the relevant models "
                          "from the 'rnn_models' directory, but does not add noise to the data now being predicted.")
+parser.add_argument("--batch", type=bool, nargs="?", const=True, default=False,
+                    help="Option that is only set if the script is run from a batch file to access the external files "
+                         "in a correct way.")
+parser.add_argument("--use_ft_concat", type=bool, nargs="?", const=True, default=False,
+                    help="Specify this is the user wishes to load models that have had file types concatenated "
+                         "together (i.e. where the 'ft' arg to 'rnn.py' was multiple file types separated by commas).")
+parser.add_argument("--use_indiv", type=bool, nargs="?", const=True, default=False,
+                    help="Specify this if wish to use models that have been trained only on the 'indiv' output type "
+                         "when only using 'single_act' files to test w/ the model.")
 args = parser.parse_args()
 
 
@@ -129,7 +138,7 @@ if args.handle_dash:
 
 
 fns = []
-for sd in sds:
+for ft, sd in zip(fts, sds):
     if args.dir == "allmatfiles":
         if any(args.fn.upper() == s.split("jointangle")[-1].split(".mat")[0].upper() for s in os.listdir(sd)):
             fns.append([s for s in os.listdir(sd) if args.fn.upper() == s.split("jointangle")[-1].split(".mat")[0].upper()][0])
@@ -151,6 +160,9 @@ for sd in sds:
                 fns.append([s for s in os.listdir(sd) if args.fn in s][0])
             else:
                 fns.append([s for s in os.listdir(sd) if args.fn in s and "act" + str(args.single_act) + "_" in s][0])
+    elif ft == "AD" and args.single_act:
+        fns.append([s for s in os.listdir(sd) if args.fn.upper() == s.upper().split("_")[1]
+                    and "act" + str(args.single_act) + "_" in s][0])
     else:
         print("Cannot find '" + str(args.fn) + "' in '" + sd + "'")
         sys.exit()
@@ -186,74 +198,93 @@ else:
 models = []
 for sd in search_dirs:
     inner_models = []
+    if args.use_indiv:
+        output_types = ["indiv"]
     for ot in output_types:
         inner_inner_models = []
-        for i, ft in enumerate(fts):
-            #Handles the special case when we're using NSAA files that are placed in the 'left-out' source dir
-            if args.dir == "left-out":
-                inner_inner_models.append([md for md in os.listdir(model_dir) if md.split("_")[0] == "NSAA"
-                                           and md.split("_")[1] == ft and md.split("_")[3] == ot
-                                           and "--leave_out" not in md and "--balance" not in md
-                                           and "--other_dir" not in md][0])
-            elif any(fn for fn in os.listdir(model_dir) if fn.split("_")[0] == sd and
-                                                         fn.split("_")[3] == ot and fn.split("_")[1] == ft):
-                #Gets the first inner model directory that match the file type, directory name, and output type, with
-                #additional preference of model trained on 'left out file' if one exists in 'model_dir
-                match_dirs = [fn for fn in os.listdir(model_dir) if fn.split("_")[0] == sd and
-                                     fn.split("_")[3] == ot and fn.split("_")[1] == ft]
-                if any(args.fn in md for md in match_dirs):
-                    #If 'use_balanced' is set, specifically use ones which have '--balance' in directory name
-                    if args.use_balanced and args.use_balanced == "up":
-                        if not args.use_seen:
-                            #If 'use_seen' is not set, specifically use ones that have '--leave_out='fn'' in directory name
-                            inner_inner_models.append([md for md in match_dirs
-                                                       if "--balance=up" in md and "--leave_out=" + args.fn in md][0])
+        #If the '--use_ft_concat' arg is set, for each of the output types, find the model that contains all of the
+        #file types that are given to 'model_predictor' within its title
+        if args.use_ft_concat:
+            match_dirs = [fn for fn in os.listdir(model_dir) if fn.split("_")[0] == sd and
+                          fn.split("_")[3] == ot]
+            for md in match_dirs:
+                if all(ft for ft in args.use_ft_concat.split(",") if ft in md):
+                    inner_models.append([md])
+                    break
+        else:
+            for i, ft in enumerate(fts):
+                #Handles the special case when we're using NSAA files that are placed in the 'left-out' source dir
+                if args.dir == "left-out":
+                    inner_inner_models.append([md for md in os.listdir(model_dir) if md.split("_")[0] == "NSAA"
+                                               and md.split("_")[1] == ft and md.split("_")[3] == ot
+                                               and "--leave_out" not in md and "--balance" not in md
+                                               and "--other_dir" not in md][0])
+                elif any(fn for fn in os.listdir(model_dir) if fn.split("_")[0] == sd and
+                                                             fn.split("_")[3] == ot and fn.split("_")[1] == ft):
+                    #Gets the first inner model directory that match the file type, directory name, and output type, with
+                    #additional preference of model trained on 'left out file' if one exists in 'model_dir
+                    match_dirs = [fn for fn in os.listdir(model_dir) if fn.split("_")[0] == sd and
+                                         fn.split("_")[3] == ot and fn.split("_")[1] == ft]
+                    if any(args.fn in md for md in match_dirs):
+                        #If 'use_balanced' is set, specifically use ones which have '--balance' in directory name
+                        if args.use_balanced and args.use_balanced == "up":
+                            if not args.use_seen:
+                                #If 'use_seen' is not set, specifically use ones that have '--leave_out='fn'' in directory name
+                                inner_inner_models.append([md for md in match_dirs
+                                                           if "--balance=up" in md and "--leave_out=" + args.fn in md][0])
+                            else:
+                                inner_inner_models.append([md for md in match_dirs
+                                                           if "--balance=up" in md and "--leave_out=" not in md][0])
+                        elif args.use_balanced and args.use_balanced == "down":
+                            if not args.use_seen:
+                                inner_inner_models.append([md for md in match_dirs
+                                                           if "--balance=down" in md and "--leave_out=" + args.fn in md][0])
+                            else:
+                                inner_inner_models.append([md for md in match_dirs
+                                                           if "--balance=down" in md and "--leave_out=" not in md][0])
+                        elif args.single_act_concat:
+                            if not args.use_seen:
+                                inner_inner_models.append([md for md in match_dirs
+                                                           if "--single_act_concat" in md and "--leave_out=" + args.fn in md][0])
+                            else:
+                                inner_inner_models.append([md for md in match_dirs
+                                                           if "--single_act_concat" in md and "--leave_out=" not in md][0])
+                        elif args.use_frc and ft == "AD":
+                            if not args.use_seen:
+                                inner_inner_models.append([md for md in match_dirs
+                                                           if "--use_frc" in md and "--leave_out=" + args.fn in md][0])
+                            else:
+                                inner_inner_models.append([md for md in match_dirs
+                                                           if "--use_frc" in md and "--leave_out=" not in md][0])
+                        elif args.standardize:
+                            if not args.use_seen:
+                                inner_inner_models.append([md for md in match_dirs
+                                                           if "--standardize" in md and "--leave_out=" + args.fn in md][0])
+                            else:
+                                inner_inner_models.append([md for md in match_dirs
+                                                           if "--standardize" in md and "--leave_out=" not in md][0])
+                        elif args.noise:
+                            if not args.use_seen:
+                                inner_inner_models.append([md for md in match_dirs
+                                                           if "--noise" in md and "--leave_out=" + args.fn in md][0])
+                            else:
+                                inner_inner_models.append([md for md in match_dirs
+                                                           if "--noise" in md and "--leave_out=" not in md][0])
                         else:
-                            inner_inner_models.append([md for md in match_dirs
-                                                       if "--balance=up" in md and "--leave_out=" not in md][0])
-                    elif args.use_balanced and args.use_balanced == "down":
-                        if not args.use_seen:
-                            inner_inner_models.append([md for md in match_dirs
-                                                       if "--balance=down" in md and "--leave_out=" + args.fn in md][0])
-                        else:
-                            inner_inner_models.append([md for md in match_dirs
-                                                       if "--balance=down" in md and "--leave_out=" not in md][0])
-                    elif args.use_frc:
-                        if not args.use_seen:
-                            inner_inner_models.append([md for md in match_dirs
-                                                       if "--use_frc" in md and "--leave_out=" + args.fn in md][0])
-                        else:
-                            inner_inner_models.append([md for md in match_dirs
-                                                       if "--use_frc" in md and "--leave_out=" not in md][0])
-                    elif args.standardize:
-                        if not args.use_seen:
-                            inner_inner_models.append([md for md in match_dirs
-                                                       if "--standardize" in md and "--leave_out=" + args.fn in md][0])
-                        else:
-                            inner_inner_models.append([md for md in match_dirs
-                                                       if "--standardize" in md and "--leave_out=" not in md][0])
-                    elif args.noise:
-                        if not args.use_seen:
-                            inner_inner_models.append([md for md in match_dirs
-                                                       if "--noise" in md and "--leave_out=" + args.fn in md][0])
-                        else:
-                            inner_inner_models.append([md for md in match_dirs
-                                                       if "--noise" in md and "--leave_out=" not in md][0])
+                            option_args = ["--balance=up", "--balance=down", "--use_frc", "--use_frc",
+                                           "--standardize", "--noise"]
+                            filtered_match_dirs = [md for md in match_dirs
+                                                   if not any(opt_arg in md for opt_arg in option_args)]
+                            if not args.use_seen:
+                                inner_inner_models.append([md for md in filtered_match_dirs if "--leave_out=" + args.fn in md][0])
+                            else:
+                                inner_inner_models.append([md for md in filtered_match_dirs if "--leave_out=" not in md][0])
                     else:
-                        option_args = ["--balance=up", "--balance=down", "--use_frc", "--use_frc",
-                                       "--standardize", "--noise"]
-                        filtered_match_dirs = [md for md in match_dirs
-                                               if not any(opt_arg in md for opt_arg in option_args)]
-                        if not args.use_seen:
-                            inner_inner_models.append([md for md in match_dirs if "--leave_out=" + args.fn in md][0])
-                        else:
-                            inner_inner_models.append([md for md in match_dirs if "--leave_out=" not in md][0])
+                        inner_inner_models.append(match_dirs[0])
                 else:
-                    inner_inner_models.append(match_dirs[0])
-            else:
-                inner_inner_models.append(None)
-            print("Using model: '" + str(inner_inner_models[-1]) + "'...")
-        inner_models.append(inner_inner_models)
+                    inner_inner_models.append(None)
+                print("Using model: '" + str(inner_inner_models[-1]) + "'...")
+            inner_models.append(inner_inner_models)
     models.append(inner_models)
 
 
@@ -267,7 +298,8 @@ models = new_models
 
 #Reads in the .xlsx file with the file shapes in them and extracts the sequence lengths from the most recent entry in
 #the tabel that corresponds to the model with a specific source dir, file type, and output type
-model_shape = pd.read_excel("..\\documentation\\model_shapes.xlsx")
+model_shapes_path = "..\\..\\documentation\\model_shapes.xlsx" if args.batch else "..\\documentation\\model_shapes.xlsx"
+model_shape = pd.read_excel(model_shapes_path)
 
 sequence_lengths = [[[model_shape.loc[(model_shape["dir"] == model.split("_")[0]) &
                                       (model_shape["ft"] == model.split("_")[1]) &
@@ -296,7 +328,8 @@ def preprocessing(full_file_name, sequence_length):
     #and three 'true' labels for the file are extracted: 'y_label_dhc' gets 1 if the short name of the file (e.g. 'D11')
     #begins with a 'D', else it gets a 0; 'y_label_overall' gets an integer value between 0 and 34 of the overall NSAA score,
     #and 'y_label_acts' gets the 17 individiual NSAA acts as a list as scores between 0 and 2
-    df_y = pd.read_excel("..\\documentation\\nsaa_6mw_info.xlsx")
+    nsaa_6mw_path = "..\\..\\documentation\\nsaa_6mw_info.xlsx" if args.batch else "..\\documentation\\nsaa_6mw_info.xlsx"
+    df_y = pd.read_excel(nsaa_6mw_path)
     if args.dir != "direct_csv" and not source_dir.startswith(local_dir):
         y_label_dhc = 1 if full_file_name.split("\\")[-1].split("_")[2][0].upper() == "D" else 0
     elif source_dir.startswith(local_dir):
@@ -459,7 +492,9 @@ if not args.file_num:
     plt.title("Plot of true overall NSAA scores against predicted overall NSAA scores")
     plt.xlabel("True overall NSAA scores")
     plt.ylabel("Predicted overall NSAA scores")
-    plt.savefig("..\\documentation\\Graphs\\Model_predictor_" + args.dir + "_" + args.ft + "_" + args.fn)
+    graphs_path = "..\\..\\documentation\\Graphs\\Model_predictor_" + args.dir + "_" + args.ft + "_" + args.fn if args.batch \
+        else "..\\documentation\\Graphs\\Model_predictor_" + args.dir + "_" + args.ft + "_" + args.fn
+    plt.savefig(graphs_path)
     plt.gcf().set_size_inches(10, 10)
     if args.show_graph:
         plt.show()
@@ -487,6 +522,8 @@ if args.use_seen:
     args.fn += " (already seen)"
 if args.single_act:
     args.fn += " (act " + str(args.single_act) + ")"
+if  args.use_indiv:
+    args.fn += " (indiv)"
 if args.single_act_concat:
     args.fn += " (concat acts)"
 if args.use_frc:
@@ -510,6 +547,7 @@ output_strs_df = pd.DataFrame([new_output_strs], columns=header, index=[ind_lab]
 
 #Writes the single-line DataFrame to a new .csv file if it doesn't exist or, if it does exist, appends it to the end
 #of the existing one
+model_pred_path = "..\\" + model_pred_path if args.batch else model_pred_path
 if not os.path.exists(model_pred_path):
     with open(model_pred_path, 'w', newline='') as file:
         output_strs_df.to_csv(file, header=header)

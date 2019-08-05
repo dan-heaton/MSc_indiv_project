@@ -15,6 +15,7 @@ from matplotlib import pyplot as plt
 from math import floor
 import data_balancer
 from settings import local_dir, source_dir, output_dir, sub_dirs, sub_sub_dirs, raw_measurements, batch_size
+from ft_sel_red import ft_red_select
 
 
 
@@ -38,7 +39,8 @@ parser.add_argument("dir", help="Specifies which source directory to use so as t
 parser.add_argument("ft", help="Specify type of .mat file that the .csv is to come from, being one of 'JA' (joint "
                                "angle), 'AD' (all data), or 'DC' (data cube). Alternatively, supply a name of a "
                                "measurement (e.g. 'position', 'velocity', 'jointAngle', etc.) if the file is to be "
-                               "trained on raw measurements.")
+                               "trained on raw measurements. Additionally, if user wishes to concatenate file types "
+                               "along the 'features' dimension, specify multiple file types separated by commas.")
 parser.add_argument("fn", help="Specify the short file name of a .csv to load from 'source_dir'; e.g. for file "
                                "'All_D2_stats_features.csv', enter 'D2'. Specify 'all' for all the files available "
                                "in the 'source_dir'.")
@@ -95,6 +97,9 @@ parser.add_argument("--noise", type=bool, nargs="?", const=True, default=False,
 parser.add_argument("--batch", type=bool, nargs="?", const=True, default=False,
                     help="Option that is only set if the script is run from a batch file to access the external files "
                          "in a correct way.")
+parser.add_argument("--pca", type=int, nargs="?", const=True, default=False,
+                    help="Specify if wishing reduce the feature size of the data set training the model to the number "
+                         "of features specified by the value passed to this argument.")
 args = parser.parse_args()
 
 #If no optional argument given for '--seq_len', defaults to seq_len = 10, i.e. defaults to splitting files into
@@ -164,7 +169,9 @@ if args.other_dir:
 nsaa_6mw_path = "..\\..\\documentation\\nsaa_6mw_info.xlsx" if args.batch else "..\\documentation\\nsaa_6mw_info.xlsx"
 model_shapes_path = "..\\..\\documentation\\model_shapes.xlsx" if args.batch else "..\\documentation\\model_shapes.xlsx"
 
-def preprocessing():
+
+
+def preprocessing(ft):
     """
         :return given a short file name for 'fn' command-line argument, finds the relevant file in 'source_dir' and
         adds it to 'file_names' (or set 'file_names' to all file names in 'source_dir'), reads in each file name in
@@ -193,34 +200,34 @@ def preprocessing():
         sys.exit()
     #Change 'source_dir' to point to the directory of raw measurement files, single-act raw measurements files,
     #or another type of file (e.g. 'AD' or 'JA')
-    if args.dir == "NSAA" and args.choice == "indiv" and args.ft in raw_measurements:
-        source_dir = local_dir + "NSAA\\matfiles\\act_files\\" + args.ft + "\\"
-    elif args.dir == "NSAA" and args.choice == "indiv" and args.ft in raw_measurements and args.use_sac:
-        source_dir = local_dir + "NSAA\\matfiles\\act_files_concat\\" + args.ft + "\\"
-    elif args.dir == "NSAA" and args.choice == "indiv" and args.ft + "\\" in sub_sub_dirs:
-        source_dir += args.ft + "\\act_files\\"
-    elif args.dir == "NSAA" and args.choice == "indiv" and args.ft + "\\" in sub_sub_dirs and args.use_sac:
-        source_dir += args.ft + "\\act_files_concat\\"
-    elif args.ft + "\\" in sub_sub_dirs and args.dir != "6MW-matFiles":
-        source_dir += args.ft + "\\"
-    elif args.dir == "allmatfiles" and args.ft in raw_measurements:
-        source_dir = local_dir + "allmatfiles\\" + args.ft + "\\"
-    elif args.dir == "NSAA" and args.ft in raw_measurements:
-        source_dir = local_dir + "NSAA\\matfiles\\" + args.ft + "\\"
+    if args.dir == "NSAA" and args.choice == "indiv" and ft in raw_measurements:
+        source_dir = local_dir + "NSAA\\matfiles\\act_files\\" + ft + "\\"
+    elif args.dir == "NSAA" and args.choice == "indiv" and ft in raw_measurements and args.use_sac:
+        source_dir = local_dir + "NSAA\\matfiles\\act_files_concat\\" + ft + "\\"
+    elif args.dir == "NSAA" and args.choice == "indiv" and ft + "\\" in sub_sub_dirs:
+        source_dir += ft + "\\act_files\\"
+    elif args.dir == "NSAA" and args.choice == "indiv" and ft + "\\" in sub_sub_dirs and args.use_sac:
+        source_dir += ft + "\\act_files_concat\\"
+    elif ft + "\\" in sub_sub_dirs and args.dir != "6MW-matFiles":
+        source_dir += ft + "\\"
+    elif args.dir == "allmatfiles" and ft in raw_measurements:
+        source_dir = local_dir + "allmatfiles\\" + ft + "\\"
+    elif args.dir == "NSAA" and ft in raw_measurements:
+        source_dir = local_dir + "NSAA\\matfiles\\" + ft + "\\"
     elif args.dir == "6minwalk-matfiles":
-        if args.ft == "AD" or args.ft == "JA":
-            source_dir += + args.ft + "\\"
-        elif args.ft in raw_measurements:
-            source_dir = local_dir + "6minwalk-matfiles\\all_data_mat_files\\" + args.ft + "\\"
+        if ft == "AD" or ft == "JA":
+            source_dir += + ft + "\\"
+        elif ft in raw_measurements:
+            source_dir = local_dir + "6minwalk-matfiles\\all_data_mat_files\\" + ft + "\\"
         else:
             print("Second arg ('ft') must be a name of a sub-subdirectory within source dir and must be one of \'AD\',"
                   "\'JA', or \'DC\' (unless dir is give as 'NSAA', where 'ft' can be a measurement name).")
             sys.exit()
     elif args.dir == "6MW-matFiles":
-        if args.ft == "AD":
+        if ft == "AD":
             source_dir = local_dir + "\\output_files\\" + args.dir + "\\AD\\"
-        elif args.ft in raw_measurements:
-            source_dir = local_dir + args.dir + "\\" + args.ft + "\\"
+        elif ft in raw_measurements:
+            source_dir = local_dir + args.dir + "\\" + ft + "\\"
         else:
             print("Second arg ('ft') must be a name of a sub-subdirectory within source dir and must be one of \'AD\',"
                   "\'JA', or \'DC\' (unless dir is give as 'NSAA', where 'ft' can be a measurement name).")
@@ -242,7 +249,7 @@ def preprocessing():
         try:
             file_names = [fn for fn in os.listdir(source_dir)]
         except FileNotFoundError:
-            print(args.dir, "not a valid 'dir' name for when choice='" + args.choice + "...")
+            print(args.dir, "not a valid 'dir' name for when choice='" + args.choice + "'...")
             sys.exit()
 
     #Sets 'choice' equal to the 'choice' argument if it's one of the allowed output RNN choices (i.e. 'dhc', 'acts',
@@ -265,7 +272,7 @@ def preprocessing():
             file_names = [fn for fn in file_names if fn.startswith("FR_")]
         else:
             file_names = [fn for fn in file_names if fn.startswith("FRC_")]
-    elif args.ft == "AD":
+    elif ft == "AD":
         if not args.use_frc:
             file_names = [fn for fn in file_names if fn.startswith("FR_")]
         else:
@@ -304,11 +311,11 @@ def preprocessing():
             data = data.values
             if args.dir != "direct_csv" and not source_dir.startswith(local_dir):
                 y_label = 1 if file_name.split("_")[2][0].upper() == "D" else 0
-            elif args.ft == "AD":
+            elif ft == "AD":
                 y_label = 1 if file_name.split("_")[2][0].upper() == "D" else 0
             elif file_name.startswith("All"):
                 y_label = 1 if file_name.split("_")[0].split("-")[1][0].upper() == "D" else 0
-            elif source_dir.startswith(local_dir) and args.ft != "AD":
+            elif source_dir.startswith(local_dir) and ft != "AD":
                 y_label = 1 if file_name.split("_")[0][0].upper() == "D" else 0
             else:
                 y_label = 1 if file_name.split("_")[1][0].upper() == "D" else 0
@@ -324,6 +331,8 @@ def preprocessing():
                     continue
             data = data.values
             if args.dir != "direct_csv" and not source_dir.startswith(local_dir):
+                y_label = data[0][2:19]
+            elif ft == "AD":
                 y_label = data[0][2:19]
             else:
                 y_label = data[0][1:18]
@@ -378,7 +387,7 @@ def preprocessing():
                 x_data.append(split_data[:, 1:])
             elif args.dir == "direct_csv":
                 x_data.append(split_data[:, 19:])
-            elif source_dir.startswith(local_dir) and choice == "dhc" and not args.ft == "AD":
+            elif source_dir.startswith(local_dir) and choice == "dhc" and not ft == "AD":
                 x_data.append(split_data[:, 1:])
             elif source_dir.startswith(local_dir) and "output_files" not in source_dir:
                 x_data.append(split_data[:, 19:])
@@ -435,10 +444,10 @@ def preprocessing():
     #the sequence lengths (to be used by the 'model_predictor.py' script
     model_shape = pd.read_excel(model_shapes_path)
     new_model_shape = model_shape.append(
-        {"dir": args.dir, "ft": args.ft, "measure": args.choice, "seq_len": x_shape[1]}, ignore_index=True)
+        {"dir": args.dir, "ft": ft, "measure": args.choice, "seq_len": x_shape[1]}, ignore_index=True)
     new_model_shape.to_excel(model_shapes_path, index=False)
 
-    return train_test_split(x_data, y_data, shuffle=True, test_size=test_ratio)
+    return x_data, y_data
 
 
 
@@ -561,7 +570,7 @@ def cnn_preprocessing():
     np.random.shuffle(z)
     x_test, y_test = zip(*z)
 
-    return x_train, x_test, y_train, y_test
+    return np.concatenate((x_train, x_test), axis=0), np.concatenate((y_train, y_test), axis=0)
 
 
 
@@ -825,22 +834,66 @@ class RNN(object):
         return np.concatenate(preds)
 
 
-old_seq_len = sequence_length
-#Extracts the training and testing data
-x_train, x_test, y_train, y_test = preprocessing()
+
+#Sets the default sequence length source dir so the originals can be retrieved later after having been modified by
+#different 'ft's or by 'altdirs'
+original_seq_len = sequence_length
+original_source_dir = source_dir
+
+#Separates the 'ft' arg into list of file types, separated by a comma
+fts = [ft for ft in args.ft.split(",")]
+#Sets the scope of the variables to store all data that is concatenated together to global scope and a variable to
+#check whether any data has been entered into this variable yet
+x_data, y_data = None, None
+data_entered = False
+
+#For each of the file types of the argument (separated by commas), preprocesses the data from all files for this
+#file type, concatenates it with any previous data from other file types along the features dimension (i.e. horizontal
+#concatenation (while checking that it is possible to do so, assuming the first 2 dimensions are the same)
+for ft in fts:
+    sequence_length = original_seq_len
+    source_dir = original_source_dir
+    #Extracts the training and testing data
+    ft_x_data, ft_y_data = preprocessing(ft)
+    if ft != "AD" or x_data is None:
+        x_data = np.concatenate((x_data, ft_x_data), axis=2) if data_entered else ft_x_data
+        y_data = y_data if y_data else ft_y_data
+        data_entered = True
+    else:
+        print("'AD' is not a valid 'dir' choice when concatenating file types due to different sized "
+                         "sequence lengths and numbers of samples; not including 'AD'...")
+        continue
+
+
 
 #Repeats the preprocessing for 'other_dir' if specified by setting 'dir' to the value of 'other_dir' and then setting
 #it back to the original value after extracting the data from 'other_dir' and adding it to the 'dir' data
 if args.other_dir:
     old_dir = args.dir
     args.dir = args.other_dir
-    sequence_length = old_seq_len
-    new_x_train, new_x_test, new_y_train, new_y_test = preprocessing()
-    x_train = np.concatenate((x_train, new_x_train), axis=0)
-    x_test = np.concatenate((x_test, new_x_test), axis=0)
-    y_train = np.concatenate((y_train, new_y_train), axis=0)
-    y_test = np.concatenate((y_test, new_y_test), axis=0)
+    sequence_length = original_seq_len
+    alt_x_data, alt_y_data = preprocessing(args.ft)
+    x_data = np.concatenate((x_data, alt_x_data), axis=0)
+    y_data = np.concatenate((y_data, alt_y_data), axis=0)
     args.dir = old_dir
+
+
+#If the optional arg '--pca' is given, reduces the dimensionality of the data set to the dimensions specified
+#by the argument via calling the relevant function from 'ft_sel_red.py'
+if args.pca:
+    print("Reducing the dimensions of data via 'PCA'....")
+    x_data = [sample for sequence in x_data for sample in sequence]
+    x_data, y_data = ft_red_select(x_data, y_data, "pca", False, False, args.pca)
+    x_data = [[x_data[i * x_shape[1] + j] for j in range(x_shape[1])] for i in range(x_shape[0])]
+    print("Reduced-dim X Shape = " + str(np.shape(x_data)))
+    print("Reduced-dim Y Shape = " + str(np.shape(y_data)))
+
+
+
+print("Splitting the data into training and testing components...")
+x_train, x_test, y_train, y_test = train_test_split(x_data, y_data, shuffle=True, test_size=test_ratio)
+
+
 
 #Builds the RNN based on the hyperparameters initially set, and trains the model
 rnn = RNN(features_length=len(x_train[0][0]), seq_len=sequence_length, lstm_size=num_lstm_cells,
