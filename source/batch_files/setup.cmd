@@ -36,6 +36,8 @@ python ..\ext_raw_measures.py 6minwalk-matfiles all all
 python ..\ext_raw_measures.py 6MW-matFiles all all
 python ..\ext_raw_measures.py allmatfiles all jointAngle
 python ..\ft_sel_red.py NSAA AD all pca --num_features=30 --no_normalize
+python ..\ft_sel_red.py NSAA AD all pca --num_features=30 --no_normalize --single_act
+python ..\ft_sel_red.py NSAA AD all pca --num_features=30 --no_normalize --single_act_concat
 python ..\ft_sel_red.py 6minwalk-matfiles AD all pca --num_features=30 --no_normalize 
 python ..\ft_sel_red.py 6MW-matFiles AD all pca --num_features=30 --no_normalize
 

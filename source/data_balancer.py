@@ -4,7 +4,7 @@ from random import shuffle
 from random import randint
 
 
-def ext_label_dist(file_name):
+def ext_label_dist(file_name, batch):
     """
         :param the name of the file name (not inc directory path) from which we wish to get the overall NSAA score
         :return the 'overall NSAA score' that corresponds to the file name
@@ -19,7 +19,8 @@ def ext_label_dist(file_name):
 
     #Loads the table of short-file-names-to-overall-NSAA-score, gets the relevant columns, and creates a dictionary
     #from these columns
-    nsaa_6mw_tab = pd.read_excel("..\\documentation\\nsaa_6mw_info.xlsx")
+    nsaa_6mw_path = "..\\..\\documentation\\nsaa_6mw_info.xlsx" if batch else "..\\documentation\\nsaa_6mw_info.xlsx"
+    nsaa_6mw_tab = pd.read_excel(nsaa_6mw_path)
     nsaa_6mw_cols = nsaa_6mw_tab[["ID", "NSAA"]]
     nsaa_overall_dict = dict(pd.Series(nsaa_6mw_cols.NSAA.values, index=nsaa_6mw_cols.ID).to_dict())
 

@@ -165,6 +165,9 @@ def main():
     parser.add_argument("--single_act", type=bool, nargs="?", const=True, default=False,
                         help="Specify this if the files to reduce the dimensions of are single-act files (located in a "
                              "different sub-directory for the given 'dir').")
+    parser.add_argument("--single_act_concat", type=bool, nargs="?", const=True, default=False,
+                        help="Specify this if the files to reduce the dimensions of are single-act concat files (located "
+                             "in a different sub-directory for the given 'dir'.")
     args = parser.parse_args()
 
     choices = ["pca", "grp", "agglom", "thresh", "rf"]
@@ -195,6 +198,8 @@ def main():
         if args.fn == "all":
             if args.single_act:
                 source_dir += "act_files\\"
+            elif args.single_act_concat:
+                source_dir += "act_files_concat\\"
             match_fns = [s for s in os.listdir(source_dir)]
             full_file_names = [source_dir + match_fns[i] for i in range(len(match_fns)) if "FR_" not in match_fns[i]
                                and match_fns[i].endswith(".csv")]
@@ -228,7 +233,7 @@ def main():
     #was set, however, just concatenate all the data along axis 0 to prepare for further processing
 
     for full_file_name in full_file_names:
-        print("Extracting data of " + full_file_name + "...")
+        print("\nExtracting data of " + full_file_name + "...")
         df = pd.read_csv(full_file_name)
         col_names = df.columns.values[2:]
         # Splits the loaded file into the 'y' parts (the original .mat source file column and file label) and 'x' parts (all

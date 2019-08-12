@@ -8,6 +8,7 @@ from collections import Counter
 from matplotlib import pyplot as plt
 from settings import local_dir, batch_size, source_dir, output_dir, \
     model_dir, sub_dirs, sub_sub_dirs, file_types, output_types, model_pred_path
+from ft_sel_red import ft_red_select
 
 
 """Section below encompasses the three arguments that are required to be passed to the script. This arguments ensures 
@@ -46,9 +47,11 @@ parser.add_argument("--use_balanced", type=str, nargs="?", const=True, default=F
 parser.add_argument("--single_act", type=int, nargs="?", const=True, default=False,
                     help="Specify this is intending to use the single-act files that are produced by 'mat_act_div' to "
                          "predict with. Only able to be used when 'dir'=NSAA.")
-parser.add_argument("--single_act_concat", type=bool, nargs="?", const=True, default=False,
+parser.add_argument("--single_act_concat", type=str, nargs="?", const=True, default=False,
                     help="Specify this if intending to use the single-act-concat files that are produced by "
-                         "'mat_act_div' to predict with. Only able to be used when 'dir'=NSAA.")
+                         "'mat_act_div' to predict with. Only able to be used when 'dir'=NSAA. If set to 'src_sac', "
+                         "source files from the 'act_files_concat' directory, whereas if set to 'src_normal', source "
+                         "files from there 'normal' location (i.e. as if the '--single_act_concat' arg wasn't set.")
 parser.add_argument("--use_frc", type=bool, nargs="?", const=True, default=False,
                     help="Option to use the 'FRC_' files for 'AD' files instead of 'FR_' files, i.e. use files where "
                          "dimensionality reduction has been applied the same way over all files rather than on a "
@@ -62,12 +65,22 @@ parser.add_argument("--noise", type=bool, nargs="?", const=True, default=False,
 parser.add_argument("--batch", type=bool, nargs="?", const=True, default=False,
                     help="Option that is only set if the script is run from a batch file to access the external files "
                          "in a correct way.")
-parser.add_argument("--use_ft_concat", type=bool, nargs="?", const=True, default=False,
+parser.add_argument("--use_ft_concat", type=str, nargs="?", const=True, default=False,
                     help="Specify this is the user wishes to load models that have had file types concatenated "
                          "together (i.e. where the 'ft' arg to 'rnn.py' was multiple file types separated by commas).")
 parser.add_argument("--use_indiv", type=bool, nargs="?", const=True, default=False,
                     help="Specify this if wish to use models that have been trained only on the 'indiv' output type "
                          "when only using 'single_act' files to test w/ the model.")
+parser.add_argument("--other_lo", type=str, nargs="?", const=True, default=False,
+                    help="Specify this with a name of other files to have been left out of the model training and "
+                         "testing data set. For example, with 'fn'=D3 and '--other_lo'=D10, search for models that "
+                         "have been built containing '--leave_out=D3,D10' in the title. Separate multiple "
+                         "files by commas.")
+parser.add_argument("--add_dir", type=str, nargs="?", const=True, default=False,
+                    help="Specify this with the name of another 'dir' if we wish to use models that are trained from "
+                         "both 'dir' and '--add_dir' types. For example, if 'dir'=NSAA and '--add_dir_6MW-matFiles', "
+                         "ensures that both 'NSAA' and '6MW-matFiles' directory files are used to train the models "
+                         "with which we are concerned.")
 args = parser.parse_args()
 
 
@@ -103,6 +116,12 @@ if args.use_balanced:
         print("Optional arg ('--balance') must be set to either 'up' or 'down'.")
         sys.exit()
 
+#Ensures that, if '--single_act_concat' is set, it is one of the two allowed strings
+if args.single_act_concat:
+    if not args.single_act_concat == "src_sac" and not args.single_act_concat == "src_normal":
+        print("'--single_act_concat' must be set to one of 'use_sac' or 'use_normal'...")
+        sys.exit()
+
 fts, sds = [], []
 for ft in args.ft.split(","):
     fts.append(ft)
@@ -114,16 +133,20 @@ for ft in args.ft.split(","):
         sds.append(source_dir + ft + "\\")
     elif ft + "\\" in sub_sub_dirs and args.single_act:
         sds.append(source_dir + ft + "\\act_files\\")
-    elif ft + "\\" in sub_sub_dirs and args.single_act_concat:
+    elif ft + "\\" in sub_sub_dirs and args.single_act_concat=="src_sac":
         sds.append(source_dir + ft + "\\act_files_concat\\")
+    elif ft + "\\" in sub_sub_dirs and args.single_act_concat == "src_normal":
+        sds.append(source_dir + ft + "\\")
+    elif ft in file_types and args.dir == "NSAA" and args.single_act_concat=="src_sac":
+        sds.append(local_dir + "NSAA\\matfiles\\act_files_concat\\" + ft + "\\")
+    elif ft in file_types and args.dir == "NSAA" and args.single_act_concat == "src_normal":
+        sds.append(local_dir + "NSAA\\matfiles\\" + ft + "\\")
     elif ft in file_types and args.dir == "NSAA" and not args.single_act:
         sds.append(local_dir + "NSAA\\matfiles\\" + ft + "\\")
     elif ft in file_types and args.dir == "NSAA" and args.single_act:
         sds.append(local_dir + "NSAA\\matfiles\\act_files\\" + ft + "\\")
     elif ft in file_types and args.dir == "NSAA" and not args.single_act_concat:
         sds.append(local_dir + "NSAA\\matfiles\\" + ft + "\\")
-    elif ft in file_types and args.dir == "NSAA" and args.single_act_concat:
-        sds.append(local_dir + "NSAA\\matfiles\\act_files_concat\\" + ft + "\\")
     elif args.dir == "allmatfiles":
         sds.append(local_dir + "allmatfiles\\")
     else:
@@ -137,6 +160,9 @@ if args.handle_dash:
     args.fn = "-" + args.fn
 
 
+#Section below encompasses all the necessary rules to fetch files from various directories, subdirectories, and so on
+#based on the 'dir', 'fn', 'ft', and other option arguments. Result of this section is a list of short file names, 'fns',
+#that contain the list of all names of files (not including their full paths)
 fns = []
 for ft, sd in zip(fts, sds):
     if args.dir == "allmatfiles":
@@ -159,15 +185,26 @@ for ft, sd in zip(fts, sds):
             if not args.single_act:
                 fns.append([s for s in os.listdir(sd) if args.fn in s][0])
             else:
-                fns.append([s for s in os.listdir(sd) if args.fn in s and "act" + str(args.single_act) + "_" in s][0])
+                try:
+                    fns.append([s for s in os.listdir(sd) if args.fn in s and "act" + str(args.single_act) + "_" in s][0])
+                except IndexError:
+                    print("Act " + str(args.single_act) + " not found for " + args.fn + " in '" + sd + "', skipping...")
+                    sys.exit()
     elif ft == "AD" and args.single_act:
         fns.append([s for s in os.listdir(sd) if args.fn.upper() == s.upper().split("_")[1]
                     and "act" + str(args.single_act) + "_" in s][0])
+    elif args.single_act_concat:
+        try:
+            fns.append([s for s in os.listdir(sd) if args.fn.upper() == s.upper().split("_")[0]][0])
+        except IndexError:
+            print("Cannot find subject '" + args.fn.upper() + "' in " + sd + "...")
+            sys.exit()
     else:
         print("Cannot find '" + str(args.fn) + "' in '" + sd + "'")
         sys.exit()
 
-#Creates a list of the full file path names to load the models of, given the type of file
+
+#Creates a list of the full file path names to load the models of, given the type of file and short file names ('fns')
 full_file_names = []
 for sd, fn in zip(sds, fns):
     if fn.startswith("AD"):
@@ -179,6 +216,7 @@ for sd, fn in zip(sds, fns):
         full_file_names.append(sd + "jointAngle\\" + fn.split(".")[0] + "_jointAngle.csv")
     else:
         full_file_names.append(sd + fn)
+
 
 #Specifies the directories (i.e. names of file groupings that can be used to train a model, e.g. 'NSAA' or
 #'6MW-matFiles') on which to test the file. If the 'alt_dirs' optional argument is not provided, then 'dir' is used
@@ -208,9 +246,18 @@ for sd in search_dirs:
             match_dirs = [fn for fn in os.listdir(model_dir) if fn.split("_")[0] == sd and
                           fn.split("_")[3] == ot]
             for md in match_dirs:
-                if all(ft for ft in args.use_ft_concat.split(",") if ft in md):
-                    inner_models.append([md])
-                    break
+                if "--pca=" + args.use_ft_concat in md and all(ft for ft in args.ft.split(",") if ft in md):
+                    if not args.use_seen:
+                        if ("--leave_out=" + args.fn) in md:
+                            inner_inner_models.append(md)
+                            print("Using model: '" + str(md) + "'...")
+                            break
+                    else:
+                        if "--leave_out=" not in md:
+                            inner_models.append(md)
+                            print("Using model: '" + str(md) + "'...")
+                            break
+            inner_models.append(inner_inner_models)
         else:
             for i, ft in enumerate(fts):
                 #Handles the special case when we're using NSAA files that are placed in the 'left-out' source dir
@@ -222,9 +269,22 @@ for sd in search_dirs:
                 elif any(fn for fn in os.listdir(model_dir) if fn.split("_")[0] == sd and
                                                              fn.split("_")[3] == ot and fn.split("_")[1] == ft):
                     #Gets the first inner model directory that match the file type, directory name, and output type, with
-                    #additional preference of model trained on 'left out file' if one exists in 'model_dir
-                    match_dirs = [fn for fn in os.listdir(model_dir) if fn.split("_")[0] == sd and
-                                         fn.split("_")[3] == ot and fn.split("_")[1] == ft]
+                    #additional preference of model trained on 'left out file' if one exists in 'model_dir. Also
+                    #ensures that if '--add_dir' is used that its value is within the directory name, otherwise ensures
+                    #that any models containing '--add_dir' values aren't used.
+                    if not args.add_dir:
+                        match_dirs = [fn for fn in os.listdir(model_dir) if fn.split("_")[0] == sd and
+                                      fn.split("_")[3] == ot and fn.split("_")[1] == ft]
+                    else:
+                        match_dirs = [fn for fn in os.listdir(model_dir) if fn.split("_")[3] == ot and
+                                      fn.split("_")[1] == ft and sd in fn.split("_")[0] and
+                                      args.add_dir in fn.split("_")[0]]
+                    #Ensures that if '--other_lo' is used that its value is within the directory name, otherwise ensures
+                    #that any models containing 'args.fn + ','' (i.e. models with more than 1 file left out) aren't used
+                    match_dirs = [fn for fn in match_dirs if args.other_lo in fn] if args.other_lo \
+                        else [fn for fn in match_dirs if args.fn + "," not in fn]
+                    match_dirs = [fn for fn in match_dirs if "--use_sac" in fn] if args.single_act_concat \
+                        else [fn for fn in match_dirs if "--use_sac" not in fn]
                     if any(args.fn in md for md in match_dirs):
                         #If 'use_balanced' is set, specifically use ones which have '--balance' in directory name
                         if args.use_balanced and args.use_balanced == "up":
@@ -242,13 +302,6 @@ for sd in search_dirs:
                             else:
                                 inner_inner_models.append([md for md in match_dirs
                                                            if "--balance=down" in md and "--leave_out=" not in md][0])
-                        elif args.single_act_concat:
-                            if not args.use_seen:
-                                inner_inner_models.append([md for md in match_dirs
-                                                           if "--single_act_concat" in md and "--leave_out=" + args.fn in md][0])
-                            else:
-                                inner_inner_models.append([md for md in match_dirs
-                                                           if "--single_act_concat" in md and "--leave_out=" not in md][0])
                         elif args.use_frc and ft == "AD":
                             if not args.use_seen:
                                 inner_inner_models.append([md for md in match_dirs
@@ -301,10 +354,23 @@ models = new_models
 model_shapes_path = "..\\..\\documentation\\model_shapes.xlsx" if args.batch else "..\\documentation\\model_shapes.xlsx"
 model_shape = pd.read_excel(model_shapes_path)
 
-sequence_lengths = [[[model_shape.loc[(model_shape["dir"] == model.split("_")[0]) &
-                                      (model_shape["ft"] == model.split("_")[1]) &
-                                     (model_shape["measure"] == model.split("_")[3])].iloc[-1, -1] if model else None
-                     for model in inner_inner_models] for inner_inner_models in inner_models] for inner_models in models]
+if args.add_dir:
+    sequence_lengths = [[[model_shape.loc[(model_shape["dir"] == model.split("_")[0].split(",")[0]) &
+                                          (model_shape["ft"] == model.split("_")[1]) &
+                                          (model_shape["measure"] == model.split("_")[3])].iloc[
+                              -1, -1] if model else None
+                          for model in inner_inner_models] for inner_inner_models in inner_models] for inner_models in
+                        models]
+elif not args.use_ft_concat:
+    sequence_lengths = [[[model_shape.loc[(model_shape["dir"] == model.split("_")[0]) &
+                                          (model_shape["ft"] == model.split("_")[1]) &
+                                         (model_shape["measure"] == model.split("_")[3])].iloc[-1, -1] if model else None
+                         for model in inner_inner_models] for inner_inner_models in inner_models] for inner_models in models]
+else:
+    sequence_lengths = [[[model_shape.loc[(model_shape["dir"] == model.split("_")[0]) &
+                                          (model_shape["measure"] == model.split("_")[3])].iloc[-1, -1] if model else None
+                          for model in inner_inner_models] for inner_inner_models in inner_models] for inner_models in
+                        models]
 
 
 def preprocessing(full_file_name, sequence_length):
@@ -350,6 +416,23 @@ def preprocessing(full_file_name, sequence_length):
     y_label_overall = df_y.loc[y_index, "NSAA"].values[0]
     y_label_acts = [int(num) for num in df_y.iloc[y_index, 5:].values[0]]
 
+    #If the '--standardize' optional argument is given, reshape the 'x' data into a 2D array, standardize
+    #each of the features, and reshape it back into its original shape (note: np.concatenate and np.reshape aren't used
+    #in order to ensure the data is written back as we would expect with the same number of lines)
+    if args.standardize:
+        x_data = [sample for sequence in x_data for sample in sequence]
+        print("Standardizing the data set...")
+        x_data = StandardScaler().fit_transform(x_data)
+        x_data = [[x_data[i * x_shape[1] + j] for j in range(x_shape[1])] for i in range(x_shape[0])]
+        #If the '--noise' argument is given, add N(0, 1) noise to every feature of every sample of every sequence
+        #in the data set
+    if args.noise:
+        x_data = [sample for sequence in x_data for sample in sequence]
+        print("Adding Gaussian noise to the data set...")
+        x_data += np.random.normal(np.mean(np.array(x_data, dtype=np.float64), axis=0),
+                                   np.std(np.array(x_data, dtype=np.float64), axis=0), np.shape(x_data))
+        x_data = [[x_data[i * x_shape[1] + j] for j in range(x_shape[1])] for i in range(x_shape[0])]
+
     return x_data, y_label_dhc, y_label_overall, y_label_acts
 
 
@@ -391,14 +474,45 @@ for i, inner_models in enumerate(models):
         preds = []
         y_label_dhc, y_label_overall, y_label_acts = (None,)*3
         #For each measurement type (i.e. for every model name, e.g. 'jointAngle' or 'AD')
+        ft_concat_data = [[] for i in range(5)]
+        data_entered = False
         for k, full_file_name in enumerate(full_file_names):
-            #If there is a 'None' sequence length (i.e. a corresponding model for the output type and file type doesn't
-            #exist), then skip over it
-            if not sequence_lengths[i][j][k]:
-                continue
-            x_data, y_label_dhc, y_label_overall, y_label_acts = preprocessing(full_file_name, sequence_lengths[i][j][k])
+            #If the '--use_ft_concat' optional arg is not set, prepare the data as normal for the given output type
+            #and file
+            if not args.use_ft_concat:
+                #If there is a 'None' sequence length (i.e. a corresponding model for the output type and file type doesn't
+                #exist), then skip over it
+                if not sequence_lengths[i][j][k]:
+                    continue
+                x_data, y_label_dhc, y_label_overall, y_label_acts = preprocessing(full_file_name, sequence_lengths[i][j][k])
+            #Otherwise, if the argument is set then, for each of the file types given, concatenate the data together
+            #and if it's the last file type in the sequence of given file types, reduce the dimensions of the sequences
+            #to the value given by the argument
+            else:
+                x_data, y_label_dhc, y_label_overall, y_label_acts = preprocessing(full_file_name, sequence_lengths[0][j][0])
+                ft_concat_data[0] = np.concatenate((ft_concat_data[0], x_data), axis=2) if data_entered else x_data
+                ft_concat_data[1] = ft_concat_data[1] if data_entered else y_label_dhc
+                ft_concat_data[2] = ft_concat_data[2] if data_entered else y_label_overall
+                ft_concat_data[3] = ft_concat_data[3] if data_entered else y_label_acts
+                data_entered = True
+                if k == len(full_file_names)-1:
+                    x_data, y_label_dhc, y_label_overall, y_label_acts = \
+                        ft_concat_data[0], ft_concat_data[1], ft_concat_data[2], ft_concat_data[3]
+                    try:
+                        pca = int(args.use_ft_concat)
+                        x_shape = np.shape(x_data)
+                        x_data = [sample for sequence in x_data for sample in sequence]
+                        x_data, y_data = ft_red_select(x_data, None, "pca", False, False, pca)
+                        x_data = [[x_data[i * x_shape[1] + j] for j in range(x_shape[1])] for i in range(x_shape[0])]
+                    except ValueError:
+                        if args.use_ft_concat != "all":
+                            print("Optional arg '--pca' must contain int value or 'all' to keep all features...")
+                            sys.exit()
+                else:
+                    continue
+
             #Complete model path to the directory of the model in question
-            model_path = model_dir + inner_inner_models[k]
+            model_path = model_dir + inner_inner_models[k] if not args.use_ft_concat else model_dir + inner_inner_models[0]
             inner_preds = []
             with tf.Session(graph=tf.Graph()) as sess:
                 #Loads the model and restores from it's final checkpoint
@@ -408,14 +522,14 @@ for i, inner_models in enumerate(models):
                 #< batch_size), then replicate it until it's the size of at least batch size
                 new_x_data = []
                 while len(new_x_data) < batch_size:
-                    new_x_data += x_data
+                    new_x_data += list(x_data)
                 x_data = new_x_data
                 #For each batch of the data from 'full_file_name', feed it through the trained model to get predictions based
                 #on the type of model (e.g. '1's or '0's if output_type == "dhc", ints between 0 and 34 if output_type ==
                 #"overall", and lists of 17 values between 0 and 1 if output_type == "dhc") and appends these to 'preds'
                 for ii, batch_x in enumerate(create_batch_generator(x_data, None, batch_size=batch_size), 1):
                     feed = {'tf_x:0': batch_x, 'tf_keepprob:0': 1.0}
-                    if output_type == "overall":
+                    if output_type == "overall" or args.use_indiv:
                         inner_preds.append(sess.run('logits_squeezed:0', feed_dict=feed))
                     else:
                         inner_preds.append(sess.run('labels:0', feed_dict=feed))
@@ -463,6 +577,10 @@ for i, inner_models in enumerate(models):
             output_strs.append(str("Predicted 'D/HC Label' = " + pred_label))
             output_strs.append(str("Percentage of predicted 'D' sequences = " + str(d_percen) + "%"))
             output_strs.append(str("Percentage of predicted 'HC' sequences = " + str(hc_percen) + "%"))
+        elif args.use_indiv:
+            true_label = y_label_acts[int(args.single_act)-1]
+            output_strs.append(str("True individual activity score = " + str(true_label)))
+            output_strs.append(str("Predicted individual activity score = " + str(round(float(np.mean(preds)), 2))))
         else:
             preds = np.transpose(preds)
             pred_acts = [Counter(preds[i]).most_common()[0][0] for i in range(len(preds))]
@@ -520,12 +638,20 @@ header = ["Short file name", "Source dir", "Model trained dir(s)", "Measurements
 #Appends a short string to the file name being written to file if the models have already seen the file name in training
 if args.use_seen:
     args.fn += " (already seen)"
+if args.other_lo:
+    args.fn += " (other lo = " + args.other_lo + ")"
+if args.single_act_concat == "src_sac":
+    args.fn += " (src sac)"
+elif args.single_act_concat == "src_normal":
+    args.fn += " (src normal)"
+if args.use_ft_concat:
+    args.fn += " (feature concat = " + args.use_ft_concat + ")"
+if args.add_dir:
+    args.fn += " (additional dir = " + args.add_dir + ")"
 if args.single_act:
     args.fn += " (act " + str(args.single_act) + ")"
 if  args.use_indiv:
     args.fn += " (indiv)"
-if args.single_act_concat:
-    args.fn += " (concat acts)"
 if args.use_frc:
     args.fn += " (FRC)"
 if args.use_balanced and args.use_balanced == "down":

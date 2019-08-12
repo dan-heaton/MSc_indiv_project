@@ -589,3 +589,196 @@ N/A,D17 (act 14),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		
 N/A,D17 (act 15),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,"[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2]","[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]",94.12%,D,HC,0.0%,100.0%,33,31
 N/A,D17 (act 16),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,"[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2]","[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]",94.12%,D,HC,0.0%,100.0%,33,33
 N/A,D17 (act 17),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,"[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2]","[2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 2, 1, 2, 1, 1, 1]",70.59%,D,HC,50.0%,50.0%,33,29
+N/A,D3,NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle', 'AD']",		 ------ NSAA Predictions ------ ,"[1, 1, 1, 2, 2, 1, 1, 0, 1, 2, 1, 2, 0, 1, 1, 1, 1]","[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 1, 2, 1, 2, 1]",41.18%,D,D,100.0%,0.0%,19,27
+N/A,D3 (other lo = D10),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle', 'AD']",		 ------ NSAA Predictions ------ ,"[1, 1, 1, 2, 2, 1, 1, 0, 1, 2, 1, 2, 0, 1, 1, 1, 1]","[2, 2, 2, 2, 2, 2, 2, 1, 1, 2, 1, 2, 1, 2, 1, 1, 1]",52.94%,D,HC,50.0%,50.0%,19,28
+N/A,D9,NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle', 'AD']",		 ------ NSAA Predictions ------ ,"[2, 1, 1, 2, 2, 2, 2, 1, 1, 1, 0, 2, 0, 2, 1, 1, 1]","[2, 2, 1, 2, 2, 1, 1, 1, 1, 2, 1, 1, 1, 2, 1, 2, 1]",52.94%,D,D,100.0%,0.0%,22,25
+N/A,D9 (other lo = D10),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle', 'AD']",		 ------ NSAA Predictions ------ ,"[2, 1, 1, 2, 2, 2, 2, 1, 1, 1, 0, 2, 0, 2, 1, 1, 1]","[2, 2, 1, 2, 2, 2, 2, 1, 1, 2, 1, 2, 1, 2, 1, 2, 1]",70.59%,D,D,100.0%,0.0%,22,26
+N/A,D11,NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle', 'AD']",		 ------ NSAA Predictions ------ ,"[2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1, 1, 1, 2, 1, 1, 1]","[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 1, 2]",70.59%,D,D,100.0%,0.0%,27,28
+N/A,D11 (other lo = D10),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle', 'AD']",		 ------ NSAA Predictions ------ ,"[2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1, 1, 1, 2, 1, 1, 1]","[2, 2, 2, 2, 2, 2, 2, 1, 1, 2, 1, 2, 2, 2, 1, 1, 1]",70.59%,D,D,100.0%,0.0%,27,27
+N/A,D17,NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle', 'AD']",		 ------ NSAA Predictions ------ ,"[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2]","[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]",94.12%,D,HC,50.0%,50.0%,33,28
+N/A,D17 (other lo = D10),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle', 'AD']",		 ------ NSAA Predictions ------ ,"[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2]","[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]",94.12%,D,HC,50.0%,50.0%,33,29
+N/A,HC6,NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle', 'AD']",		 ------ NSAA Predictions ------ ,"[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]","[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]",100.0%,HC,HC,25.0%,75.0%,34,31
+N/A,HC6 (other lo = D10),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle', 'AD']",		 ------ NSAA Predictions ------ ,"[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]","[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]",100.0%,HC,HC,25.0%,75.0%,34,28
+N/A,D3,NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle', 'AD']",		 ------ NSAA Predictions ------ ,"[1, 1, 1, 2, 2, 1, 1, 0, 1, 2, 1, 2, 0, 1, 1, 1, 1]","[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 1, 2, 1, 2, 1]",41.18%,D,D,100.0%,0.0%,19,27
+N/A,D3 (src sac),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle', 'AD']",		 ------ NSAA Predictions ------ ,"[1, 1, 1, 2, 2, 1, 1, 0, 1, 2, 1, 2, 0, 1, 1, 1, 1]","[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 1, 2, 1]",41.18%,D,D,75.0%,25.0%,19,29
+N/A,D3 (src normal),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle', 'AD']",		 ------ NSAA Predictions ------ ,"[1, 1, 1, 2, 2, 1, 1, 0, 1, 2, 1, 2, 0, 1, 1, 1, 1]","[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 2, 2, 1, 1, 1]",41.18%,D,D,75.0%,25.0%,19,28
+N/A,D9,NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle', 'AD']",		 ------ NSAA Predictions ------ ,"[2, 1, 1, 2, 2, 2, 2, 1, 1, 1, 0, 2, 0, 2, 1, 1, 1]","[2, 2, 1, 2, 2, 1, 1, 1, 1, 2, 1, 1, 1, 2, 1, 2, 1]",52.94%,D,D,100.0%,0.0%,22,25
+N/A,D9 (src sac),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle', 'AD']",		 ------ NSAA Predictions ------ ,"[2, 1, 1, 2, 2, 2, 2, 1, 1, 1, 0, 2, 0, 2, 1, 1, 1]","[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 1, 1]",52.94%,D,D,84.38%,15.62%,22,28
+N/A,D9 (src normal),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle', 'AD']",		 ------ NSAA Predictions ------ ,"[2, 1, 1, 2, 2, 2, 2, 1, 1, 1, 0, 2, 0, 2, 1, 1, 1]","[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 1, 2]",47.06%,D,D,75.0%,25.0%,22,28
+N/A,D11,NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle', 'AD']",		 ------ NSAA Predictions ------ ,"[2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1, 1, 1, 2, 1, 1, 1]","[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 1, 2]",70.59%,D,D,100.0%,0.0%,27,28
+N/A,D11 (src sac),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle', 'AD']",		 ------ NSAA Predictions ------ ,"[2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1, 1, 1, 2, 1, 1, 1]","[2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 2, 2, 2, 1, 1, 1]",64.71%,D,D,75.0%,25.0%,27,24
+N/A,D11 (src normal),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle', 'AD']",		 ------ NSAA Predictions ------ ,"[2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1, 1, 1, 2, 1, 1, 1]","[2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 2, 1, 2, 1, 1, 1]",70.59%,D,D,75.0%,25.0%,27,24
+N/A,D17,NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle', 'AD']",		 ------ NSAA Predictions ------ ,"[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2]","[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]",94.12%,D,HC,50.0%,50.0%,33,28
+N/A,D17 (src sac),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle', 'AD']",		 ------ NSAA Predictions ------ ,"[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2]","[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]",94.12%,D,HC,39.06%,60.94%,33,27
+N/A,D17 (src normal),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle', 'AD']",		 ------ NSAA Predictions ------ ,"[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2]","[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]",94.12%,D,HC,50.0%,50.0%,33,28
+N/A,HC6,NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle', 'AD']",		 ------ NSAA Predictions ------ ,"[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]","[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]",100.0%,HC,HC,25.0%,75.0%,34,31
+N/A,HC6 (src normal),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle', 'AD']",		 ------ NSAA Predictions ------ ,"[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]","[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]",100.0%,HC,HC,50.0%,50.0%,34,29
+N/A,D3,NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle', 'AD']",		 ------ NSAA Predictions ------ ,"[1, 1, 1, 2, 2, 1, 1, 0, 1, 2, 1, 2, 0, 1, 1, 1, 1]","[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 1, 2, 1, 2, 1]",41.18%,D,D,100.0%,0.0%,19,27
+N/A,D3 (downsampled),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle', 'AD']",		 ------ NSAA Predictions ------ ,"[1, 1, 1, 2, 2, 1, 1, 0, 1, 2, 1, 2, 0, 1, 1, 1, 1]","[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 2, 1, 1, 1]",41.18%,D,D,100.0%,0.0%,19,25
+N/A,D9,NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle', 'AD']",		 ------ NSAA Predictions ------ ,"[2, 1, 1, 2, 2, 2, 2, 1, 1, 1, 0, 2, 0, 2, 1, 1, 1]","[2, 2, 1, 2, 2, 1, 1, 1, 1, 2, 1, 1, 1, 2, 1, 2, 1]",52.94%,D,D,100.0%,0.0%,22,25
+N/A,D9 (downsampled),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle', 'AD']",		 ------ NSAA Predictions ------ ,"[2, 1, 1, 2, 2, 2, 2, 1, 1, 1, 0, 2, 0, 2, 1, 1, 1]","[2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 1, 1, 1, 2, 1, 1, 1]",47.06%,D,D,75.0%,25.0%,22,23
+N/A,D11,NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle', 'AD']",		 ------ NSAA Predictions ------ ,"[2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1, 1, 1, 2, 1, 1, 1]","[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 1, 2]",70.59%,D,D,100.0%,0.0%,27,28
+N/A,D11 (downsampled),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle', 'AD']",		 ------ NSAA Predictions ------ ,"[2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1, 1, 1, 2, 1, 1, 1]","[2, 2, 1, 2, 2, 2, 2, 1, 1, 1, 1, 2, 0, 2, 1, 1, 1]",58.82%,D,D,100.0%,0.0%,27,24
+N/A,D17,NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle', 'AD']",		 ------ NSAA Predictions ------ ,"[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2]","[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]",94.12%,D,HC,50.0%,50.0%,33,28
+N/A,D17 (downsampled),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle', 'AD']",		 ------ NSAA Predictions ------ ,"[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2]","[2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 1, 2, 1, 2, 1, 1, 1]",70.59%,D,HC,50.0%,50.0%,33,25
+N/A,HC6,NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle', 'AD']",		 ------ NSAA Predictions ------ ,"[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]","[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]",100.0%,HC,HC,25.0%,75.0%,34,31
+N/A,HC6 (downsampled),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle', 'AD']",		 ------ NSAA Predictions ------ ,"[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]","[2, 2, 1, 2, 2, 2, 2, 1, 1, 2, 1, 2, 2, 2, 1, 1, 1]",58.82%,HC,D,75.0%,25.0%,34,23
+N/A,D3,NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,"[1, 1, 1, 2, 2, 1, 1, 0, 1, 2, 1, 2, 0, 1, 1, 1, 1]","[2, 2, 2, 2, 2, 2, 2, 1, 1, 2, 1, 2, 1, 2, 1, 1, 1]",52.94%,D,D,91.74%,8.26%,19,25
+N/A,D3 (feature concat = 60),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,"[1, 1, 1, 2, 2, 1, 1, 0, 1, 2, 1, 2, 0, 1, 1, 1, 1]","[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]",23.53%,D,D,77.23%,22.77%,19,28
+N/A,D3 (feature concat = all),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,"[1, 1, 1, 2, 2, 1, 1, 0, 1, 2, 1, 2, 0, 1, 1, 1, 1]","[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 1, 1]",41.18%,D,D,87.95%,12.05%,19,29
+N/A,D9,NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,"[2, 1, 1, 2, 2, 2, 2, 1, 1, 1, 0, 2, 0, 2, 1, 1, 1]","[2, 2, 2, 2, 2, 2, 2, 1, 1, 2, 1, 1, 1, 2, 1, 1, 1]",64.71%,D,D,100.0%,0.0%,22,25
+N/A,D9 (feature concat = 60),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,"[2, 1, 1, 2, 2, 2, 2, 1, 1, 1, 0, 2, 0, 2, 1, 1, 1]","[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]",41.18%,D,D,80.94%,19.06%,22,28
+N/A,D9 (feature concat = all),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,"[2, 1, 1, 2, 2, 2, 2, 1, 1, 1, 0, 2, 0, 2, 1, 1, 1]","[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]",41.18%,D,D,73.75%,26.25%,22,25
+N/A,D11,NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,"[2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1, 1, 1, 2, 1, 1, 1]","[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 1, 1, 1]",82.35%,D,D,94.84%,5.16%,27,27
+N/A,D11 (feature concat = 60),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,"[2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1, 1, 1, 2, 1, 1, 1]","[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 1, 1, 1]",82.35%,D,D,69.53%,30.47%,27,26
+N/A,D11 (feature concat = all),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,"[2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1, 1, 1, 2, 1, 1, 1]","[2, 2, 2, 2, 2, 2, 2, 1, 1, 2, 1, 2, 2, 2, 1, 1, 1]",70.59%,D,D,63.12%,36.88%,27,27
+N/A,D17,NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,"[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2]","[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]",94.12%,D,HC,22.66%,77.34%,33,27
+N/A,D17 (feature concat = 60),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,"[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2]","[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 1]",94.12%,D,D,79.69%,20.31%,33,26
+N/A,D17 (feature concat = all),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,"[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2]","[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 1, 1]",88.24%,D,D,81.25%,18.75%,33,26
+N/A,HC6,NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,"[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]","[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]",100.0%,HC,HC,16.8%,83.2%,34,31
+N/A,HC6 (feature concat = 60),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,"[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]","[2, 2, 1, 2, 2, 2, 2, 1, 1, 2, 1, 2, 0, 2, 1, 1, 1]",52.94%,HC,D,85.94%,14.06%,34,26
+N/A,HC6 (feature concat = all),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,"[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]","[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]",100.0%,HC,HC,13.28%,86.72%,34,32
+N/A,D3 (act 1) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,1,1.34
+N/A,D3 (act 2) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,1,1.62
+N/A,D3 (act 3) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,1,0.78
+N/A,D3 (act 4) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,2,0.94
+N/A,D3 (act 5) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,2,1.15
+N/A,D3 (act 6) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,1,0.75
+N/A,D3 (act 7) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,1,0.66
+N/A,D3 (act 8) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,0,1.55
+N/A,D3 (act 9) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,1,1.64
+N/A,D3 (act 10) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,2,0.66
+N/A,D3 (act 11) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,1,1.06
+N/A,D3 (act 12) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,2,1.2
+N/A,D3 (act 13) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,0,0.71
+N/A,D3 (act 14) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,1,0.86
+N/A,D3 (act 15) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,1,0.93
+N/A,D3 (act 16) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,1,0.91
+N/A,D3 (act 17) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,1,1.67
+N/A,D9 (act 1) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,2,1.98
+N/A,D9 (act 2) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,1,1.7
+N/A,D9 (act 4) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,2,1.47
+N/A,D9 (act 5) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,2,1.51
+N/A,D9 (act 6) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,2,1.91
+N/A,D9 (act 7) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,2,1.98
+N/A,D9 (act 8) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,1,1.92
+N/A,D9 (act 9) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,1,1.98
+N/A,D9 (act 10) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,1,1.48
+N/A,D9 (act 11) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,0,1.55
+N/A,D9 (act 12) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,2,1.51
+N/A,D9 (act 13) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,0,1.37
+N/A,D9 (act 14) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,2,1.83
+N/A,D9 (act 15) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,1,1.98
+N/A,D9 (act 16) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,1,1.83
+N/A,D9 (act 17) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,1,1.71
+N/A,D11 (act 1) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,2,1.48
+N/A,D11 (act 3) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,2,1.2
+N/A,D11 (act 4) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,1,0.98
+N/A,D11 (act 5) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,2,1.43
+N/A,D11 (act 6) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,2,1.5
+N/A,D11 (act 7) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,2,1.57
+N/A,D11 (act 8) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,2,1.74
+N/A,D11 (act 9) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,2,1.85
+N/A,D11 (act 10) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,2,1.13
+N/A,D11 (act 11) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,1,1.18
+N/A,D11 (act 12) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,1,1.02
+N/A,D11 (act 13) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,1,1.03
+N/A,D11 (act 14) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,2,1.05
+N/A,D11 (act 15) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,1,1.39
+N/A,D11 (act 16) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,1,1.33
+N/A,D11 (act 17) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,1,1.57
+N/A,D17 (act 1) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,2,1.79
+N/A,D17 (act 2) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,2,1.93
+N/A,D17 (act 3) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,2,1.51
+N/A,D17 (act 4) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,2,1.35
+N/A,D17 (act 5) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,2,1.41
+N/A,D17 (act 6) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,2,1.4
+N/A,D17 (act 7) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,2,1.67
+N/A,D17 (act 8) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,2,1.4
+N/A,D17 (act 9) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,2,1.48
+N/A,D17 (act 10) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,2,1.54
+N/A,D17 (act 11) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,1,0.87
+N/A,D17 (act 12) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,2,1.31
+N/A,D17 (act 13) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,2,1.26
+N/A,D17 (act 14) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,2,1.07
+N/A,D17 (act 15) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,2,1.53
+N/A,D17 (act 16) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,2,1.31
+N/A,D17 (act 17) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,2,1.69
+N/A,HC6 (act 2) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,2,1.98
+N/A,D3 (already seen) (act 1) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,1,1.41
+N/A,D3 (already seen) (act 2) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,1,1.27
+N/A,D3 (already seen) (act 3) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,1,1.06
+N/A,D3 (already seen) (act 4) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,2,1.44
+N/A,D3 (already seen) (act 5) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,2,1.41
+N/A,D3 (already seen) (act 6) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,1,1.16
+N/A,D3 (already seen) (act 7) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,1,0.91
+N/A,D3 (already seen) (act 8) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,0,1.55
+N/A,D3 (already seen) (act 9) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,1,1.6
+N/A,D3 (already seen) (act 10) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,2,0.67
+N/A,D3 (already seen) (act 11) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,1,0.96
+N/A,D3 (already seen) (act 12) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,2,1.51
+N/A,D3 (already seen) (act 13) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,0,1.01
+N/A,D3 (already seen) (act 14) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,1,1.08
+N/A,D3 (already seen) (act 15) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,1,1.18
+N/A,D3 (already seen) (act 16) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,1,1.28
+N/A,D3 (already seen) (act 17) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,1,1.68
+N/A,D9 (already seen) (act 1) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,2,2.01
+N/A,D9 (already seen) (act 2) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,1,1.15
+N/A,D9 (already seen) (act 4) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,2,1.66
+N/A,D9 (already seen) (act 5) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,2,1.74
+N/A,D9 (already seen) (act 6) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,2,1.79
+N/A,D9 (already seen) (act 7) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,2,1.84
+N/A,D9 (already seen) (act 8) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,1,1.77
+N/A,D9 (already seen) (act 9) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,1,1.95
+N/A,D9 (already seen) (act 10) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,1,1.36
+N/A,D9 (already seen) (act 11) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,0,1.54
+N/A,D9 (already seen) (act 12) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,2,1.82
+N/A,D9 (already seen) (act 13) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,0,1.41
+N/A,D9 (already seen) (act 14) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,2,1.95
+N/A,D9 (already seen) (act 15) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,1,2.02
+N/A,D9 (already seen) (act 16) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,1,1.8
+N/A,D9 (already seen) (act 17) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,1,1.92
+N/A,D11 (already seen) (act 1) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,2,1.92
+N/A,D11 (already seen) (act 3) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,2,1.95
+N/A,D11 (already seen) (act 4) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,1,1.22
+N/A,D11 (already seen) (act 5) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,2,1.83
+N/A,D11 (already seen) (act 6) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,2,1.81
+N/A,D11 (already seen) (act 7) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,2,1.73
+N/A,D11 (already seen) (act 8) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,2,1.75
+N/A,D11 (already seen) (act 9) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,2,1.69
+N/A,D11 (already seen) (act 10) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,2,1.53
+N/A,D11 (already seen) (act 11) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,1,1.01
+N/A,D11 (already seen) (act 12) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,1,1.34
+N/A,D11 (already seen) (act 13) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,1,1.42
+N/A,D11 (already seen) (act 14) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,2,1.58
+N/A,D11 (already seen) (act 15) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,1,1.72
+N/A,D11 (already seen) (act 16) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,1,1.72
+N/A,D11 (already seen) (act 17) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,1,1.66
+N/A,D17 (already seen) (act 1) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,2,1.63
+N/A,D17 (already seen) (act 2) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,2,1.92
+N/A,D17 (already seen) (act 3) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,2,1.41
+N/A,D17 (already seen) (act 4) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,2,1.61
+N/A,D17 (already seen) (act 5) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,2,1.69
+N/A,D17 (already seen) (act 6) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,2,1.62
+N/A,D17 (already seen) (act 7) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,2,1.8
+N/A,D17 (already seen) (act 8) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,2,1.64
+N/A,D17 (already seen) (act 9) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,2,1.72
+N/A,D17 (already seen) (act 10) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,2,1.58
+N/A,D17 (already seen) (act 11) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,1,0.97
+N/A,D17 (already seen) (act 12) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,2,1.44
+N/A,D17 (already seen) (act 13) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,2,1.27
+N/A,D17 (already seen) (act 14) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,2,1.3
+N/A,D17 (already seen) (act 15) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,2,1.61
+N/A,D17 (already seen) (act 16) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,2,1.5
+N/A,D17 (already seen) (act 17) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,2,1.85
+N/A,HC6 (already seen) (act 2) (indiv),NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle']",		 ------ NSAA Predictions ------ ,2,1.97
+N/A,D3,NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle', 'AD']",		 ------ NSAA Predictions ------ ,"[1, 1, 1, 2, 2, 1, 1, 0, 1, 2, 1, 2, 0, 1, 1, 1, 1]","[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 1, 2, 1, 2, 1]",41.18%,D,D,100.0%,0.0%,19,27
+N/A,"D3 (additional dir = 6minwalk-matfiles,6MW-matFiles)",NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle', 'AD']",		 ------ NSAA Predictions ------ ,"[1, 1, 1, 2, 2, 1, 1, 0, 1, 2, 1, 2, 0, 1, 1, 1, 1]","[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 1]",35.29%,D,D,75.0%,25.0%,19,27
+N/A,D9,NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle', 'AD']",		 ------ NSAA Predictions ------ ,"[2, 1, 1, 2, 2, 2, 2, 1, 1, 1, 0, 2, 0, 2, 1, 1, 1]","[2, 2, 1, 2, 2, 1, 1, 1, 1, 2, 1, 1, 1, 2, 1, 2, 1]",52.94%,D,D,100.0%,0.0%,22,25
+N/A,"D9 (additional dir = 6minwalk-matfiles,6MW-matFiles)",NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle', 'AD']",		 ------ NSAA Predictions ------ ,"[2, 1, 1, 2, 2, 2, 2, 1, 1, 1, 0, 2, 0, 2, 1, 1, 1]","[2, 2, 1, 2, 2, 2, 2, 1, 1, 1, 1, 2, 1, 2, 1, 1, 1]",82.35%,D,D,75.0%,25.0%,22,24
+N/A,D11,NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle', 'AD']",		 ------ NSAA Predictions ------ ,"[2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1, 1, 1, 2, 1, 1, 1]","[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 1, 2]",70.59%,D,D,100.0%,0.0%,27,28
+N/A,"D11 (additional dir = 6minwalk-matfiles,6MW-matFiles)",NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle', 'AD']",		 ------ NSAA Predictions ------ ,"[2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1, 1, 1, 2, 1, 1, 1]","[2, 2, 2, 2, 2, 2, 2, 1, 1, 2, 1, 2, 2, 2, 1, 1, 1]",70.59%,D,D,100.0%,0.0%,27,23
+N/A,D17,NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle', 'AD']",		 ------ NSAA Predictions ------ ,"[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2]","[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]",94.12%,D,HC,50.0%,50.0%,33,28
+N/A,"D17 (additional dir = 6minwalk-matfiles,6MW-matFiles)",NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle', 'AD']",		 ------ NSAA Predictions ------ ,"[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2]","[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 1, 1]",88.24%,D,HC,50.0%,50.0%,33,22
+N/A,HC6,NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle', 'AD']",		 ------ NSAA Predictions ------ ,"[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]","[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]",100.0%,HC,HC,25.0%,75.0%,34,31
+N/A,"HC6 (additional dir = 6minwalk-matfiles,6MW-matFiles)",NSAA,N/A,"['position', 'sensorMagneticField', 'jointAngle', 'AD']",		 ------ NSAA Predictions ------ ,"[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]","[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]",100.0%,HC,HC,0.0%,100.0%,34,29
