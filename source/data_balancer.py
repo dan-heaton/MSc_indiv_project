@@ -2,6 +2,7 @@ from collections import OrderedDict
 import pandas as pd
 from random import shuffle
 from random import randint
+from settings import nsaa_6mw_path
 
 
 def ext_label_dist(file_name, batch):
@@ -19,7 +20,8 @@ def ext_label_dist(file_name, batch):
 
     #Loads the table of short-file-names-to-overall-NSAA-score, gets the relevant columns, and creates a dictionary
     #from these columns
-    nsaa_6mw_path = "..\\..\\documentation\\nsaa_6mw_info.xlsx" if batch else "..\\documentation\\nsaa_6mw_info.xlsx"
+    global nsaa_6mw_path
+    nsaa_6mw_path = "..\\" + nsaa_6mw_path if batch else nsaa_6mw_path
     nsaa_6mw_tab = pd.read_excel(nsaa_6mw_path)
     nsaa_6mw_cols = nsaa_6mw_tab[["ID", "NSAA"]]
     nsaa_overall_dict = dict(pd.Series(nsaa_6mw_cols.NSAA.values, index=nsaa_6mw_cols.ID).to_dict())

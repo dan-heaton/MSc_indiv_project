@@ -3,28 +3,30 @@ import pandas as pd
 import sys
 import matplotlib.pyplot as plt
 import numpy as np
-from settings import results_path, local_dir
+from settings import results_path, local_dir, model_pred_path
 from sklearn.metrics import mean_absolute_error
 
 parser = argparse.ArgumentParser()
 parser.add_argument("choice",
                     help="Choice of graph creator mode. Must be one of: 'trues_preds' to call the 'plot_trues_preds()' "
                          "function, 'model_preds_altdirs' to call the 'plot_model_preds_altdirs()' function, "
-                         "'model_preds_single_acts' for 'plot_model_preds_single_acts()', or 'rnn_results' to call "
-                         "the 'plot_rnn_results() function.")
+                         "'model_preds_trues_preds' for 'plot_model_preds_trues_preds()', 'model_preds_single_acts' "
+                         "for 'plot_model_preds_single_acts()', or 'rnn_results' to call the 'plot_rnn_results() function.")
 parser.add_argument("arg_one", nargs="?", default=None,
                     help="Arg based on 'choice' that is specified. If choice='trues_preds', 'arg_one' is the name of "
                          "the file to load from 'RNN_outputs' (not inc. file extension) to plot the trues and preds "
                          "from. If choice='model_pred_altdirs', 'arg_one' is the name of the source directory to use "
-                         "for the rows to be selected from 'model_predictions.csv'. If choice='model_preds_single_acts', "
-                         "'arg_one' is the short file name of the file of which to load the 'single act' rows. "
-                         "If choice='rnn_results', 'arg_one' is the start experiment number to load "
-                         "from 'RNN Results.xlsx'.")
+                         "for the rows to be selected from 'model_predictions.csv'. If choice='model_preds_trues_preds', "
+                         "'arg_one' is the row number within 'model_predictions.csv' to start from to draw the true and "
+                         "predicted values from (inclusive). If choice='model_preds_single_acts', 'arg_one' is the short "
+                         "file name of the file of which to load the 'single act' rows. If choice='rnn_results', "
+                         "'arg_one' is the start experiment number to load from 'RNN Results.xlsx'.")
 parser.add_argument("arg_two", nargs="?", default=None,
                     help="Arg based on 'choice' that is specified. If choice='model_preds_altdirs', 'arg_two' is the "
                          "name of the model trained dirs to use for the rows to be selected from 'model_predictions.csv' "
-                         "(comma separated). If choice='rnn_results', 'arg_two' is the end experiment number to load "
-                         "from 'RNN Results.xlsx.")
+                         "(comma separated). If choice='model_preds_trues_preds', 'arg_two' is the row number within "
+                         "'model_predictions.csv' to end from to draw the true and predicted values from (inclusive). "
+                         "If choice='rnn_results', 'arg_two' is the end experiment number to load from 'RNN Results.xlsx.")
 parser.add_argument("out_type", nargs="?", default=None,
                     help="Only used when choice='rnn_results'. Name of metric of which we wish to plot the results."
                          " Must be one of 'acc', 'mse', 'mae', 'rmse', 'r2', 'ind_act', or 'all_act'.")
@@ -44,10 +46,13 @@ parser.add_argument("--split_rows_disc", type=bool, nargs="?", const=True,
 parser.add_argument("--x_log", type=bool, nargs="?", const=True,
                     help="Specify if wish to plot x-axis values in log scale (e.g. when plotting very large "
                          "sequence lengths.")
+parser.add_argument("--batch", type=bool, nargs="?", const=True, default=False,
+                    help="Option that is only set if the script is run from a batch file to access the external files "
+                         "in a correct way.")
 args = parser.parse_args()
 
 
-choices = ["trues_preds", "model_preds_altdirs", "model_preds_single_acts", "rnn_results"]
+choices = ["trues_preds", "model_preds_altdirs", "model_preds_trues_preds", "model_preds_single_acts", "rnn_results"]
 if args.choice not in choices:
     print("First arg ('arg_one') must be one of 'trues_preds', 'model_preds_altdirs', or 'rnn_results'...")
     sys.exit()
@@ -85,7 +90,7 @@ def plot_model_preds_altdirs():
     """
         Handles the case where we are graphing with the 'model_predictions.csv' file, i.e. the 'test_altdirs.py' output
     """
-    model_preds = pd.read_csv("..\\documentation\\model_predictions.csv")
+    model_preds = pd.read_csv(model_pred_path)
     #Select the relevant rows from the file based on the args that we passed into 'graph_creator.py'
     model_preds = model_preds.loc[(model_preds["Source dir"] == args.arg_one) &
                                   (model_preds["Model trained dir(s)"] == str(args.arg_two.split(",")))]
@@ -202,12 +207,47 @@ def plot_model_preds_altdirs():
 
 
 
+def plot_model_preds_trues_preds():
+    """
+        Plots the true and predicted NSAA values for the selected rows (given by 'arg_one' and 'arg_two', inclusive)
+        on a graph, with true values plotted on 'x-axis' and predicted values along the 'y-axis'
+    """
+    model_preds = pd.read_csv("..\\" + model_pred_path) if args.batch else pd.read_csv(model_pred_path)
+
+    try:
+        start_row, end_row = int(args.arg_one), int(args.arg_two)
+    except ValueError:
+        print("First two args ('arg_one' and 'arg_two') must be integers to select the row range "
+              "of 'model_predictions.csv...")
+        sys.exit()
+
+    model_preds = model_preds.iloc[start_row-2:end_row-1, :]
+    trues = model_preds.iloc[:, 6].astype(float).tolist()
+    preds = model_preds.iloc[:, 7].astype(float).tolist()
+    fig, ax = plt.subplots()
+    ax.scatter(trues, preds, alpha=0.3)
+    x = np.linspace(*ax.get_xlim())
+    ax.plot(x, x)
+    plt.title("Plot of true overall NSAA scores against predicted overall NSAA scores")
+    plt.xlabel("True NSAA scores")
+    plt.ylabel("Predicted NSAA scores")
+    if args.save_img:
+        if args.batch:
+            plt.savefig("..\\..\\documentation\\Graphs\\" + "model_preds_trues_preds_" + args.arg_one + "_" + args.arg_two)
+        else:
+            plt.savefig("..\\documentation\\Graphs\\" + "model_preds_trues_preds_" + args.arg_one + "_" + args.arg_two)
+    plt.gcf().set_size_inches(10, 10)
+    if not args.no_display:
+        plt.show()
+
+
+
 def plot_model_preds_single_acts():
     """
         Plots 3 subplots where the act number (between 1 and 17) are along the x-axis and the results of the 3 output
         types for each activity is plotted along the y-axis.
     """
-    model_preds = pd.read_csv("..\\documentation\\model_predictions.csv")
+    model_preds = pd.read_csv(model_pred_path)
     #Select the relevant rows from the file based on the args that we passed into 'graph_creator.py'
     model_preds = model_preds.loc[(model_preds["Short file name"].str.contains(args.arg_one)) &
                                   (model_preds["Short file name"].str.contains("\(act"))]
@@ -391,6 +431,8 @@ if args.choice == "trues_preds":
     plot_trues_preds()
 elif args.choice == "model_preds_altdirs":
     plot_model_preds_altdirs()
+elif args.choice == "model_preds_trues_preds":
+    plot_model_preds_trues_preds()
 elif args.choice == "model_preds_single_acts":
     plot_model_preds_single_acts()
 elif args.choice == "rnn_results":

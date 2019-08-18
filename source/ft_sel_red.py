@@ -10,7 +10,7 @@ from sklearn.cluster import FeatureAgglomeration
 from sklearn.feature_selection import VarianceThreshold
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.feature_selection import SelectFromModel
-from settings import local_dir, source_dir, sub_dirs, sub_sub_dirs
+from settings import local_dir, source_dir, sub_dirs, sub_sub_dirs, nsaa_6mw_path
 
 
 
@@ -82,7 +82,7 @@ def add_nsaa_scores(file_df):
     #For the table of data that we have on the subjects, load in the table, find the columns with ID and
     #overall NSAA scores, and create a dictionary of matching values, e.g. {'D4': 15, 'D11: 28,...}, with all values
     #from each table
-    nsaa_6mw_tab = pd.read_excel("..\\documentation\\nsaa_6mw_info.xlsx")
+    nsaa_6mw_tab = pd.read_excel(nsaa_6mw_path)
     nsaa_6mw_cols = nsaa_6mw_tab[["ID", "NSAA"]]
     nsaa_overall_dict = dict(pd.Series(nsaa_6mw_cols.NSAA.values, index=nsaa_6mw_cols.ID).to_dict())
 

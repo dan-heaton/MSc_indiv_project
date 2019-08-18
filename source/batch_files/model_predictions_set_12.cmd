@@ -196,3 +196,7 @@ python ..\model_predictor.py NSAA position,sensorMagneticField,jointAngle HC6 --
 python ..\model_predictor.py NSAA position,sensorMagneticField,jointAngle HC6 --single_act=15 --use_indiv --use_seen --batch
 python ..\model_predictor.py NSAA position,sensorMagneticField,jointAngle HC6 --single_act=16 --use_indiv --use_seen --batch
 python ..\model_predictor.py NSAA position,sensorMagneticField,jointAngle HC6 --single_act=17 --use_indiv --use_seen --batch
+
+REM Note that the below two sets of integer arguments to 'graph_creator.py' may need to be changed to the correct row numbers in 'model_predictions.csv'
+python ..\graph_creator.py model_preds_trues_preds 641 707 --batch --save_img --no_display
+python ..\graph_creator.py model_preds_trues_preds 708 774 --batch --save_img --no_display

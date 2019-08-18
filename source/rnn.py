@@ -14,7 +14,8 @@ import pyexcel as pe
 from matplotlib import pyplot as plt
 from math import floor
 import data_balancer
-from settings import local_dir, source_dir, output_dir, sub_dirs, sub_sub_dirs, raw_measurements, batch_size
+from settings import local_dir, source_dir, output_dir, sub_dirs, sub_sub_dirs, raw_measurements, batch_size, \
+    nsaa_6mw_path, model_shapes_path
 from ft_sel_red import ft_red_select
 
 
@@ -94,15 +95,19 @@ parser.add_argument("--use_sac", type=bool, nargs="?", const=True, default=False
 parser.add_argument("--standardize", type=bool, nargs="?", const=True, default=False,
                     help="Option to standardize all the data (i.e. so each feature column of the total data set "
                          "(following splitting into sequences) is N(0, 1).")
-parser.add_argument("--noise", type=bool, nargs="?", const=True, default=False,
-                    help="Option to add Gaussian-distributed noise to each of the features. As this noise is "
-                         "distributed as N(0, 1), this arg first standardizes the data before adding the noise.")
+parser.add_argument("--noise", type=float, nargs="?", const=True, default=False,
+                    help="Option to add Gaussian-distributed noise to each of the features. Specify a proportion of "
+                         "N(0, 1) noise to the add to the data set.")
 parser.add_argument("--batch", type=bool, nargs="?", const=True, default=False,
                     help="Option that is only set if the script is run from a batch file to access the external files "
                          "in a correct way.")
 parser.add_argument("--pca", type=str, nargs="?", const=True, default=False,
                     help="Specify if wishing reduce the feature size of the data set training the model to the number "
                          "of features specified by the value passed to this argument.")
+parser.add_argument("--balance_allmatfiles", type=int, nargs="?", const=True, default=False,
+                    help="Specify this to only use a smaller sample of the overall 'allmatfiles' data set, as the "
+                         "base contains ~8x as many files as NSAA. Value given is the maximum number of files per "
+                         "subject that we can draw from the 'allmatfiles' directory.")
 args = parser.parse_args()
 
 #If no optional argument given for '--seq_len', defaults to seq_len = 10, i.e. defaults to splitting files into
@@ -169,8 +174,8 @@ if args.other_dir:
         sys.exit()
 
 #Sets the paths for external files based on the whether the script was called from a batch file or not
-nsaa_6mw_path = "..\\..\\documentation\\nsaa_6mw_info.xlsx" if args.batch else "..\\documentation\\nsaa_6mw_info.xlsx"
-model_shapes_path = "..\\..\\documentation\\model_shapes.xlsx" if args.batch else "..\\documentation\\model_shapes.xlsx"
+nsaa_6mw_path = "..\\" + nsaa_6mw_path if args.batch else nsaa_6mw_path
+model_shapes_path = "..\\" + model_shapes_path if args.batch else model_shapes_path
 
 
 
@@ -290,6 +295,35 @@ def preprocessing(dir, ft):
         lo_names = args.leave_out.split(",")
         for lo_n in lo_names:
             file_names = [fn for fn in file_names if lo_n not in fn]
+
+
+    #If the '--balance_allmatfiles' optional argument is set, rebalance the 'allmatfiles' data set to use a reduced
+    #number of files
+    if dir == "allmatfiles" and args.balance_allmatfiles:
+        print("Initial number of files within 'allmatfiles': " + str(len(file_names)))
+        #Ensures that the number of files selected for each subject name in 'allmatfiles' are randomly chosen for a
+        #given subject, as opposed to the first occuring files
+        np.random.seed(42)
+        np.random.shuffle(file_names)
+
+        #Setups a dictionary to count the number of files we have selected per subject and an empty list to hold the
+        #selected file names
+        fn_counts = {fn.split("jointangle")[1].split("-")[0]:0 for fn in file_names}
+        new_file_names = []
+
+        #For each file name, adds it to the new list of file names to include if we haven't reached the maximum number
+        #allowed ('--balance_allmatfiles') for that subject
+        for fn in file_names:
+            short_fn = fn.split("jointangle")[1].split("-")[0]
+            if fn_counts[short_fn] < args.balance_allmatfiles:
+                new_file_names.append(fn)
+                fn_counts[short_fn] += 1
+
+        #Sets the newly chosen file names to the list of files from which to build the model
+        file_names = new_file_names
+        print("Reduced number of files within 'allmatfiles' to use to train models (max = " +
+              str(args.balance_allmatfiles) + " per subject) : " + str(len(file_names)))
+
 
     #For each file name that we are dealing with (all files names in 'source_dir' if 'fn' is 'all, else a single
     #file name), adds 'y' labels based on what type of model output we are training for and divide up both 'x' and 'y'
@@ -441,13 +475,12 @@ def preprocessing(dir, ft):
         print("Standardizing the data set...")
         x_data = StandardScaler().fit_transform(x_data)
         x_data = [[x_data[i*x_shape[1] + j] for j in range(x_shape[1])] for i in range(x_shape[0])]
-        #If the '--noise' argument is given, add N(0, 1) noise to every feature of every sample of every sequence
-        #in the data set
+    #If the '--noise' argument is given, add Gaussian noise to every feature of every sample of every sequence
+    #in the data set
     if args.noise:
         x_data = [sample for sequence in x_data for sample in sequence]
         print("Adding Gaussian noise to the data set...")
-        x_data += np.random.normal(np.mean(np.array(x_data, dtype=np.float64), axis=0),
-                                   np.std(np.array(x_data, dtype=np.float64), axis=0), np.shape(x_data))
+        x_data += np.random.normal(0, np.std(np.array(x_data, dtype=np.float64), axis=0) * args.noise, np.shape(x_data))
         x_data = [[x_data[i * x_shape[1] + j] for j in range(x_shape[1])] for i in range(x_shape[0])]
 
     #Appends the arguments that were used to invoke the model and its sequence length to a file that stores
@@ -860,9 +893,9 @@ data_entered = False
 
 #For each of the directories that we wish to use as a source of the file data...
 for dir in args.dir.split(","):
-#For each of the file types of the argument (separated by commas), preprocesses the data from all files for this
-#file type, concatenates it with any previous data from other file types along the features dimension (i.e. horizontal
-#concatenation (while checking that it is possible to do so, assuming the first 2 dimensions are the same)
+    #For each of the file types of the argument (separated by commas), preprocesses the data from all files for this
+    #file type, concatenates it with any previous data from other file types along the features dimension (i.e. horizontal
+    #concatenation (while checking that it is possible to do so, assuming the first 2 dimensions are the same)
     fts_x_data, fts_y_data = None, None
     fts_data_entered = False
     for ft in fts:

@@ -7,7 +7,7 @@ import tensorflow as tf
 from collections import Counter
 from matplotlib import pyplot as plt
 from settings import local_dir, batch_size, source_dir, output_dir, \
-    model_dir, sub_dirs, sub_sub_dirs, file_types, output_types, model_pred_path
+    model_dir, sub_dirs, sub_sub_dirs, file_types, output_types, model_pred_path, model_shapes_path, nsaa_6mw_path
 from ft_sel_red import ft_red_select
 
 
@@ -59,7 +59,7 @@ parser.add_argument("--use_frc", type=bool, nargs="?", const=True, default=False
 parser.add_argument("--standardize", type=bool, nargs="?", const=True, default=False,
                     help="Option to use models that have the '--standardize' argument set. Selects the relevant models "
                          "from the 'rnn_models' directory along with standardizing the file's data.")
-parser.add_argument("--noise", type=bool, nargs="?", const=True, default=False,
+parser.add_argument("--noise", type=str, nargs="?", const=True, default=False,
                     help="Option to use models that have the '--noise' argument set, which selects the relevant models "
                          "from the 'rnn_models' directory, but does not add noise to the data now being predicted.")
 parser.add_argument("--batch", type=bool, nargs="?", const=True, default=False,
@@ -81,6 +81,17 @@ parser.add_argument("--add_dir", type=str, nargs="?", const=True, default=False,
                          "both 'dir' and '--add_dir' types. For example, if 'dir'=NSAA and '--add_dir_6MW-matFiles', "
                          "ensures that both 'NSAA' and '6MW-matFiles' directory files are used to train the models "
                          "with which we are concerned.")
+parser.add_argument("--ft_red", type=str, nargs="?", const=True, default=False,
+                    help="Specify this is using models that have had their raw measurement inputs feature reduced; note "
+                         "that this, like '--use_ft_concat', loads '--pca' models but specifically not models with "
+                         "their input features concatenated.")
+parser.add_argument("--single_sequence", type=bool, nargs="?", const=True, default=False,
+                    help="Specify this if we only wish to draw a single sequence from the source file(s) for the subject "
+                         "that is drawn evenly across the complete file(s). Note that this is replicated 'batch_size' "
+                         "times so it can be accepted into the pre-built models.")
+parser.add_argument("--combine_preds", type=bool, nargs="?", const=True, default=False,
+                    help="Specify this if we wish to combine the predictions made using models built for different "
+                         "output types to get an aggregate prediction for the overall NSAA score.")
 args = parser.parse_args()
 
 
@@ -254,9 +265,23 @@ for sd in search_dirs:
                             break
                     else:
                         if "--leave_out=" not in md:
-                            inner_models.append(md)
+                            inner_inner_models.append(md)
                             print("Using model: '" + str(md) + "'...")
                             break
+            inner_models.append(inner_inner_models)
+        elif args.ft_red:
+            match_dirs = [fn for fn in os.listdir(model_dir) if fn.split("_")[0] == sd and
+                          fn.split("_")[3] == ot and "--pca=" + args.ft_red in fn]
+            for ft in fts:
+                for md in match_dirs:
+                    if not args.use_seen:
+                        if ("--leave_out=" + args.fn) in md and md.split("_")[1] == ft:
+                            inner_inner_models.append(md)
+                            print("Using model: '" + str(md) + "'...")
+                    else:
+                        if "--leave_out=" not in md and md.split("_")[1] == ft:
+                            inner_inner_models.append(md)
+                            print("Using model: '" + str(md) + "'...")
             inner_models.append(inner_inner_models)
         else:
             for i, ft in enumerate(fts):
@@ -319,10 +344,10 @@ for sd in search_dirs:
                         elif args.noise:
                             if not args.use_seen:
                                 inner_inner_models.append([md for md in match_dirs
-                                                           if "--noise" in md and "--leave_out=" + args.fn in md][0])
+                                                           if "--noise=" + args.noise in md and "--leave_out=" + args.fn in md][0])
                             else:
                                 inner_inner_models.append([md for md in match_dirs
-                                                           if "--noise" in md and "--leave_out=" not in md][0])
+                                                           if "--noise=" + args.noise in md and "--leave_out=" not in md][0])
                         else:
                             option_args = ["--balance=up", "--balance=down", "--use_frc", "--use_frc",
                                            "--standardize", "--noise"]
@@ -351,7 +376,7 @@ models = new_models
 
 #Reads in the .xlsx file with the file shapes in them and extracts the sequence lengths from the most recent entry in
 #the tabel that corresponds to the model with a specific source dir, file type, and output type
-model_shapes_path = "..\\..\\documentation\\model_shapes.xlsx" if args.batch else "..\\documentation\\model_shapes.xlsx"
+model_shapes_path = "..\\" + model_shapes_path if args.batch else model_shapes_path
 model_shape = pd.read_excel(model_shapes_path)
 
 if args.add_dir:
@@ -382,6 +407,12 @@ def preprocessing(full_file_name, sequence_length):
     else:
         df_x = pd.read_csv(full_file_name, index_col=0).iloc[:, 20:].values
 
+    #If we only wish to use a single sequence drawn from the subject file, draw 'sequence_length' frames of data
+    #from the file that is evenly distributed across the file
+    if args.single_sequence:
+        df_x = np.array([df_x[i] for i in range(0, len(df_x), int(len(df_x)/sequence_length)+1)])
+
+
     x_data = [df_x[sequence_length*i:(sequence_length*(i+1)), :] for i in range(int(len(df_x)/sequence_length))]
 
     #Handles the case where the '.mat' file doesn't even contain enough data for one sequence (i.e. the number of rows
@@ -394,8 +425,8 @@ def preprocessing(full_file_name, sequence_length):
     #and three 'true' labels for the file are extracted: 'y_label_dhc' gets 1 if the short name of the file (e.g. 'D11')
     #begins with a 'D', else it gets a 0; 'y_label_overall' gets an integer value between 0 and 34 of the overall NSAA score,
     #and 'y_label_acts' gets the 17 individiual NSAA acts as a list as scores between 0 and 2
-    nsaa_6mw_path = "..\\..\\documentation\\nsaa_6mw_info.xlsx" if args.batch else "..\\documentation\\nsaa_6mw_info.xlsx"
-    df_y = pd.read_excel(nsaa_6mw_path)
+    local_nsaa_6mw_path = "..\\" + nsaa_6mw_path if args.batch else nsaa_6mw_path
+    df_y = pd.read_excel(local_nsaa_6mw_path)
     if args.dir != "direct_csv" and not source_dir.startswith(local_dir):
         y_label_dhc = 1 if full_file_name.split("\\")[-1].split("_")[2][0].upper() == "D" else 0
     elif source_dir.startswith(local_dir):
@@ -416,6 +447,7 @@ def preprocessing(full_file_name, sequence_length):
     y_label_overall = df_y.loc[y_index, "NSAA"].values[0]
     y_label_acts = [int(num) for num in df_y.iloc[y_index, 5:].values[0]]
 
+
     #If the '--standardize' optional argument is given, reshape the 'x' data into a 2D array, standardize
     #each of the features, and reshape it back into its original shape (note: np.concatenate and np.reshape aren't used
     #in order to ensure the data is written back as we would expect with the same number of lines)
@@ -423,14 +455,6 @@ def preprocessing(full_file_name, sequence_length):
         x_data = [sample for sequence in x_data for sample in sequence]
         print("Standardizing the data set...")
         x_data = StandardScaler().fit_transform(x_data)
-        x_data = [[x_data[i * x_shape[1] + j] for j in range(x_shape[1])] for i in range(x_shape[0])]
-        #If the '--noise' argument is given, add N(0, 1) noise to every feature of every sample of every sequence
-        #in the data set
-    if args.noise:
-        x_data = [sample for sequence in x_data for sample in sequence]
-        print("Adding Gaussian noise to the data set...")
-        x_data += np.random.normal(np.mean(np.array(x_data, dtype=np.float64), axis=0),
-                                   np.std(np.array(x_data, dtype=np.float64), axis=0), np.shape(x_data))
         x_data = [[x_data[i * x_shape[1] + j] for j in range(x_shape[1])] for i in range(x_shape[0])]
 
     return x_data, y_label_dhc, y_label_overall, y_label_acts
@@ -457,6 +481,39 @@ def create_batch_generator(x, y=None, batch_size=64):
             yield x[ii:ii+batch_size]
 
 
+
+def combine_preds(output_strs):
+    """
+        :return: gets the results that are contained within the output strings, computes a method for predicting an
+        overall NSAA score based on the D/HC label and percentage of predicted sequences, and aggregates the
+        predictions made by all three output types to get an average aggregated overall NSAA score prediction
+    """
+
+    #Gets the numerical predictions made for each of the output metrics as contained within 'output_strs'
+    acts_sum_pred = sum(eval([out_str for out_str in output_strs if "Predicted 'Acts Sequence'" in out_str][0].split(" = ")[1]))
+    dhc_pred = [out_str for out_str in output_strs if "Predicted 'D/HC Label'" in out_str][0].split(" = ")[1]
+    dhc_prop_pred = float([out_str for out_str in output_strs if "Percentage of predicted '" + dhc_pred + "' sequences"
+                in out_str][0].split(" = ")[1].split("%")[0])/100
+    overall_pred = int([out_str for out_str in output_strs if "Predicted 'Overall NSAA Score'" in out_str][0].split(" = ")[1])
+
+    #Gets the median value of all the subjects true overall NSAA scores according to the 'nsaa_6mw_info.xlsx' file
+    #and uses this as the basis for the overall NSAA score associated with the 'D' label
+    local_nsaa_6mw_path = "..\\" + nsaa_6mw_path if args.batch else nsaa_6mw_path
+    df_y = pd.read_excel(local_nsaa_6mw_path)
+    df_y = df_y.loc[df_y["ID"].str.startswith("D")]
+    d_median = int(np.median(df_y["NSAA"].tolist()))
+
+    #Averages the overall NSAA scores made by each of the predictions, with the average of the predicted overall NSAA
+    #score, the sum of the indivudal acts predictions, and the assigned numerical value for the 'D' or 'HC' label
+    dhc_value = 34 if dhc_pred == "HC" else d_median
+    average_pred = round((acts_sum_pred + overall_pred + (dhc_value*dhc_prop_pred)) / (2 + dhc_prop_pred))
+
+    output_strs.append("Aggregated predicted 'Overall NSAA Score' = " + str(average_pred))
+
+    return output_strs
+
+
+
 pred_overalls, true_overalls = [], []
 #Stores the strings to write AFTER all the models have run so all results are printed at the end, rather than some being
 #printed and then obscured by the model setup text
@@ -477,18 +534,10 @@ for i, inner_models in enumerate(models):
         ft_concat_data = [[] for i in range(5)]
         data_entered = False
         for k, full_file_name in enumerate(full_file_names):
-            #If the '--use_ft_concat' optional arg is not set, prepare the data as normal for the given output type
-            #and file
-            if not args.use_ft_concat:
-                #If there is a 'None' sequence length (i.e. a corresponding model for the output type and file type doesn't
-                #exist), then skip over it
-                if not sequence_lengths[i][j][k]:
-                    continue
-                x_data, y_label_dhc, y_label_overall, y_label_acts = preprocessing(full_file_name, sequence_lengths[i][j][k])
-            #Otherwise, if the argument is set then, for each of the file types given, concatenate the data together
+            #If the argument is set then, for each of the file types given, concatenate the data together
             #and if it's the last file type in the sequence of given file types, reduce the dimensions of the sequences
             #to the value given by the argument
-            else:
+            if args.use_ft_concat:
                 x_data, y_label_dhc, y_label_overall, y_label_acts = preprocessing(full_file_name, sequence_lengths[0][j][0])
                 ft_concat_data[0] = np.concatenate((ft_concat_data[0], x_data), axis=2) if data_entered else x_data
                 ft_concat_data[1] = ft_concat_data[1] if data_entered else y_label_dhc
@@ -510,6 +559,26 @@ for i, inner_models in enumerate(models):
                             sys.exit()
                 else:
                     continue
+            #Else, prepare the data as normal for the given output type and file
+            else:
+                #If there is a 'None' sequence length (i.e. a corresponding model for the output type and file type doesn't
+                #exist), then skip over it
+                if not sequence_lengths[i][j][k]:
+                    continue
+                x_data, y_label_dhc, y_label_overall, y_label_acts = preprocessing(full_file_name, sequence_lengths[i][j][k])
+                if args.ft_red:
+                    try:
+                        pca = int(args.ft_red)
+                        x_shape = np.shape(x_data)
+                        x_data = [sample for sequence in x_data for sample in sequence]
+                        x_data, y_data = ft_red_select(x_data, None, "pca", False, False, pca)
+                        x_data = [[x_data[i * x_shape[1] + j] for j in range(x_shape[1])] for i in range(x_shape[0])]
+                    except ValueError:
+                        if args.use_ft_concat != "all":
+                            print("Optional arg '--pca' must contain int value or 'all' to keep all features...")
+                            sys.exit()
+
+
 
             #Complete model path to the directory of the model in question
             model_path = model_dir + inner_inner_models[k] if not args.use_ft_concat else model_dir + inner_inner_models[0]
@@ -594,6 +663,13 @@ for i, inner_models in enumerate(models):
             output_strs.append(str("Percent of acts correctly predicted = " + str(perc_correct) + "%"))
         output_strs.append("")
 
+
+#If the optional '--combine_preds' argument is set, compute the aggregated predicted 'Overall NSAA Score' and add this
+#to the list of output strings
+if args.combine_preds:
+    output_strs = combine_preds(output_strs)
+
+
 #Prints to the user all the output lines that were generated by testing on all the models
 print("\n")
 for output_str in output_strs:
@@ -646,6 +722,8 @@ elif args.single_act_concat == "src_normal":
     args.fn += " (src normal)"
 if args.use_ft_concat:
     args.fn += " (feature concat = " + args.use_ft_concat + ")"
+if args.ft_red:
+    args.fn += " (feature reduced = " + args.ft_red + ")"
 if args.add_dir:
     args.fn += " (additional dir = " + args.add_dir + ")"
 if args.single_act:
@@ -654,6 +732,8 @@ if  args.use_indiv:
     args.fn += " (indiv)"
 if args.use_frc:
     args.fn += " (FRC)"
+if args.noise:
+    args.fn += " (noise = " + args.noise + ")"
 if args.use_balanced and args.use_balanced == "down":
     args.fn += " (downsampled)"
 elif args.use_balanced and args.use_balanced == "up":

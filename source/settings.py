@@ -15,8 +15,12 @@ sub_dirs = ["6minwalk-matfiles\\", "6MW-matFiles\\", "NSAA\\", "direct_csv\\", "
 sub_sub_dirs = ["AD\\", "JA\\", "DC\\"]
 
 #Other paths to documentation files that are referenced in several locations within 'source'
-model_pred_path = "..\\documentation\\model_predictions.csv"
-results_path = "..\\documentation\\RNN Results.xlsx"
+doc_path = "..\\documentation\\"
+model_pred_path = doc_path + "model_predictions.csv"
+results_path = doc_path + "RNN Results.xlsx"
+nsaa_6mw_path = doc_path + "nsaa_6mw_info.xlsx"
+model_shapes_path = doc_path + "model_shapes.xlsx"
+nsaa_subtasks_path = doc_path + "nsaa_17subtasks_matfiles.csv"
 
 #Types of files that are used to train models on
 file_types = ["AD", "position", "velocity", "acceleration", "angularVelocity", "angularAcceleration",

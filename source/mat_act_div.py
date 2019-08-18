@@ -9,7 +9,7 @@ import numpy as np
 import sys
 import os
 import scipy.io as sio
-from settings import local_dir
+from settings import local_dir, nsaa_subtasks_path
 
 """Section below encompasses all the required arguments for the script to run. Note there are only 2 arguments and they 
 are BOTH required."""
@@ -32,7 +32,7 @@ def extract_act_times():
     """
     #Reads in the downloaded Google sheet and makes a list of tuples, where each element in the list is a tuple of two
     #values: the name of an 'ID' cell and its index location within a different list of IDs
-    data = pd.read_csv(local_dir + "nsaa_17subtasks_matfiles.csv", delimiter=";")
+    data = pd.read_csv(nsaa_subtasks_path, delimiter=";")
     #Removes the final 12 columns loaded from the table, as these are concerning the '6-min walk' data
     data = data.iloc[:, :-12]
     #Drops the columns from the table that we don't need
