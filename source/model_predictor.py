@@ -92,6 +92,13 @@ parser.add_argument("--single_sequence", type=bool, nargs="?", const=True, defau
 parser.add_argument("--combine_preds", type=bool, nargs="?", const=True, default=False,
                     help="Specify this if we wish to combine the predictions made using models built for different "
                          "output types to get an aggregate prediction for the overall NSAA score.")
+parser.add_argument("--no_testset", type=bool, nargs="?", const=True, default=False,
+                    help="Specify this to select models that have the train/test ratio set to 0.")
+parser.add_argument("--new_subject", type=bool, nargs="?", const=True, default=False,
+                    help="Specify this if the we wish to treat the subject, 'fn', as one with no 'true' y-labels. "
+                         "Hence, specify this if the subject does not have 'true' values recorded by specialists that "
+                         "is stored in the 'nsaa_6mw_info.xlsx' file (e.g. if the subject is a new subject with no "
+                         "true labels or if we otherwise wish to treat them as such).")
 args = parser.parse_args()
 
 
@@ -310,6 +317,8 @@ for sd in search_dirs:
                         else [fn for fn in match_dirs if args.fn + "," not in fn]
                     match_dirs = [fn for fn in match_dirs if "--use_sac" in fn] if args.single_act_concat \
                         else [fn for fn in match_dirs if "--use_sac" not in fn]
+                    match_dirs = [fn for fn in match_dirs if "--no_testset" in fn] if args.no_testset \
+                        else [fn for fn in match_dirs if "--no_testset" not in fn]
                     if any(args.fn in md for md in match_dirs):
                         #If 'use_balanced' is set, specifically use ones which have '--balance' in directory name
                         if args.use_balanced and args.use_balanced == "up":
@@ -420,6 +429,11 @@ def preprocessing(full_file_name, sequence_length):
     if len(x_data) == 0:
         print(full_file_name.split("\\")[-1].split(".")[0], "too short in length to use, skipping....")
         sys.exit()
+
+    #If the '--new_subject' optional arg is split, returns without fetching the 'y' label information
+    #from the 'nsaa_6mw_info.xlsx' file
+    if args.new_subject:
+        return x_data, None, None, None
 
     #Loads the file that contains information on each subject and their corresponding overall and individual NSAA scores,
     #and three 'true' labels for the file are extracted: 'y_label_dhc' gets 1 if the short name of the file (e.g. 'D11')
@@ -635,32 +649,38 @@ for i, inner_models in enumerate(models):
         #file (e.g. true 'D' or 'HC' label, true overall NSAA score, or true single acts scores) and what the model predicted
         if output_type == "overall":
             true_overalls = [y_label_overall for m in range(len(pred_overalls))]
-            output_strs.append(str("True 'Overall NSAA Score' = " + str(y_label_overall)))
+            if not args.new_subject:
+                output_strs.append(str("True 'Overall NSAA Score' = " + str(y_label_overall)))
             output_strs.append(str("Predicted 'Overall NSAA Score' = " + str(int(round(float(np.mean(preds)), 0)))))
         elif output_type == "dhc":
             true_label = "D" if y_label_dhc == 1 else "HC"
             pred_label = "D" if max(set(list(preds)), key=list(preds).count) == 1 else "HC"
             d_percen = np.round(((np.sum(preds)/len(preds))*100), 2)
             hc_percen = np.round(100 - d_percen, 2)
-            output_strs.append(str("True 'D/HC Label' = " + true_label))
+            if not args.new_subject:
+                output_strs.append(str("True 'D/HC Label' = " + true_label))
             output_strs.append(str("Predicted 'D/HC Label' = " + pred_label))
             output_strs.append(str("Percentage of predicted 'D' sequences = " + str(d_percen) + "%"))
             output_strs.append(str("Percentage of predicted 'HC' sequences = " + str(hc_percen) + "%"))
         elif args.use_indiv:
-            true_label = y_label_acts[int(args.single_act)-1]
-            output_strs.append(str("True individual activity score = " + str(true_label)))
+            if not args.new_subject:
+                true_label = y_label_acts[int(args.single_act)-1]
+                output_strs.append(str("True individual activity score = " + str(true_label)))
             output_strs.append(str("Predicted individual activity score = " + str(round(float(np.mean(preds)), 2))))
         else:
             preds = np.transpose(preds)
             pred_acts = [Counter(preds[i]).most_common()[0][0] for i in range(len(preds))]
-            num_correct = 0
-            for m in range(len(y_label_acts)):
-                if y_label_acts[m] == pred_acts[m]:
-                    num_correct += 1
-            perc_correct = round(((num_correct / 17)*100), 2)
-            output_strs.append(str("True 'Acts Sequence' = " + str(y_label_acts)))
+            perc_correct = 0
+            if not args.new_subject:
+                num_correct = 0
+                for m in range(len(y_label_acts)):
+                    if y_label_acts[m] == pred_acts[m]:
+                        num_correct += 1
+                perc_correct = round(((num_correct / 17)*100), 2)
+                output_strs.append(str("True 'Acts Sequence' = " + str(y_label_acts)))
             output_strs.append(str("Predicted 'Acts Sequence' = " + str(pred_acts)))
-            output_strs.append(str("Percent of acts correctly predicted = " + str(perc_correct) + "%"))
+            if not args.new_subject:
+                output_strs.append(str("Percent of acts correctly predicted = " + str(perc_correct) + "%"))
         output_strs.append("")
 
 
@@ -675,8 +695,17 @@ print("\n")
 for output_str in output_strs:
     print(output_str)
 
-#Plot the predicted values against the true values for NSAA overall (only if *not* run from 'test_altdirs.py'
-if not args.file_num:
+
+#Finish the program if optional argument'--new_subject' is set, as do not wish to write predictions on new files
+#to 'model_predictions.csv' (as it has no true values and thus is the wrong shape for the table
+if args.new_subject:
+    print("\nFinished file assessment: no information written to 'model_predictions.csv'...")
+    sys.exit()
+
+
+#Plot the predicted values against the true values for NSAA overall (only if *not* run from 'test_altdirs.py'; does not
+#worth if '--new_subject' is set, as won't have the 'true' values
+if not args.file_num and not args.new_subject:
     fig, ax = plt.subplots()
     ax.scatter(true_overalls, pred_overalls, alpha=0.03)
     plt.xlim(0, 34)
@@ -728,6 +757,12 @@ if args.add_dir:
     args.fn += " (additional dir = " + args.add_dir + ")"
 if args.single_act:
     args.fn += " (act " + str(args.single_act) + ")"
+if args.single_sequence:
+    args.fn += " (single sequence)"
+if args.combine_preds:
+    args.fn += " (aggregate overall)"
+if args.no_testset:
+    args.fn += " (no testset)"
 if  args.use_indiv:
     args.fn += " (indiv)"
 if args.use_frc:

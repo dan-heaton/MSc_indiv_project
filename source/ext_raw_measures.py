@@ -14,7 +14,7 @@ files are retrieved."""
 parser = argparse.ArgumentParser()
 parser.add_argument("dir", help="Specifies which source directory to use so as to process the files contained within "
                                 "them accordingly. Must be one of '6minwalk-matfiles', '6MW-matFiles', "
-                                "'NSAA', or 'allmatfiles'.")
+                                "'NSAA', 'NMB', or 'allmatfiles'.")
 parser.add_argument("fn", help="Specifies the short name (e.g. 'D11') of the file that we wish to extract the specified "
                                "raw measurements. Specify 'all' for all the files available in the 'local_dir'.")
 parser.add_argument("measurements", help="Specifies the measurements to extract from the source .mat file. Separate "
@@ -31,7 +31,7 @@ args = parser.parse_args()
 if args.dir + "\\" in sub_dirs:
     if args.dir == "6minwalk-matfiles":
         local_dir += args.dir + "\\all_data_mat_files\\"
-    elif args.dir == "6MW-matFiles" or args.dir == "allmatfiles" or args.dir == "left-out":
+    elif args.dir == "6MW-matFiles" or args.dir == "allmatfiles" or args.dir == "left-out" or args.dir == "NMB":
         local_dir += args.dir + "\\"
     else:
         local_dir += args.dir + "\\matfiles\\"
@@ -41,7 +41,7 @@ if args.dir + "\\" in sub_dirs:
             local_dir += "act_files_concat\\"
 else:
     print("First arg ('dir') must be a name of a subdirectory within source dir and must be one of "
-          "'6minwalk-matfiles', '6MW-matFiles', 'NSAA', or 'allmatfiles'.")
+          "'6minwalk-matfiles', '6MW-matFiles', 'NSAA', 'NMB', or 'allmatfiles'.")
     sys.exit()
 
 #Gets the names of all the files within the 'local_dir' directory and filters them to a list of one element if
@@ -58,6 +58,7 @@ elif args.fn == "all":
 else:
     print("Second arg ('fn') must be the short name of a file (e.g. 'D2' or 'all') within", local_dir)
     sys.exit()
+
 
 #Sets measures to all possible measurement names if the argument given is 'all', or get all parts of the 'measurements'
 #argument, splits it up by commas, and adds the measurement names to a list. E.g., if the script was run as
@@ -94,7 +95,10 @@ for full_file_name in full_file_names:
         try:
             frame_data = tree[0][0][6][0][0][10][0][0][3][0]
         except IndexError:
-            frame_data = tree[0][0][6][0][0][10][0][0][2][0]
+            try:
+                frame_data = tree[0][0][6][0][0][10][0][0][2][0]
+            except IndexError:
+                frame_data = tree[0][0][6][0][0][9][0][0][2][0]
         #Gets the names of each of the columns within
         col_names = frame_data.dtype.names
         # Extract single outer-list wrapping for vectors and double outer-list values for single values
@@ -117,6 +121,9 @@ for full_file_name in full_file_names:
                         row_data.append(row[i][0][0])
                 new_frame_data.append(row_data)
             frame_data = new_frame_data
+            import numpy as np
+            print(np.shape(frame_data))
+            sys.exit()
     else:
         frame_data = mat_file["jointangle"]
         col_names = None
@@ -140,7 +147,15 @@ for full_file_name in full_file_names:
         if args.dir == "allmatfiles":
             measure_data = frame_data
         else:
-            measure_data = [list(data) for data in df.loc[:, measure].values]
+            try:
+                measure_data = [list(data) for data in df.loc[:, measure].values]
+            #Accounts for files where we expect to see more measurements than their exists within the '.mat' file (i.e.
+            #in an 'AD' file where we expect all measurements but instead only contains 'jointAngle' and
+            #'jointAngleXZY' measurements
+            except KeyError:
+                print("Measurement '" + measure + "' that we expect to see within '" + full_file_name +
+                      "' are not present, skipping this measurement...")
+                continue
         if full_file_name.split("\\")[-1].startswith("All"):
             short_file_name = full_file_name.split("\\")[-1].split("-")[1]
         else:

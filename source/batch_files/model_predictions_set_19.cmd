@@ -1,6 +1,26 @@
-python ..\rnn.py allmatfiles jointAngle all dhc --seq_len=600 --seq_overlap=0.1 --discard_prop=0.9 --epochs=20
-python ..\rnn.py allmatfiles jointAngle all overall --seq_len=600 --seq_overlap=0.1 --discard_prop=0.9 --epochs=20
-python ..\rnn.py allmatfiles jointAngle all acts --seq_len=600 --seq_overlap=0.1 --discard_prop=0.9 --epochs=20
+python ..\rnn.py NSAA,allmatfiles jointAngle all dhc --seq_len=600 --seq_overlap=0.9 --discard_prop=0.9 --epochs=20 --balance_allmatfiles=3 --no_testset --leave_out=D3 --batch
+python ..\rnn.py NSAA,allmatfiles jointAngle all overall --seq_len=600 --seq_overlap=0.9 --discard_prop=0.9 --epochs=20 --balance_allmatfiles=3 --no_testset --leave_out=D3 --batch
+python ..\rnn.py NSAA,allmatfiles jointAngle all acts --seq_len=600 --seq_overlap=0.9 --discard_prop=0.9 --epochs=20 --balance_allmatfiles=3 --no_testset --leave_out=D3 --batch
+python ..\rnn.py NSAA,allmatfiles jointAngle all dhc --seq_len=600 --seq_overlap=0.9 --discard_prop=0.9 --epochs=20 --balance_allmatfiles=3 --no_testset --leave_out=D9 --batch
+python ..\rnn.py NSAA,allmatfiles jointAngle all overall --seq_len=600 --seq_overlap=0.9 --discard_prop=0.9 --epochs=20 --balance_allmatfiles=3 --no_testset --leave_out=D9 --batch
+python ..\rnn.py NSAA,allmatfiles jointAngle all acts --seq_len=600 --seq_overlap=0.9 --discard_prop=0.9 --epochs=20 --balance_allmatfiles=3 --no_testset --leave_out=D9 --batch
+python ..\rnn.py NSAA,allmatfiles jointAngle all dhc --seq_len=600 --seq_overlap=0.9 --discard_prop=0.9 --epochs=20 --balance_allmatfiles=3 --no_testset --leave_out=D11 --batch
+python ..\rnn.py NSAA,allmatfiles jointAngle all overall --seq_len=600 --seq_overlap=0.9 --discard_prop=0.9 --epochs=20 --balance_allmatfiles=3 --no_testset --leave_out=D11 --batch
+python ..\rnn.py NSAA,allmatfiles jointAngle all acts --seq_len=600 --seq_overlap=0.9 --discard_prop=0.9 --epochs=20 --balance_allmatfiles=3 --no_testset --leave_out=D11 --batch
+python ..\rnn.py NSAA,allmatfiles jointAngle all dhc --seq_len=600 --seq_overlap=0.9 --discard_prop=0.9 --epochs=20 --balance_allmatfiles=3 --no_testset --leave_out=D17 --batch
+python ..\rnn.py NSAA,allmatfiles jointAngle all overall --seq_len=600 --seq_overlap=0.9 --discard_prop=0.9 --epochs=20 --balance_allmatfiles=3 --no_testset --leave_out=D17 --batch
+python ..\rnn.py NSAA,allmatfiles jointAngle all acts --seq_len=600 --seq_overlap=0.9 --discard_prop=0.9 --epochs=20 --balance_allmatfiles=3 --no_testset --leave_out=D17 --batch
+python ..\rnn.py NSAA,allmatfiles jointAngle all dhc --seq_len=600 --seq_overlap=0.9 --discard_prop=0.9 --epochs=20 --balance_allmatfiles=3 --no_testset --leave_out=HC6 --batch
+python ..\rnn.py NSAA,allmatfiles jointAngle all overall --seq_len=600 --seq_overlap=0.9 --discard_prop=0.9 --epochs=20 --balance_allmatfiles=3 --no_testset --leave_out=HC6 --batch
+python ..\rnn.py NSAA,allmatfiles jointAngle all acts --seq_len=600 --seq_overlap=0.9 --discard_prop=0.9 --epochs=20 --balance_allmatfiles=3 --no_testset --leave_out=HC6 --batch
 
-python ..\test_altdirs.py NSAA allmatfiles jointAngle
-python ..\graph_creator.py model_preds_altdirs NSAA allmatfiles
+python ..\model_predictor.py NSAA jointAngle D3 --add_dir=allmatfiles --combine_preds --batch
+python ..\model_predictor.py NSAA jointAngle D3 --add_dir=allmatfiles --combine_preds --no_testset --batch
+python ..\model_predictor.py NSAA jointAngle D9 --add_dir=allmatfiles --combine_preds --batch
+python ..\model_predictor.py NSAA jointAngle D9 --add_dir=allmatfiles --combine_preds --no_testset --batch
+python ..\model_predictor.py NSAA jointAngle D11 --add_dir=allmatfiles --combine_preds --batch
+python ..\model_predictor.py NSAA jointAngle D11 --add_dir=allmatfiles --combine_preds --no_testset --batch
+python ..\model_predictor.py NSAA jointAngle D17 --add_dir=allmatfiles --combine_preds --batch
+python ..\model_predictor.py NSAA jointAngle D17 --add_dir=allmatfiles --combine_preds --no_testset --batch
+python ..\model_predictor.py NSAA jointAngle HC6 --add_dir=allmatfiles --combine_preds --batch
+python ..\model_predictor.py NSAA jointAngle HC6 --add_dir=allmatfiles --combine_preds --no_testset --batch

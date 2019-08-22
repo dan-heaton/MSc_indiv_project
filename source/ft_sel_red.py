@@ -69,7 +69,7 @@ def ft_red_select(x, y, choice, no_normalize, dis_kept_features, num_features=30
 
 
 
-def add_nsaa_scores(file_df):
+def add_nsaa_scores(file_df, batch):
     """
     :param 'file_df', which contains the values in a 2D numpy array, to have the values NSAA scores appended on each
     of its rows
@@ -82,7 +82,9 @@ def add_nsaa_scores(file_df):
     #For the table of data that we have on the subjects, load in the table, find the columns with ID and
     #overall NSAA scores, and create a dictionary of matching values, e.g. {'D4': 15, 'D11: 28,...}, with all values
     #from each table
-    nsaa_6mw_tab = pd.read_excel(nsaa_6mw_path)
+
+    new_nsaa_6mw_path = "..\\" + nsaa_6mw_path if batch else nsaa_6mw_path
+    nsaa_6mw_tab = pd.read_excel(new_nsaa_6mw_path)
     nsaa_6mw_cols = nsaa_6mw_tab[["ID", "NSAA"]]
     nsaa_overall_dict = dict(pd.Series(nsaa_6mw_cols.NSAA.values, index=nsaa_6mw_cols.ID).to_dict())
 
@@ -142,7 +144,8 @@ def main():
     the number of features chosen by the script."""
     parser = argparse.ArgumentParser()
     parser.add_argument("dir", help="Specifies which source directory to use so as to process the files contained within "
-                                    "them accordingly. Must be one of '6minwalk-matfiles', '6MW-matFiles' or 'NSAA'.")
+                                    "them accordingly. Must be one of '6minwalk-matfiles', '6MW-matFiles', "
+                                    "'NMB', or 'NSAA'.")
     parser.add_argument("ft", help="Specify type of .mat file that the .csv is to come from, being one of 'JA' (joint "
                                    "angle), 'AD' (all data), or 'DC' (data cube).")
     parser.add_argument("fn", help="Specify the short file name of a .csv to load from 'source_dir'; e.g. for file "
@@ -168,6 +171,9 @@ def main():
     parser.add_argument("--single_act_concat", type=bool, nargs="?", const=True, default=False,
                         help="Specify this if the files to reduce the dimensions of are single-act concat files (located "
                              "in a different sub-directory for the given 'dir'.")
+    parser.add_argument("--batch", type=bool, nargs="?", const=True, default=False,
+                        help="Option that is only set if the script is run from a batch file to access the external files "
+                             "in a correct way.")
     args = parser.parse_args()
 
     choices = ["pca", "grp", "agglom", "thresh", "rf"]
@@ -177,7 +183,7 @@ def main():
         source_dir += args.dir + "\\"
     else:
         print("First arg ('dir') must be a name of a subdirectory within source dir and must be one of "
-              "'6minwalk-matfiles', '6MW-matFiles', 'NSAA', or 'direct_csv'.")
+              "'6minwalk-matfiles', '6MW-matFiles', 'NSAA', 'NMB', or 'direct_csv'.")
         sys.exit()
 
     #Appends the sub_sub_dir name to 'source_dir' if it's an allowed name, along with appending 'act_files\\' if it's 'NSAA'
@@ -187,6 +193,8 @@ def main():
         print("Second arg ('ft') must be a name of a sub-subdirectory within source dir and must be one of \'AD\',"
               "\'JA', or \'DC\'.")
         sys.exit()
+
+    batch = True if args.batch else False
 
 
     #Find the matching full file name in 'source_dir' given the 'fn' argument, otherwise use all file names in 'source_dir'
@@ -253,7 +261,7 @@ def main():
 
             #Add a column of NSAA scores to the DataFrame by referencing the external .csvs
             try:
-                new_df_nsaa = add_nsaa_scores(new_df)
+                new_df_nsaa = add_nsaa_scores(new_df, batch)
             except KeyError:
                 print(full_file_name + " not found as entry in either 'nsaa_6mw_info', skipping...")
                 continue
@@ -292,7 +300,7 @@ def main():
             new_df = pd.DataFrame(np.concatenate((new_y, new_x), axis=1))
             #Add a column of NSAA scores to the DataFrame by referencing the external .csvs
             try:
-                new_df_nsaa = add_nsaa_scores(new_df)
+                new_df_nsaa = add_nsaa_scores(new_df, batch)
             except KeyError:
                 print(full_file_name + " not found as entry in either 'nsaa_6mw_info', skipping...")
                 continue

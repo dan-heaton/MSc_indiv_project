@@ -108,7 +108,12 @@ def cov_eigenvals(nums, i):
     """
     vals = la.eig(covariance_round(nums))[0].tolist()
     vals = list(vals)
-    vals.sort(reverse=True)
+    #Ensures that we only use the 'real' components here, as sorting based on complex numbers isn't possible here
+    try:
+        vals.sort(reverse=True)
+    except TypeError:
+        vals = list(np.real(vals))
+        vals.sort(reverse=True)
     top_vals = vals[:2]
     return round(top_vals[i], 4)
 
@@ -811,7 +816,8 @@ with '--' being optional arguments and the others being required arguments (with
 being necessary if 'ft' is 'DC')"""
 parser = argparse.ArgumentParser()
 parser.add_argument("dir", help="Specifies which source directory to use so as to process the files contained within "
-                                "them accordingly. Must be one of '6minwalk-matfiles', '6MW-matFiles' or 'NSAA'.")
+                                "them accordingly. Must be one of '6minwalk-matfiles', '6MW-matFiles', "
+                                "'NMB', or 'NSAA'.")
 parser.add_argument("ft", help="Specify type of file we wish to read from, being one of 'JA' (joint angle), "
                                "'AD' (all data), or 'DC' (data cube).")
 parser.add_argument("fn", nargs="?", default="DC",
@@ -863,7 +869,7 @@ if args.dir + "\\" in sub_dirs:
     local_dir += args.dir + "\\"
 else:
     print("First arg ('dir') must be a name of a subdirectory within the source dir and must be one of "
-          "'6minwalk-matfiles', '6MW-matFiles', 'NSAA', 'direct_csv', 'allmatfiles', or 'left-out'.")
+          "'6minwalk-matfiles', '6MW-matFiles', 'NSAA', 'direct_csv', 'allmatfiles', 'NMB', or 'left-out'.")
     sys.exit()
 file_names = []
 if args.dir == "6minwalk-matfiles":
@@ -882,7 +888,7 @@ elif args.dir == "6MW-matFiles":
     else:
         print("Second arg must be 'AD', as '6MW-matFiles' doesn't have joint angle or data cube files in them.")
         sys.exit()
-elif args.dir == "left-out":
+elif args.dir == "left-out" or args.dir == "NMB":
     file_names = [f for f in os.listdir(local_dir)]
 else:
     if args.ft.upper() == "AD":
@@ -917,7 +923,7 @@ if not args.dis_3d_pos and not args.dis_diff_plot and not args.dis_3d_angs:
                 names = class_selector(args.ft, file_name, fns=None, sub_dir=args.dir, is_all=False,
                                        split_files=split_files, is_extract_csv=args.extract_csv, split_size=split_size)
             elif args.fn == "all":
-                file_names = [local_dir + fn for fn in file_names]
+                file_names = [local_dir + fn for fn in file_names if fn.endswith(".mat")]
                 names = class_selector(args.ft, None, fns=file_names, sub_dir = args.dir, is_all=True,
                                        split_files=split_files, is_extract_csv=args.extract_csv, split_size=split_size)
             else:

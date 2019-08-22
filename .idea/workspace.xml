@@ -2,40 +2,29 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="6269803a-5c93-4fe7-8214-f3bd850e9b27" name="Default Changelist" comment="Fixed issue with incorrect models being retrieved by 'model_predictor' and added '--batch' functionality with 'rnn.py'.`">
-      <change afterPath="$PROJECT_DIR$/source/dis_3d_pos.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.~lock.MSc Project Plan.ods#" beforeDir="false" afterPath="$PROJECT_DIR$/.~lock.MSc Project Plan.ods#" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/MSc Project Plan.ods" beforeDir="false" afterPath="$PROJECT_DIR$/MSc Project Plan.ods" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/documentation/Graphs/Model_predictor_NSAA_jointAngle_D11.png" beforeDir="false" afterPath="$PROJECT_DIR$/documentation/Graphs/Model_predictor_NSAA_jointAngle_D11.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/documentation/Graphs/Model_predictor_NSAA_jointAngle_D17.png" beforeDir="false" afterPath="$PROJECT_DIR$/documentation/Graphs/Model_predictor_NSAA_jointAngle_D17.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/documentation/Graphs/Model_predictor_NSAA_jointAngle_D3.png" beforeDir="false" afterPath="$PROJECT_DIR$/documentation/Graphs/Model_predictor_NSAA_jointAngle_D3.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/documentation/Graphs/Model_predictor_NSAA_jointAngle_D9.png" beforeDir="false" afterPath="$PROJECT_DIR$/documentation/Graphs/Model_predictor_NSAA_jointAngle_D9.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/documentation/Graphs/Model_predictor_NSAA_jointAngle_HC6.png" beforeDir="false" afterPath="$PROJECT_DIR$/documentation/Graphs/Model_predictor_NSAA_jointAngle_HC6.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/documentation/Graphs/Model_predictor_NSAA_position,sensorMagneticField,jointAngle,AD_D11.png" beforeDir="false" afterPath="$PROJECT_DIR$/documentation/Graphs/Model_predictor_NSAA_position,sensorMagneticField,jointAngle,AD_D11.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/documentation/Graphs/Model_predictor_NSAA_position,sensorMagneticField,jointAngle,AD_D17.png" beforeDir="false" afterPath="$PROJECT_DIR$/documentation/Graphs/Model_predictor_NSAA_position,sensorMagneticField,jointAngle,AD_D17.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/documentation/Graphs/Model_predictor_NSAA_position,sensorMagneticField,jointAngle,AD_D3.png" beforeDir="false" afterPath="$PROJECT_DIR$/documentation/Graphs/Model_predictor_NSAA_position,sensorMagneticField,jointAngle,AD_D3.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/documentation/Graphs/Model_predictor_NSAA_position,sensorMagneticField,jointAngle,AD_D9.png" beforeDir="false" afterPath="$PROJECT_DIR$/documentation/Graphs/Model_predictor_NSAA_position,sensorMagneticField,jointAngle,AD_D9.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/documentation/Graphs/Model_predictor_NSAA_position,sensorMagneticField,jointAngle,AD_HC6.png" beforeDir="false" afterPath="$PROJECT_DIR$/documentation/Graphs/Model_predictor_NSAA_position,sensorMagneticField,jointAngle,AD_HC6.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/documentation/Graphs/Model_predictor_NSAA_position,sensorMagneticField,jointAngle_D11.png" beforeDir="false" afterPath="$PROJECT_DIR$/documentation/Graphs/Model_predictor_NSAA_position,sensorMagneticField,jointAngle_D11.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/documentation/Graphs/Model_predictor_NSAA_position,sensorMagneticField,jointAngle_D17.png" beforeDir="false" afterPath="$PROJECT_DIR$/documentation/Graphs/Model_predictor_NSAA_position,sensorMagneticField,jointAngle_D17.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/documentation/Graphs/Model_predictor_NSAA_position,sensorMagneticField,jointAngle_D3.png" beforeDir="false" afterPath="$PROJECT_DIR$/documentation/Graphs/Model_predictor_NSAA_position,sensorMagneticField,jointAngle_D3.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/documentation/Graphs/Model_predictor_NSAA_position,sensorMagneticField,jointAngle_D9.png" beforeDir="false" afterPath="$PROJECT_DIR$/documentation/Graphs/Model_predictor_NSAA_position,sensorMagneticField,jointAngle_D9.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/documentation/Graphs/Model_predictor_NSAA_position,sensorMagneticField,jointAngle_HC6.png" beforeDir="false" afterPath="$PROJECT_DIR$/documentation/Graphs/Model_predictor_NSAA_position,sensorMagneticField,jointAngle_HC6.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/documentation/model_predictions - (BACKUP).csv" beforeDir="false" afterPath="$PROJECT_DIR$/documentation/model_predictions - (BACKUP).csv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/documentation/model_predictions.csv" beforeDir="false" afterPath="$PROJECT_DIR$/documentation/model_predictions.csv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/documentation/model_shapes.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/documentation/model_shapes.xlsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/report_stuff/Script pipeline diagram.pptx" beforeDir="false" afterPath="$PROJECT_DIR$/report_stuff/Script pipeline diagram.pptx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/report_stuff/Script_pipeline_diagram.PNG" beforeDir="false" afterPath="$PROJECT_DIR$/report_stuff/Script_pipeline_diagram.PNG" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/report_stuff/report_parts/Experiments and Results Discussion.docx" beforeDir="false" afterPath="$PROJECT_DIR$/report_stuff/report_parts/Experiments and Results Discussion.docx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/report_stuff/report_parts/Script Ecosystem Overview.docx" beforeDir="false" afterPath="$PROJECT_DIR$/report_stuff/report_parts/Script Ecosystem Overview.docx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/source/batch_files/model_predictions_set_12.cmd" beforeDir="false" afterPath="$PROJECT_DIR$/source/batch_files/model_predictions_set_12.cmd" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/source/batch_files/model_predictions_set_13.cmd" beforeDir="false" afterPath="$PROJECT_DIR$/source/batch_files/model_predictions_set_13.cmd" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/source/batch_files/model_predictions_set_15.cmd" beforeDir="false" afterPath="$PROJECT_DIR$/source/batch_files/model_predictions_set_15.cmd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/report_stuff/report_parts/Glossary.docx" beforeDir="false" afterPath="$PROJECT_DIR$/report_stuff/report_parts/Glossary.docx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/source/batch_files/model_predictions_set_16.cmd" beforeDir="false" afterPath="$PROJECT_DIR$/source/batch_files/model_predictions_set_16.cmd" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/source/batch_files/model_predictions_set_17.cmd" beforeDir="false" afterPath="$PROJECT_DIR$/source/batch_files/model_predictions_set_17.cmd" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/source/data_balancer.py" beforeDir="false" afterPath="$PROJECT_DIR$/source/data_balancer.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/source/batch_files/model_predictions_set_18.cmd" beforeDir="false" afterPath="$PROJECT_DIR$/source/batch_files/model_predictions_set_18.cmd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/source/batch_files/model_predictions_set_19.cmd" beforeDir="false" afterPath="$PROJECT_DIR$/source/batch_files/model_predictions_set_19.cmd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/source/batch_files/model_predictions_set_20.cmd" beforeDir="false" afterPath="$PROJECT_DIR$/source/batch_files/model_predictions_set_20.cmd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/source/batch_files/model_predictions_set_21.cmd" beforeDir="false" afterPath="$PROJECT_DIR$/source/batch_files/model_predictions_set_21.cmd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/source/batch_files/setup.cmd" beforeDir="false" afterPath="$PROJECT_DIR$/source/batch_files/setup.cmd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/source/comp_stat_vals.py" beforeDir="false" afterPath="$PROJECT_DIR$/source/comp_stat_vals.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/source/ext_raw_measures.py" beforeDir="false" afterPath="$PROJECT_DIR$/source/ext_raw_measures.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/source/file_renamer.py" beforeDir="false" afterPath="$PROJECT_DIR$/source/file_renamer.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/source/ft_sel_red.py" beforeDir="false" afterPath="$PROJECT_DIR$/source/ft_sel_red.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/source/graph_creator.py" beforeDir="false" afterPath="$PROJECT_DIR$/source/graph_creator.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/source/mat_act_div.py" beforeDir="false" afterPath="$PROJECT_DIR$/source/mat_act_div.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/source/model_predictor.py" beforeDir="false" afterPath="$PROJECT_DIR$/source/model_predictor.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/source/rnn.py" beforeDir="false" afterPath="$PROJECT_DIR$/source/rnn.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/source/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/source/settings.py" afterDir="false" />
@@ -50,7 +39,7 @@
     <session id="-1966947946">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="53" />
+          <entry key="project.closed" value="54" />
           <entry key="project.open.time.0" value="3" />
           <entry key="project.open.time.10" value="6" />
           <entry key="project.open.time.11" value="2" />
@@ -61,17 +50,18 @@
           <entry key="project.open.time.19" value="1" />
           <entry key="project.open.time.20" value="1" />
           <entry key="project.open.time.22" value="1" />
+          <entry key="project.open.time.23" value="1" />
           <entry key="project.open.time.25" value="1" />
           <entry key="project.open.time.26" value="1" />
           <entry key="project.open.time.3" value="7" />
           <entry key="project.open.time.33" value="1" />
-          <entry key="project.open.time.4" value="49" />
+          <entry key="project.open.time.4" value="50" />
           <entry key="project.open.time.5" value="22" />
           <entry key="project.open.time.6" value="16" />
           <entry key="project.open.time.7" value="9" />
           <entry key="project.open.time.8" value="2" />
           <entry key="project.open.time.9" value="3" />
-          <entry key="project.opened" value="133" />
+          <entry key="project.opened" value="135" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
@@ -79,7 +69,7 @@
           <entry key="D2_D3_stats_features" value="1" />
           <entry key="cmd" value="18" />
           <entry key="csv" value="231" />
-          <entry key="py" value="100" />
+          <entry key="py" value="108" />
           <entry key="txt" value="7" />
         </counts>
       </usages-collector>
@@ -87,22 +77,22 @@
         <counts>
           <entry key="CSV" value="226" />
           <entry key="PLAIN_TEXT" value="31" />
-          <entry key="Python" value="100" />
+          <entry key="Python" value="108" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="Python Console" value="1501" />
+          <entry key="Python Console" value="2018" />
           <entry key="cmd" value="216" />
           <entry key="dummy" value="86" />
-          <entry key="py" value="300800" />
+          <entry key="py" value="305313" />
           <entry key="txt" value="789" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="PLAIN_TEXT" value="1091" />
-          <entry key="Python" value="302301" />
+          <entry key="Python" value="307331" />
         </counts>
       </usages-collector>
     </session>
@@ -112,8 +102,53 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/source/settings.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="170">
-              <caret line="10" column="32" selection-start-line="10" selection-start-column="32" selection-end-line="10" selection-end-column="32" />
+            <state relative-caret-position="136">
+              <caret line="8" column="56" selection-start-line="8" selection-start-column="56" selection-end-line="8" selection-end-column="56" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/source/file_renamer.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1224">
+              <caret line="76" column="40" selection-start-line="76" selection-start-column="40" selection-end-line="76" selection-end-column="40" />
+              <folding>
+                <element signature="e#0#15#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/source/comp_stat_vals.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1870">
+              <caret line="110" column="113" selection-start-line="110" selection-start-column="113" selection-end-line="110" selection-end-column="113" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/source/ext_raw_measures.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="2448">
+              <caret line="150" column="62" selection-start-line="150" selection-start-column="62" selection-end-line="150" selection-end-column="62" />
+              <folding>
+                <element signature="e#0#15#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/source/ft_sel_red.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1224">
+              <caret line="72" column="7" selection-start-line="72" selection-start-column="7" selection-end-line="72" selection-end-column="7" />
+              <folding>
+                <element signature="e#0#19#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -121,8 +156,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/source/rnn.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="3536">
-              <caret line="305" column="25" selection-start-line="305" selection-start-column="25" selection-end-line="305" selection-end-column="25" />
+            <state relative-caret-position="65">
+              <caret line="342" column="90" lean-forward="true" selection-start-line="342" selection-start-column="90" selection-end-line="342" selection-end-column="90" />
               <folding>
                 <element signature="e#0#10#0" expanded="true" />
               </folding>
@@ -133,21 +168,12 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/source/model_predictor.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="4862">
-              <caret line="366" selection-start-line="366" selection-end-line="366" />
+            <state relative-caret-position="193">
+              <caret line="304" column="47" selection-start-line="304" selection-start-column="40" selection-end-line="304" selection-end-column="47" />
               <folding>
                 <element signature="e#0#15#0" expanded="true" />
-                <marker date="1566150130973" expanded="true" signature="33562:33565" ph="..." />
+                <marker date="1566241527863" expanded="true" signature="34668:34671" ph="..." />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/source/predictions_selector.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="459">
-              <caret line="30" selection-start-line="30" selection-end-line="30" />
             </state>
           </provider>
         </entry>
@@ -163,35 +189,35 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>y_label</find>
-      <find>x_data</find>
-      <find>np.arra</find>
-      <find>np.transpose</find>
-      <find>args.ft_red</find>
-      <find>args.noise</find>
-      <find>noise</find>
-      <find>if args.noise</find>
-      <find>annotation</find>
-      <find>&quot;D&quot;</find>
-      <find>model_shapes_path</find>
-      <find>..\\</find>
-      <find>model_shapes</find>
-      <find>nsaa_6m</find>
-      <find>.csv</find>
-      <find>&quot;..\\</find>
-      <find>np.random_</find>
-      <find>allmatfiles</find>
-      <find>shuffle</find>
-      <find>const=true</find>
-      <find>normal</find>
-      <find>while</find>
-      <find>combine</find>
+      <find>np.random</find>
+      <find>unseen</find>
+      <find>_path</find>
+      <find>y_label_dhc</find>
+      <find>true_overalls</find>
+      <find>y_label_overall</find>
+      <find>y_label_acts</find>
+      <find>test_ratio</find>
+      <find>--no_testset</find>
+      <find>6minwalk</find>
+      <find>sys.exit</find>
+      <find>NSAA</find>
+      <find>6minwalk-</find>
+      <find>6MW-</find>
+      <find>AllData</find>
+      <find>class_selector</find>
+      <find>source_dir</find>
+      <find>args.dir</find>
+      <find>dir</find>
+      <find>preprocessing</find>
+      <find>&quot;NSAA&quot;</find>
+      <find>act_files_concat</find>
+      <find>vals.sort</find>
+      <find>train_test_spl</find>
       <find>path</find>
       <find>nsaa_6mw_path</find>
-      <find>nsaa_6mw</find>
-      <find>Extracting</find>
-      <find>np.random</find>
-      <find>args.dir</find>
+      <find>add_nsaa</find>
+      <find>batch</find>
+      <find>balance_allmatfiles</find>
       <find>add_dir</find>
     </findStrings>
     <replaceStrings>
@@ -271,15 +297,17 @@
         <option value="$PROJECT_DIR$/project_files/source/model_predictor.py" />
         <option value="$PROJECT_DIR$/project_files/source/rnn.py" />
         <option value="$PROJECT_DIR$/source/predictions_selector.py" />
-        <option value="$PROJECT_DIR$/source/comp_stat_vals.py" />
         <option value="$PROJECT_DIR$/source/dis_3d_pos.py" />
-        <option value="$PROJECT_DIR$/source/ft_sel_red.py" />
         <option value="$PROJECT_DIR$/source/mat_act_div.py" />
         <option value="$PROJECT_DIR$/source/data_balancer.py" />
         <option value="$PROJECT_DIR$/source/graph_creator.py" />
-        <option value="$PROJECT_DIR$/source/settings.py" />
-        <option value="$PROJECT_DIR$/source/rnn.py" />
         <option value="$PROJECT_DIR$/source/model_predictor.py" />
+        <option value="$PROJECT_DIR$/source/settings.py" />
+        <option value="$PROJECT_DIR$/source/file_renamer.py" />
+        <option value="$PROJECT_DIR$/source/comp_stat_vals.py" />
+        <option value="$PROJECT_DIR$/source/ext_raw_measures.py" />
+        <option value="$PROJECT_DIR$/source/ft_sel_red.py" />
+        <option value="$PROJECT_DIR$/source/rnn.py" />
       </list>
     </option>
   </component>
@@ -525,9 +553,9 @@
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" sideWeight="0.4993395" weight="0.32956153" />
       <window_info anchor="bottom" id="Version Control" order="7" sideWeight="0.49867898" weight="0.3286119" />
-      <window_info active="true" anchor="bottom" id="Terminal" order="8" sideWeight="0.4953765" visible="true" weight="0.33002833" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="8" sideWeight="0.4953765" visible="true" weight="0.68696886" />
       <window_info anchor="bottom" id="Event Log" order="9" sideWeight="0.50462353" side_tool="true" weight="0.2549575" />
-      <window_info anchor="bottom" id="Python Console" order="10" sideWeight="0.49603698" weight="0.28045326" />
+      <window_info anchor="bottom" id="Python Console" order="10" sideWeight="0.49603698" weight="0.77195466" />
       <window_info active="true" anchor="bottom" id="SVN Repositories" order="11" visible="true" weight="0.21074964" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
@@ -627,38 +655,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/source/comp_stat_vals.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="17">
-          <caret line="1" column="8" selection-start-line="1" selection-start-column="4" selection-end-line="1" selection-end-column="8" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/source/file_renamer.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="119">
-          <caret line="7" column="2" selection-start-line="7" selection-start-column="2" selection-end-line="7" selection-end-column="2" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/source/ft_sel_red.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="174">
-          <caret line="12" column="81" selection-start-line="12" selection-start-column="77" selection-end-line="12" selection-end-column="81" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/source/mat_act_div.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="174">
           <caret line="96" column="49" selection-start-line="96" selection-start-column="47" selection-end-line="96" selection-end-column="49" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/source/ext_raw_measures.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="155">
-          <caret line="39" column="36" lean-forward="true" selection-start-line="39" selection-start-column="36" selection-end-line="39" selection-end-column="36" />
         </state>
       </provider>
     </entry>
@@ -683,35 +683,72 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/source/settings.py">
+    <entry file="file://$PROJECT_DIR$/source/predictions_selector.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="170">
-          <caret line="10" column="32" selection-start-line="10" selection-start-column="32" selection-end-line="10" selection-end-column="32" />
+        <state relative-caret-position="374">
+          <caret line="25" column="117" lean-forward="true" selection-start-line="25" selection-start-column="117" selection-end-line="25" selection-end-column="117" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/source/predictions_selector.py">
+    <entry file="file://$PROJECT_DIR$/source/settings.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="459">
-          <caret line="30" selection-start-line="30" selection-end-line="30" />
+        <state relative-caret-position="136">
+          <caret line="8" column="56" selection-start-line="8" selection-start-column="56" selection-end-line="8" selection-end-column="56" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/source/file_renamer.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1224">
+          <caret line="76" column="40" selection-start-line="76" selection-start-column="40" selection-end-line="76" selection-end-column="40" />
+          <folding>
+            <element signature="e#0#15#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/source/comp_stat_vals.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1870">
+          <caret line="110" column="113" selection-start-line="110" selection-start-column="113" selection-end-line="110" selection-end-column="113" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/source/ext_raw_measures.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2448">
+          <caret line="150" column="62" selection-start-line="150" selection-start-column="62" selection-end-line="150" selection-end-column="62" />
+          <folding>
+            <element signature="e#0#15#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/source/ft_sel_red.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1224">
+          <caret line="72" column="7" selection-start-line="72" selection-start-column="7" selection-end-line="72" selection-end-column="7" />
+          <folding>
+            <element signature="e#0#19#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/source/model_predictor.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="4862">
-          <caret line="366" selection-start-line="366" selection-end-line="366" />
+        <state relative-caret-position="193">
+          <caret line="304" column="47" selection-start-line="304" selection-start-column="40" selection-end-line="304" selection-end-column="47" />
           <folding>
             <element signature="e#0#15#0" expanded="true" />
-            <marker date="1566150130973" expanded="true" signature="33562:33565" ph="..." />
+            <marker date="1566241527863" expanded="true" signature="34668:34671" ph="..." />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/source/rnn.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3536">
-          <caret line="305" column="25" selection-start-line="305" selection-start-column="25" selection-end-line="305" selection-end-column="25" />
+        <state relative-caret-position="65">
+          <caret line="342" column="90" lean-forward="true" selection-start-line="342" selection-start-column="90" selection-end-line="342" selection-end-column="90" />
           <folding>
             <element signature="e#0#10#0" expanded="true" />
           </folding>

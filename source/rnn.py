@@ -5,9 +5,7 @@ import numpy as np
 import tensorflow as tf
 import argparse
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import mean_squared_error
-from sklearn.metrics import mean_absolute_error
-from sklearn.metrics import r2_score
+from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 from sklearn.metrics import confusion_matrix as cm
 from sklearn.preprocessing import StandardScaler
 import pyexcel as pe
@@ -108,6 +106,13 @@ parser.add_argument("--balance_allmatfiles", type=int, nargs="?", const=True, de
                     help="Specify this to only use a smaller sample of the overall 'allmatfiles' data set, as the "
                          "base contains ~8x as many files as NSAA. Value given is the maximum number of files per "
                          "subject that we can draw from the 'allmatfiles' directory.")
+parser.add_argument("--balance_nmb", type=int, nargs="?", const=True, default=False,
+                    help="Specify this to only use a smaller sample of the overall 'nmb' data set, as the "
+                         "base contains ~8x as many files as NSAA. Value given is the maximum number of files per "
+                         "subject that we can draw from the 'allmatfiles' directory.")
+parser.add_argument("--no_testset", type=bool, nargs="?", const=True, default=False,
+                    help="Specify this to set the train/test ratio to 0 so to use all the available data as training. "
+                         "Note that this results in no results being written to console or the 'RNN Results' directory.")
 args = parser.parse_args()
 
 #If no optional argument given for '--seq_len', defaults to seq_len = 10, i.e. defaults to splitting files into
@@ -166,11 +171,16 @@ num_acts = 17
 if args.epochs:
     num_epochs = int(args.epochs)
 
+#Only sets the 'test_ratio' to 0 (i.e. use all available data for model training) if '--no_testset' optional
+#argument is provided
+if args.no_testset:
+    test_ratio = 0
+
 #If '--other_dir' is set, make sure it's a permitted name before continuing
 if args.other_dir:
     if not args.other_dir + "\\" in sub_dirs or args.other_dir == args.dir:
-        print("Optional arg '--other_dir' must be one of '6minwalk-matfiles', '6MW-matFiles', 'NSAA', or 'direct_csv' and "
-              "must not be the same name as 'dir'....")
+        print("Optional arg '--other_dir' must be one of '6minwalk-matfiles', '6MW-matFiles', 'NSAA', "
+              "'NMB', or 'direct_csv' and must not be the same name as 'dir'....")
         sys.exit()
 
 #Sets the paths for external files based on the whether the script was called from a batch file or not
@@ -204,7 +214,7 @@ def preprocessing(dir, ft):
         source_dir += dir + "\\"
     else:
         print("First arg ('dir') must be a name of a subdirectory within source dir and must be one of "
-              "'6minwalk-matfiles', '6MW-matFiles', 'NSAA', or 'direct_csv'.")
+              "'6minwalk-matfiles', '6MW-matFiles', 'NSAA', 'NMB', or 'direct_csv'.")
         sys.exit()
     #Change 'source_dir' to point to the directory of raw measurement files, single-act raw measurements files,
     #or another type of file (e.g. 'AD' or 'JA')
@@ -231,7 +241,7 @@ def preprocessing(dir, ft):
             print("Second arg ('ft') must be a name of a sub-subdirectory within source dir and must be one of \'AD\',"
                   "\'JA', or \'DC\' (unless dir is give as 'NSAA', where 'ft' can be a measurement name).")
             sys.exit()
-    elif dir == "6MW-matFiles":
+    elif dir == "6MW-matFiles" or dir == "NMB":
         if ft == "AD":
             source_dir = local_dir + "\\output_files\\" + dir + "\\AD\\"
         elif ft in raw_measurements:
@@ -323,7 +333,30 @@ def preprocessing(dir, ft):
         file_names = new_file_names
         print("Reduced number of files within 'allmatfiles' to use to train models (max = " +
               str(args.balance_allmatfiles) + " per subject) : " + str(len(file_names)))
+    elif dir == "NMB" and args.balance_nmb:
+        print("Initial number of files within 'nmb': " + str(len(file_names)))
+        #Ensures that the number of files selected for each subject name in 'nmb' are randomly chosen for a
+        #given subject, as opposed to the first occuring files
+        np.random.seed(42)
+        np.random.shuffle(file_names)
 
+        #Setups a dictionary to count the number of files we have selected per subject and an empty list to hold the
+        #selected file names
+        fn_counts = {fn.split("-")[0]: 0 for fn in file_names}
+        new_file_names = []
+
+        #For each file name, adds it to the new list of file names to include if we haven't reached the maximum number
+        #allowed ('--balance_nmb') for that subject
+        for fn in file_names:
+            short_fn = fn.split("-")[0]
+            if fn_counts[short_fn] < args.balance_nmb:
+                new_file_names.append(fn)
+                fn_counts[short_fn] += 1
+
+        # Sets the newly chosen file names to the list of files from which to build the model
+        file_names = new_file_names
+        print("Reduced number of files within 'NMB' to use to train models (max = " +
+              str(args.balance_nmb) + " per subject) : " + str(len(file_names)))
 
     #For each file name that we are dealing with (all files names in 'source_dir' if 'fn' is 'all, else a single
     #file name), adds 'y' labels based on what type of model output we are training for and divide up both 'x' and 'y'
@@ -926,7 +959,7 @@ if args.other_dir:
     old_dir = args.dir
     args.dir = args.other_dir
     sequence_length = original_seq_len
-    alt_x_data, alt_y_data = preprocessing(args.ft)
+    alt_x_data, alt_y_data = preprocessing(args.other_dir, args.ft)
     x_data = np.concatenate((x_data, alt_x_data), axis=0)
     y_data = np.concatenate((y_data, alt_y_data), axis=0)
     args.dir = old_dir
@@ -960,6 +993,11 @@ rnn = RNN(features_length=len(x_train[0][0]), seq_len=sequence_length, lstm_size
                    num_layers=num_rnn_hidden_layers, batch_size=batch_size, learning_rate=learn_rate, num_acts=num_acts)
 
 rnn.train(x_train, y_train, num_epochs=num_epochs)
+
+#If the optional arg '--no_testset' is set, finish the the program after completing the training of the model
+if args.no_testset:
+    print("Model built: finishing without testing as '--no_testset' is set...")
+    sys.exit()
 
 preds = rnn.predict(x_test)
 #Ensures the true 'y' values are the same length and the predicted values (so 'preds' and 'y_true' have the same shape)

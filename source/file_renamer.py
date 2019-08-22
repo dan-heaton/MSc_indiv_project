@@ -7,7 +7,8 @@ from settings import local_dir, sub_dirs
 
 parser = argparse.ArgumentParser()
 parser.add_argument("dir", help="Specifies the directory that we wish to use to source the file names that we wish to "
-                                "rename. Must be one of '6minwalk-matfiles', '6MW-matFiles', 'NSAA', or 'allmatfiles'.")
+                                "rename. Must be one of '6minwalk-matfiles', '6MW-matFiles', 'NSAA', "
+                                "NMB, or 'allmatfiles'.")
 args = parser.parse_args()
 
 dir = args.dir
@@ -17,13 +18,13 @@ dir = args.dir
 #Checks that the 'dir' argument is one of the allowed values and exits if it isn't
 if dir + "\\" not in sub_dirs:
     print("First arg ('dir') must the name of the source directory from which we wish to transform the file names and "
-          "must be one of '6minwalk-matfiles', '6MW-matFiles', 'NSAA', or 'allmatfiles'.")
+          "must be one of '6minwalk-matfiles', '6MW-matFiles', 'NSAA', 'allmatfiles', or 'NMB'.")
     sys.exit()
 
 #Gets the directory within 'dir' that contains the files of which we wish to change the name
 if dir == "NSAA":
     local_dir += dir + "\\matfiles\\"
-elif dir == "allmatfiles" or dir == "6MW-matFiles":
+elif dir == "allmatfiles" or dir == "6MW-matFiles" or dir == "NMB":
     local_dir += dir + "\\"
 else:
     local_dir += dir + "\\all_data_mat_files\\"
@@ -77,6 +78,19 @@ elif dir =="6MW-matFiles":
         f = sub("6MWT.*\.mat", "6MW.mat", f)
         f = sub("6MW.mat", "6MinWalk.mat", f)
         new_file_names.append(f)
+elif dir == "NMB":
+    for fn in files_kept:
+        f = sub("^d", "D", fn)
+        f = sub("^hc", "HC", f)
+        f = sub("^HC ", "HC", f)
+        f = sub("^HC0", "HC", f)
+        f = sub("7l", "7", f)
+        f = sub("v2", "V2", f)
+        f = sub("\)\.mat", ".mat", f)
+        f = sub("- \(", "-", f)
+        f = sub(" \(", "-", f)
+        f = f.split("-")[0] + "-" + '{0}'.format(f.split("-")[1].split(".")[0]).zfill(3) + ".mat"
+        new_file_names.append(f)
 else:
     for fn in files_kept:
         #File names containing 'jointangle' has the beginning of each chopped off if it doesn't start with 'jointangle'
@@ -107,4 +121,7 @@ if files_to_delete:
 
 #Takes the new file names that have been created in the predefined format and replaces the original file names with them
 for nfn, fn in zip(new_file_names, files_kept):
-    os.rename(local_dir + fn, local_dir + nfn)
+    try:
+        os.rename(local_dir + fn, local_dir + nfn)
+    except FileExistsError:
+        os.remove(local_dir + fn)
