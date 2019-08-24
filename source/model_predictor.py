@@ -99,6 +99,9 @@ parser.add_argument("--new_subject", type=bool, nargs="?", const=True, default=F
                          "Hence, specify this if the subject does not have 'true' values recorded by specialists that "
                          "is stored in the 'nsaa_6mw_info.xlsx' file (e.g. if the subject is a new subject with no "
                          "true labels or if we otherwise wish to treat them as such).")
+parser.add_argument("--leave_out_version", type=str, nargs="?", const=True, default=False,
+                    help="Specify this with the name of a version of subjects (e.g. 'V2') to assess the 'fn' file "
+                         "on models with the specified version of files not used to train the models.")
 args = parser.parse_args()
 
 
@@ -177,6 +180,7 @@ for ft in args.ft.split(","):
 if args.handle_dash:
     args.fn = "-" + args.fn
 
+local_nsaa_6mw_path = "..\\" + nsaa_6mw_path if args.batch else nsaa_6mw_path
 
 #Section below encompasses all the necessary rules to fetch files from various directories, subdirectories, and so on
 #based on the 'dir', 'fn', 'ft', and other option arguments. Result of this section is a list of short file names, 'fns',
@@ -191,11 +195,14 @@ for ft, sd in zip(fts, sds):
             sys.exit()
     elif args.dir == "left-out":
         fns.append([s for s in os.listdir(sd) if args.fn.split("-")[0]in s][0])
-    elif any(args.fn.upper() == s.upper().split("-")[0] for s in os.listdir(sd)) \
+    elif ("AD\\" in sd and any(args.fn.upper().split("-")[0] == s.upper().split("_")[2] for s in os.listdir(sd)
+                               if s.endswith(".csv"))) \
+            or any(args.fn.upper() == "-".join(s.upper().split("-")[:2]) for s in os.listdir(sd)) \
+            or any(args.fn.upper() == s.upper().split("-")[0] for s in os.listdir(sd)) \
             or any(args.fn.upper() == s.upper().split("_")[2] for s in os.listdir(sd) if s.endswith(".csv")):
         if "AD\\" in sd:
             if not args.single_act:
-                fns.append([s for s in os.listdir(sd) if args.fn.upper() == s.upper().split("_")[1]][0])
+                fns.append([s for s in os.listdir(sd) if args.fn.upper().split("-")[0] == s.upper().split("_")[1]][0])
             else:
                 fns.append([s for s in os.listdir(sd) if args.fn.upper() == s.upper().split("_")[1]
                             and "act" + str(args.single_act) + "_" in s][0])
@@ -319,10 +326,13 @@ for sd in search_dirs:
                         else [fn for fn in match_dirs if "--use_sac" not in fn]
                     match_dirs = [fn for fn in match_dirs if "--no_testset" in fn] if args.no_testset \
                         else [fn for fn in match_dirs if "--no_testset" not in fn]
+                    match_dirs = [fn for fn in match_dirs if "--leave_out_version=" + args.leave_out_version in fn] \
+                        if args.leave_out_version \
+                        else [fn for fn in match_dirs if "--leave_out_version=" + args.leave_out_version not in fn]
                     if any(args.fn in md for md in match_dirs):
                         #If 'use_balanced' is set, specifically use ones which have '--balance' in directory name
                         if args.use_balanced and args.use_balanced == "up":
-                            if not args.use_seen:
+                            if not args.use_seen and not args.leave_out_version:
                                 #If 'use_seen' is not set, specifically use ones that have '--leave_out='fn'' in directory name
                                 inner_inner_models.append([md for md in match_dirs
                                                            if "--balance=up" in md and "--leave_out=" + args.fn in md][0])
@@ -330,28 +340,28 @@ for sd in search_dirs:
                                 inner_inner_models.append([md for md in match_dirs
                                                            if "--balance=up" in md and "--leave_out=" not in md][0])
                         elif args.use_balanced and args.use_balanced == "down":
-                            if not args.use_seen:
+                            if not args.use_seen and not args.leave_out_version:
                                 inner_inner_models.append([md for md in match_dirs
                                                            if "--balance=down" in md and "--leave_out=" + args.fn in md][0])
                             else:
                                 inner_inner_models.append([md for md in match_dirs
                                                            if "--balance=down" in md and "--leave_out=" not in md][0])
                         elif args.use_frc and ft == "AD":
-                            if not args.use_seen:
+                            if not args.use_seen and not args.leave_out_version:
                                 inner_inner_models.append([md for md in match_dirs
                                                            if "--use_frc" in md and "--leave_out=" + args.fn in md][0])
                             else:
                                 inner_inner_models.append([md for md in match_dirs
                                                            if "--use_frc" in md and "--leave_out=" not in md][0])
                         elif args.standardize:
-                            if not args.use_seen:
+                            if not args.use_seen and not args.leave_out_version:
                                 inner_inner_models.append([md for md in match_dirs
                                                            if "--standardize" in md and "--leave_out=" + args.fn in md][0])
                             else:
                                 inner_inner_models.append([md for md in match_dirs
                                                            if "--standardize" in md and "--leave_out=" not in md][0])
                         elif args.noise:
-                            if not args.use_seen:
+                            if not args.use_seen and not args.leave_out_version:
                                 inner_inner_models.append([md for md in match_dirs
                                                            if "--noise=" + args.noise in md and "--leave_out=" + args.fn in md][0])
                             else:
@@ -362,7 +372,7 @@ for sd in search_dirs:
                                            "--standardize", "--noise"]
                             filtered_match_dirs = [md for md in match_dirs
                                                    if not any(opt_arg in md for opt_arg in option_args)]
-                            if not args.use_seen:
+                            if not args.use_seen and not args.leave_out_version:
                                 inner_inner_models.append([md for md in filtered_match_dirs if "--leave_out=" + args.fn in md][0])
                             else:
                                 inner_inner_models.append([md for md in filtered_match_dirs if "--leave_out=" not in md][0])
@@ -439,7 +449,6 @@ def preprocessing(full_file_name, sequence_length):
     #and three 'true' labels for the file are extracted: 'y_label_dhc' gets 1 if the short name of the file (e.g. 'D11')
     #begins with a 'D', else it gets a 0; 'y_label_overall' gets an integer value between 0 and 34 of the overall NSAA score,
     #and 'y_label_acts' gets the 17 individiual NSAA acts as a list as scores between 0 and 2
-    local_nsaa_6mw_path = "..\\" + nsaa_6mw_path if args.batch else nsaa_6mw_path
     df_y = pd.read_excel(local_nsaa_6mw_path)
     if args.dir != "direct_csv" and not source_dir.startswith(local_dir):
         y_label_dhc = 1 if full_file_name.split("\\")[-1].split("_")[2][0].upper() == "D" else 0
@@ -512,7 +521,6 @@ def combine_preds(output_strs):
 
     #Gets the median value of all the subjects true overall NSAA scores according to the 'nsaa_6mw_info.xlsx' file
     #and uses this as the basis for the overall NSAA score associated with the 'D' label
-    local_nsaa_6mw_path = "..\\" + nsaa_6mw_path if args.batch else nsaa_6mw_path
     df_y = pd.read_excel(local_nsaa_6mw_path)
     df_y = df_y.loc[df_y["ID"].str.startswith("D")]
     d_median = int(np.median(df_y["NSAA"].tolist()))
@@ -696,12 +704,6 @@ for output_str in output_strs:
     print(output_str)
 
 
-#Finish the program if optional argument'--new_subject' is set, as do not wish to write predictions on new files
-#to 'model_predictions.csv' (as it has no true values and thus is the wrong shape for the table
-if args.new_subject:
-    print("\nFinished file assessment: no information written to 'model_predictions.csv'...")
-    sys.exit()
-
 
 #Plot the predicted values against the true values for NSAA overall (only if *not* run from 'test_altdirs.py'; does not
 #worth if '--new_subject' is set, as won't have the 'true' values
@@ -722,76 +724,133 @@ if not args.file_num and not args.new_subject:
     if args.show_graph:
         plt.show()
 
-
-#Creates a list of outputs of the model in a way more fitting of a .csv file (e.g. reducing writing "Percent correct = 10%"
-#to "10%" when writing it to a cell, while the corresponding header becomes "Percent correct")
-header, new_output_strs = [], []
-for out_str in output_strs:
-    if out_str == "":
-        pass
-    elif " = " in out_str:
-        header.append(out_str.split(" = ")[0])
-        new_output_strs.append(out_str.split(" = ")[1])
-    else:
-        header.append(out_str)
-        new_output_strs.append(out_str)
-
-
-#Adds in additional strings to the row that are based on the arguments based in to 'model_predictor' and also creates
-#additional corresponding header strings
-header = ["Short file name", "Source dir", "Model trained dir(s)", "Measurements tested"] + header
+#Copies the 'fn' argument value to 'write_fn', which will be modified and then added to the list of 'output_strs'
+write_fn = args.fn
 #Appends a short string to the file name being written to file if the models have already seen the file name in training
 if args.use_seen:
-    args.fn += " (already seen)"
+    write_fn += " (already seen)"
 if args.other_lo:
-    args.fn += " (other lo = " + args.other_lo + ")"
+    write_fn += " (other lo = " + args.other_lo + ")"
 if args.single_act_concat == "src_sac":
-    args.fn += " (src sac)"
+    write_fn += " (src sac)"
 elif args.single_act_concat == "src_normal":
-    args.fn += " (src normal)"
+    write_fn += " (src normal)"
 if args.use_ft_concat:
-    args.fn += " (feature concat = " + args.use_ft_concat + ")"
+    write_fn += " (feature concat = " + args.use_ft_concat + ")"
 if args.ft_red:
-    args.fn += " (feature reduced = " + args.ft_red + ")"
+    write_fn += " (feature reduced = " + args.ft_red + ")"
 if args.add_dir:
-    args.fn += " (additional dir = " + args.add_dir + ")"
+    write_fn += " (additional dir = " + args.add_dir + ")"
 if args.single_act:
-    args.fn += " (act " + str(args.single_act) + ")"
+    write_fn += " (act " + str(args.single_act) + ")"
 if args.single_sequence:
-    args.fn += " (single sequence)"
+    write_fn += " (single sequence)"
 if args.combine_preds:
-    args.fn += " (aggregate overall)"
+    write_fn += " (aggregate overall)"
 if args.no_testset:
-    args.fn += " (no testset)"
+    write_fn += " (no testset)"
 if  args.use_indiv:
-    args.fn += " (indiv)"
+    write_fn += " (indiv)"
 if args.use_frc:
-    args.fn += " (FRC)"
+    write_fn += " (FRC)"
 if args.noise:
-    args.fn += " (noise = " + args.noise + ")"
+    write_fn += " (noise = " + args.noise + ")"
 if args.use_balanced and args.use_balanced == "down":
-    args.fn += " (downsampled)"
+    write_fn += " (downsampled)"
 elif args.use_balanced and args.use_balanced == "up":
-    args.fn += " (upsampled)"
-if args.alt_dirs:
-    new_output_strs = [args.fn, args.dir, args.alt_dirs.split("_"), args.ft.split(",")] + new_output_strs
+    write_fn += " (upsampled)"
+if args.leave_out_version:
+    write_fn += " (leave out version = " + args.leave_out_version + ")"
+
+
+#If we're predicting on a subject where we know the true values of their overall score, individual scores, etc., then
+#we write to 'model_predictions.csv' as this is a table that stores the true values for each output type as well as predicted
+if not args.new_subject:
+    #Creates a list of outputs of the model in a way more fitting of a .csv file (e.g. reducing writing "Percent correct = 10%"
+    #to "10%" when writing it to a cell, while the corresponding header becomes "Percent correct")
+    header, new_output_strs = [], []
+    for out_str in output_strs:
+        if out_str == "":
+            pass
+        elif " = " in out_str:
+            header.append(out_str.split(" = ")[0])
+            new_output_strs.append(out_str.split(" = ")[1])
+        else:
+            header.append(out_str)
+            new_output_strs.append(out_str)
+
+    #Adds in additional strings to the row that are based on the arguments based in to 'model_predictor' and also creates
+    #additional corresponding header strings
+    header = ["Short file name", "Source dir", "Model trained dir(s)", "Measurements tested"] + header
+    if args.alt_dirs:
+        new_output_strs = [write_fn, args.dir, args.alt_dirs.split("_"), args.ft.split(",")] + new_output_strs
+    else:
+        #If same directory is used for training models as is used for assessing, add a 'N/A' to the column
+        new_output_strs = [write_fn, args.dir, "N/A", args.ft.split(",")] + new_output_strs
+
+    #Adds a index name that is set to what number it corresponds to within 'dir' if passed from 'test_altdirs'
+    #(e.g. '8/470') or 'N/A' if the optional '--file_num' arg is not provided
+    ind_lab = args.file_num if args.file_num else "N/A"
+    #Creates a single-line DataFrame from the predictions made by the model(s) with corresponding headers
+    output_strs_df = pd.DataFrame([new_output_strs], columns=header, index=[ind_lab])
+
+
+    #Writes the single-line DataFrame to a new .csv file if it doesn't exist or, if it does exist, appends it to the end
+    #of the existing one
+    model_pred_path = "..\\" + model_pred_path if args.batch else model_pred_path
+    if not os.path.exists(model_pred_path):
+        with open(model_pred_path, 'w', newline='') as file:
+            output_strs_df.to_csv(file, header=header)
+    else:
+        with open(model_pred_path, 'a', newline='') as file:
+            output_strs_df.to_csv(file, header=False)
+
+#If '--new_subject' is set (i.e. we're using a subject with a new version or a completely new subject altogether that
+#doesn't exist within the 'nsaa_6mw_info' table), then write to 'model_predictions_newfiles.csv'
 else:
-    #If same directory is used for training models as is used for assessing, add a 'N/A' to the column
-    new_output_strs = [args.fn, args.dir, "N/A", args.ft.split(",")] + new_output_strs
+    df = pd.read_excel(local_nsaa_6mw_path)
 
-#Adds a index name that is set to what number it corresponds to within 'dir' if passed from 'test_altdirs'
-#(e.g. '8/470') or 'N/A' if the optional '--file_num' arg is not provided
-ind_lab = args.file_num if args.file_num else "N/A"
-#Creates a single-line DataFrame from the predictions made by the model(s) with corresponding headers
-output_strs_df = pd.DataFrame([new_output_strs], columns=header, index=[ind_lab])
+    #Gets the ID of the row we are fetching in the table. If 'fn' is a different version of a subject that exists in
+    #the table (e.g. 'fn'=D4V2), then we retrieve the subject's previous version's info (e.g. the 'D4' row).
+    id = args.fn.split("-")[0][:-2] if "V2" in args.fn else args.fn.split("-")[0]
+    df_row = df.loc[df["ID"] == id]
+
+    #Gets the overall score, individual scores, and D/HC classification of the 'comparison' entry in the table if one
+    #exists (e.g. if the 'fn' args is a 'V2' file with a 'V1' file entry in 'nsaa_6mw_info.xlsx'), else if not in the
+    #table then add corresponding '(Not in table)' values
+    dhc_label = ("D" if id.startswith("D") else "HC") if not df_row.empty else "(Not in table)"
+    overall_score = int(df_row.iloc[0, 4]) if not df_row.empty else "(Not in table)"
+    acts_scores = df_row.iloc[0, 5:22].astype(float).values.tolist() if not df_row.empty else "(Not in table)"
+    acts_scores = [int(act_score) for act_score in acts_scores]
 
 
-#Writes the single-line DataFrame to a new .csv file if it doesn't exist or, if it does exist, appends it to the end
-#of the existing one
-model_pred_path = "..\\" + model_pred_path if args.batch else model_pred_path
-if not os.path.exists(model_pred_path):
-    with open(model_pred_path, 'w', newline='') as file:
-        output_strs_df.to_csv(file, header=header)
-else:
-    with open(model_pred_path, 'a', newline='') as file:
-        output_strs_df.to_csv(file, header=False)
+    #Gets the values that we have predicted for the 'fn' file we are predicting upon
+    dhc_pred = [out_str for out_str in output_strs if "Predicted 'D/HC Label'" in out_str][0].split(" = ")[1]
+    pred_str = "Aggregated predicted 'Overall NSAA Score'" if args.combine_preds else "Predicted 'Overall NSAA Score'"
+    overall_pred = int([out_str for out_str in output_strs if pred_str in out_str][0].split(" = ")[1])
+    acts_pred = [out_str for out_str in output_strs if "Predicted 'Acts Sequence'" in out_str][0].split(" = ")[1]
+
+    header = ["Short file name", "Source dir", "Model trained dir(s)", "Measurements tested",
+              "True D/HC label (other version)", "Predicted D/HC label (short file name)",
+              "True overall NSAA score (other version)", "Predicted overall NSAA Score (short file name)",
+              "True single act scores (other version)", "Predicted single acts scores (short file name)"]
+
+    new_output_strs = [write_fn, args.dir, args.ft.split(","), dhc_label, dhc_pred, overall_score,
+                       overall_pred, acts_scores, acts_pred]
+
+    if args.alt_dirs:
+        new_output_strs.insert(2, args.alt_dirs.split("_"))
+    else:
+        new_output_strs.insert(2, "N/A")
+
+    output_strs_df = pd.DataFrame([new_output_strs], columns=header)
+
+    model_pred_newfiles_path = model_pred_path.split(".csv")[0] + "_newfiles.csv"
+    model_pred_newfiles_path = "..\\" + model_pred_newfiles_path if args.batch else model_pred_newfiles_path
+
+    if not os.path.exists(model_pred_newfiles_path):
+        with open(model_pred_newfiles_path, 'w', newline='') as file:
+            output_strs_df.to_csv(file, header=header, index=False)
+    else:
+        with open(model_pred_newfiles_path, 'a', newline='') as file:
+            output_strs_df.to_csv(file, header=False, index=False)

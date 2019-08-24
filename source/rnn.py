@@ -113,6 +113,10 @@ parser.add_argument("--balance_nmb", type=int, nargs="?", const=True, default=Fa
 parser.add_argument("--no_testset", type=bool, nargs="?", const=True, default=False,
                     help="Specify this to set the train/test ratio to 0 so to use all the available data as training. "
                          "Note that this results in no results being written to console or the 'RNN Results' directory.")
+parser.add_argument("--leave_out_version", type=str, nargs="?", const=True, default=False,
+                    help="Specify this with the name of a version of subjects (e.g. 'V2') to leave out of the files "
+                         "used to train the models. Use this if wish to train models on one version of subjecst to "
+                         "then evaluate model generalisation to other versions of already-seen subjects.")
 args = parser.parse_args()
 
 #If no optional argument given for '--seq_len', defaults to seq_len = 10, i.e. defaults to splitting files into
@@ -306,6 +310,9 @@ def preprocessing(dir, ft):
         for lo_n in lo_names:
             file_names = [fn for fn in file_names if lo_n not in fn]
 
+    #Removes any file that contains in the name the optional argument '--leave_out_version'
+    if args.leave_out_version:
+        file_names = [fn for fn in file_names if args.leave_out_version not in fn]
 
     #If the '--balance_allmatfiles' optional argument is set, rebalance the 'allmatfiles' data set to use a reduced
     #number of files

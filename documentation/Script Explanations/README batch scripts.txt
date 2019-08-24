@@ -46,6 +46,14 @@ given the file name, models are built to distinctly leave out the file in questi
 model training. This ensures that the new file we are working with within this script is completely new to 
 the models that will be predicting from in 'model_predictor.py'.
 
+-- 'assess_nsaaV2_file': this batch file takes in type of data file we are dealing with (e.g. an NSAA file, 
+an NMB file, etc.) and the absolute (or relative, given <project directory>\source\batch_files\) path to a 
+file we wish to predict that is a 'V2' file (which is a 2nd assessment of a subject, e.g. 'D4V2') and 
+extracts all the measurements (raw measurements or computed statistical values) that are needed to assess 
+the file and pushes these through 'model_predictor.py' to assess the subject. This allows this script to 
+take in a source '.mat' file of a 'V2' file and assess it on models built on non-'V2' files (e.g. built on 
+'D4V1' subject, while we are now assessing on the 'D4V2' subject).
+
 
 
 
