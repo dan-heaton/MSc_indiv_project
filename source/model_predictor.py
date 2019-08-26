@@ -169,7 +169,11 @@ for ft in args.ft.split(","):
     elif ft in file_types and args.dir == "NSAA" and not args.single_act_concat:
         sds.append(local_dir + "NSAA\\matfiles\\" + ft + "\\")
     elif args.dir == "allmatfiles":
-        sds.append(local_dir + "allmatfiles\\")
+        sds.append(local_dir + "allmatfiles\\" + ft + "\\")
+    elif args.dir == "NMB" and ft != "AD":
+        sds.append(local_dir + "NMB\\" + ft + "\\")
+    elif args.dir == "NMB":
+        sds.append(source_dir + "NMB\\AD\\")
     else:
         print("Second arg ('ft') must be a name of a sub-subdirectory within source dir and must be one of \'AD\',"
               "\'JA', or \'DC\' (unless dir is give as 'NSAA', where 'ft' can be a measurement name), and each part "
@@ -194,7 +198,11 @@ for ft, sd in zip(fts, sds):
             print("Cannot find '" + str(args.fn) + "' in '" + sd + "'")
             sys.exit()
     elif args.dir == "left-out":
-        fns.append([s for s in os.listdir(sd) if args.fn.split("-")[0]in s][0])
+        fns.append([s for s in os.listdir(sd) if args.fn.split("-")[0] in s][0])
+    elif args.dir == "NMB" and ft != "AD":
+        fns.append([s for s in os.listdir(sd) if args.fn in s][0])
+    elif args.dir == "NMB":
+        fns.append([s for s in os.listdir(sd) if "FR_AD_" + args.fn.split("-")[0] + "_" in s][0])
     elif ("AD\\" in sd and any(args.fn.upper().split("-")[0] == s.upper().split("_")[2] for s in os.listdir(sd)
                                if s.endswith(".csv"))) \
             or any(args.fn.upper() == "-".join(s.upper().split("-")[:2]) for s in os.listdir(sd)) \
@@ -328,7 +336,7 @@ for sd in search_dirs:
                         else [fn for fn in match_dirs if "--no_testset" not in fn]
                     match_dirs = [fn for fn in match_dirs if "--leave_out_version=" + args.leave_out_version in fn] \
                         if args.leave_out_version \
-                        else [fn for fn in match_dirs if "--leave_out_version=" + args.leave_out_version not in fn]
+                        else [fn for fn in match_dirs if "--leave_out_version=" not in fn]
                     if any(args.fn in md for md in match_dirs):
                         #If 'use_balanced' is set, specifically use ones which have '--balance' in directory name
                         if args.use_balanced and args.use_balanced == "up":
@@ -468,7 +476,11 @@ def preprocessing(full_file_name, sequence_length):
         print(args.fn.upper().split("-")[0] + " not an entry in 'nsaa_6mw_info.xlsx' for " + full_file_name + ", skipping...")
         sys.exit()
     y_label_overall = df_y.loc[y_index, "NSAA"].values[0]
-    y_label_acts = [int(num) for num in df_y.iloc[y_index, 5:].values[0]]
+    try:
+        y_label_acts = [int(num) for num in df_y.iloc[y_index, 5:].values[0]]
+    except ValueError:
+        print("\nEntry for '" + args.fn + "' single-act scores not in table, skipping file...\n")
+        sys.exit()
 
 
     #If the '--standardize' optional argument is given, reshape the 'x' data into a 2D array, standardize
@@ -638,11 +650,14 @@ for i, inner_models in enumerate(models):
         #Aggregate results for measurements
         if output_type == "acts":
             #Makes sure that each measurement's worth of predictions are the same length (e.g. if there are far
-            #fewer 'AD' predictions than 'jointAngle', then duplicate 'AD' predictions to be of the same length
+            #fewer 'AD' predictions than 'jointAngle', then duplicate 'AD' predictions to be of the same length)
             preds_lens = [len(preds[m]) for m in range(len(preds))]
             for m in range(len(preds)):
-                if len(preds[m]) < max(preds_lens):
-                    preds[m] *= int(max(preds_lens)/len(preds[m]))
+                #If the length of one part of 'preds' is shorter than the rest, add 'batch_size' chunks of that part
+                #of preds until it matches that of the largest part. This ensures they all have the same length
+                #to be able to use 'np.transpose()'.
+                while len(preds[m]) < max(preds_lens):
+                    preds[m] += preds[m][:batch_size]
             preds = np.transpose(preds, (1, 2, 0))
             preds = [[Counter(elems).most_common()[0][0] for elems in row] for row in preds]
         elif output_type == "dhc":

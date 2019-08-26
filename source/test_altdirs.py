@@ -16,6 +16,9 @@ parser.add_argument("testdirs", help="Specifies the directories of files that ar
                                      "'NSAA', or 'allmatfiles', and should be separated with '_'.")
 parser.add_argument("ft", help="Specifies the measurements that will be used from the files in 'dir' to test on "
                                "the models sourced from 'testdirs'.")
+parser.add_argument("--batch", type=bool, nargs="?", const=True, default=False,
+                    help="Option that is only set if the script is run from a batch file to access the external files "
+                         "in a correct way.")
 args = parser.parse_args()
 
 
@@ -60,6 +63,9 @@ elif args.dir == "6MW-matFiles":
 elif args.dir == "NSAA":
     source_dir = local_dir + args.dir + "\\matfiles\\"
     short_file_names = [f.upper().split("-")[0] for f in os.listdir(source_dir) if f.endswith(".mat")]
+elif args.dir == "NMB":
+    source_dir = local_dir + args.dir + "\\"
+    short_file_names = [f.split(".")[0] for f in os.listdir(source_dir) if f.endswith(".mat")]
 else:
     source_dir = local_dir + args.dir + "\\all_data_mat_files\\"
     short_file_names = [f.split("-")[1] for f in os.listdir(source_dir) if f.endswith(".mat")]
@@ -72,12 +78,14 @@ len_sfn = len(short_file_names)
 #and with arguments specified by the arguments given to 'test_altdirs'
 for i, sfn in enumerate(short_file_names):
     print("\nFile: " + str(i+1) + " / " + str(len(short_file_names)) + ": " + sfn + "\n")
+    str_part = " ..\model_predictor.py " if args.batch else "model_predictor.py"
     if sfn.startswith("-"):
-        mod_pred_str = "python model_predictor.py " + args.dir + " " + args.ft + " " + sfn[1:] \
+        mod_pred_str = "python" + str_part + args.dir + " " + args.ft + " " + sfn[1:] \
                        + " --alt_dirs=" + args.testdirs + " --handle_dash --file_num=" \
-                       + str(i+1) + " / " + str(len_sfn)
+                       + str(i+1) + " / " + str(len_sfn) + " --no_testset"
     else:
-        mod_pred_str = "python model_predictor.py " + args.dir + " " + args.ft + " " + sfn + \
+        mod_pred_str = "python" + str_part + args.dir + " " + args.ft + " " + sfn + \
                        " --alt_dirs=" + args.testdirs + " --file_num=" \
-                       + str(i+1) + "/" + str(len_sfn)
+                       + str(i+1) + "/" + str(len_sfn) + " --no_testset"
+        mod_pred_str = mod_pred_str + " --batch" if args.batch else mod_pred_str
     os.system(mod_pred_str)

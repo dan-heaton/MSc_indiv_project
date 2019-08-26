@@ -15,7 +15,7 @@ parser.add_argument("choice",
 parser.add_argument("arg_one", nargs="?", default=None,
                     help="Arg based on 'choice' that is specified. If choice='trues_preds', 'arg_one' is the name of "
                          "the file to load from 'RNN_outputs' (not inc. file extension) to plot the trues and preds "
-                         "from. If choice='model_pred_altdirs', 'arg_one' is the name of the source directory to use "
+                         "from. If choice='model_preds_altdirs', 'arg_one' is the name of the source directory to use "
                          "for the rows to be selected from 'model_predictions.csv'. If choice='model_preds_trues_preds', "
                          "'arg_one' is the row number within 'model_predictions.csv' to start from to draw the true and "
                          "predicted values from (inclusive). If choice='model_preds_single_acts', 'arg_one' is the short "
@@ -27,6 +27,9 @@ parser.add_argument("arg_two", nargs="?", default=None,
                          "(comma separated). If choice='model_preds_trues_preds', 'arg_two' is the row number within "
                          "'model_predictions.csv' to end from to draw the true and predicted values from (inclusive). "
                          "If choice='rnn_results', 'arg_two' is the end experiment number to load from 'RNN Results.xlsx.")
+parser.add_argument("arg_three", nargs="?", default=None,
+                    help="Only used when choice='model_preds_altdirs' to select only the rows where 'Measurements "
+                         "tested' are the same as 'arg_three'.")
 parser.add_argument("out_type", nargs="?", default=None,
                     help="Only used when choice='rnn_results'. Name of metric of which we wish to plot the results."
                          " Must be one of 'acc', 'mse', 'mae', 'rmse', 'r2', 'ind_act', or 'all_act'.")
@@ -75,7 +78,7 @@ def plot_trues_preds():
         plt.xlabel("True overall NSAA scores")
         plt.ylabel("Predicted overall NSAA scores")
         if args.save_img:
-            plt.savefig("..\\documentation\\Graphs\\" + args.arg_one)
+            plt.savefig(graphs_path + args.arg_one)
         plt.gcf().set_size_inches(10, 10)
         if not args.no_display:
             plt.show()
@@ -90,11 +93,15 @@ def plot_model_preds_altdirs():
     """
         Handles the case where we are graphing with the 'model_predictions.csv' file, i.e. the 'test_altdirs.py' output
     """
-    model_preds = pd.read_csv(model_pred_path)
+    model_preds = pd.read_csv(local_model_pred_path)
     #Select the relevant rows from the file based on the args that we passed into 'graph_creator.py'
     model_preds = model_preds.loc[(model_preds["Source dir"] == args.arg_one) &
-                                  (model_preds["Model trained dir(s)"] == str(args.arg_two.split(",")))]
+                                  (model_preds["Model trained dir(s)"] == str(args.arg_two.split(","))) &
+                                  (model_preds["Measurements tested"] == str(args.arg_three.split(",")))]
     model_train_dirs = args.arg_two.split(",")
+
+    #Removes any 'NaN' columns that arise from only zero or one 'alt dirs'
+    model_preds = model_preds.dropna(axis=1)
 
 
     cols = model_preds.columns.values.tolist()
@@ -120,8 +127,8 @@ def plot_model_preds_altdirs():
         plt.ylabel("Predicted overall NSAA scores")
         plt.gcf().set_size_inches(10, 10)
         if args.save_img:
-            plt.savefig("..\\documentation\\Graphs\\Model_predictions_" + args.arg_one + "_" + args.arg_two + "_" +
-                        args.arg_two.split(",")[i] + "_true_pred_overall_NSAA")
+            plt.savefig(graphs_path + "Model_predictions_" + args.arg_one + "_" + args.arg_two + "_" +
+                        args.arg_two.split(",")[i] + "_" + args.arg_three + "_true_pred_overall_NSAA")
         if not args.no_display:
             plt.show()
         plt.close()
@@ -145,8 +152,8 @@ def plot_model_preds_altdirs():
         plt.ylabel("Number of files")
         plt.gcf().set_size_inches(10, 10)
         if args.save_img:
-            plt.savefig("..\\documentation\\Graphs\\Model_predictions_" + args.arg_one + "_" + args.arg_two + "_" +
-                        args.arg_two.split(",")[i] + "_distrib_seq_labels")
+            plt.savefig(graphs_path + "Model_predictions_" + args.arg_one + "_" + args.arg_two + "_" +
+                        args.arg_two.split(",")[i] + "_" + args.arg_three + "_distrib_seq_labels")
         if not args.no_display:
             plt.show()
         plt.close()
@@ -162,8 +169,8 @@ def plot_model_preds_altdirs():
         plt.ylabel("Number of files")
         plt.gcf().set_size_inches(10, 10)
         if args.save_img:
-            plt.savefig("..\\documentation\\Graphs\\Model_predictions_" + args.arg_one + "_" + args.arg_two + "_" +
-                        args.arg_two.split(",")[i] + "_distrib_perc_indiv_acts")
+            plt.savefig(graphs_path + "Model_predictions_" + args.arg_one + "_" + args.arg_two + "_" +
+                        args.arg_two.split(",")[i] + "_" + args.arg_three + "_distrib_perc_indiv_acts")
         if not args.no_display:
             plt.show()
         plt.close()
@@ -174,7 +181,6 @@ def plot_model_preds_altdirs():
                                         model_preds.iloc[:, md_off+9].tolist()), 2)
         print("MAE between true and predicted NSAA scores over files (" +
               args.arg_two.split(",")[i] + ") = " + str(mae))
-    print("\n")
 
     #Computes and prints percentage of correct predicted file D/HC label
     for i, md_off in enumerate(model_dir_offsets):
@@ -183,7 +189,6 @@ def plot_model_preds_altdirs():
             correct_labels += 1 if row[md_off+4] == row[md_off+5] else 0
         print("Percentage of correct predicted file D/HC label (" + args.arg_two.split(",")[i] + ") = " +
               str(round(((correct_labels/len(model_preds))*100), 2)) + "%")
-    print("\n")
 
     #Computes and prints MAE of percentage predicted wrong sequence D/HC classification over files
     for i, md_off in enumerate(model_dir_offsets):
@@ -196,7 +201,6 @@ def plot_model_preds_altdirs():
         mae = round(mean_absolute_error(pred_percents, [100.0 for k in range(len(pred_percents))]), 2)
         print("MAE of percentage predicted wrong sequence D/HC classification over files (" +
               args.arg_two.split(",")[i] + ") = " + str(mae))
-    print("\n")
 
     #Computes and prints average percentage of single acts correctly predicted over files
     for i, md_off in enumerate(model_dir_offsets):
@@ -212,7 +216,7 @@ def plot_model_preds_trues_preds():
         Plots the true and predicted NSAA values for the selected rows (given by 'arg_one' and 'arg_two', inclusive)
         on a graph, with true values plotted on 'x-axis' and predicted values along the 'y-axis'
     """
-    model_preds = pd.read_csv("..\\" + model_pred_path) if args.batch else pd.read_csv(model_pred_path)
+    model_preds = pd.read_csv(local_model_pred_path)
 
     try:
         start_row, end_row = int(args.arg_one), int(args.arg_two)
@@ -235,7 +239,7 @@ def plot_model_preds_trues_preds():
         if args.batch:
             plt.savefig("..\\..\\documentation\\Graphs\\" + "model_preds_trues_preds_" + args.arg_one + "_" + args.arg_two)
         else:
-            plt.savefig("..\\documentation\\Graphs\\" + "model_preds_trues_preds_" + args.arg_one + "_" + args.arg_two)
+            plt.savefig(graphs_path + "model_preds_trues_preds_" + args.arg_one + "_" + args.arg_two)
     plt.gcf().set_size_inches(10, 10)
     if not args.no_display:
         plt.show()
@@ -247,7 +251,7 @@ def plot_model_preds_single_acts():
         Plots 3 subplots where the act number (between 1 and 17) are along the x-axis and the results of the 3 output
         types for each activity is plotted along the y-axis.
     """
-    model_preds = pd.read_csv(model_pred_path)
+    model_preds = pd.read_csv(local_model_pred_path)
     #Select the relevant rows from the file based on the args that we passed into 'graph_creator.py'
     model_preds = model_preds.loc[(model_preds["Short file name"].str.contains(args.arg_one)) &
                                   (model_preds["Short file name"].str.contains("\(act"))]
@@ -282,7 +286,7 @@ def plot_model_preds_single_acts():
     plt.subplots_adjust(hspace=0.5, top=0.95, bottom=0.05)
     plt.gcf().set_size_inches(18.5, 10.5)
     if args.save_img:
-        plt.savefig("..\\documentation\\Graphs\\Model_predictions_" + args.arg_one + "_single_acts")
+        plt.savefig(graphs_path + "Model_predictions_" + args.arg_one + "_single_acts")
     if not args.no_display:
         plt.show()
     plt.close()
@@ -418,14 +422,15 @@ def plot_rnn_results():
     #Only save the plot image to file (with a name based on the rows of data used and metric plotted) if argument is specified
     if args.save_img:
         file_name = "Exp" + str(start_pos) + "-" + str(end_pos) + "_" + choice
-        plt.savefig("..\\documentation\\Graphs\\" + file_name)
+        plt.savefig(graphs_path + file_name)
 
     #Display the image to the user if the '--no_display' argument is not given
     if not args.no_display:
         plt.gcf().set_size_inches(10, 10)
         plt.show()
 
-
+local_model_pred_path = "..\\" + model_pred_path if args.batch else model_pred_path
+graphs_path = "..\\..\\documentation\\Graphs\\" if args.batch else "..\\documentation\\Graphs\\"
 
 if args.choice == "trues_preds":
     plot_trues_preds()
