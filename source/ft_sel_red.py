@@ -174,6 +174,11 @@ def main():
     parser.add_argument("--batch", type=bool, nargs="?", const=True, default=False,
                         help="Option that is only set if the script is run from a batch file to access the external files "
                              "in a correct way.")
+    parser.add_argument("--new_subject", type=bool, nargs="?", const=True, default=False,
+                        help="Specify this if the we wish to treat the subject, 'fn', as one with no 'true' y-labels. "
+                             "Hence, specify this if the subject does not have 'true' values recorded by specialists that "
+                             "is stored in the 'nsaa_6mw_info.xlsx' file (e.g. if the subject is a new subject with no "
+                             "true labels or if we otherwise wish to treat them as such).")
     args = parser.parse_args()
 
     choices = ["pca", "grp", "agglom", "thresh", "rf"]
@@ -260,11 +265,14 @@ def main():
             new_df = pd.DataFrame(np.concatenate((new_y, new_x), axis=1))
 
             #Add a column of NSAA scores to the DataFrame by referencing the external .csvs
-            try:
-                new_df_nsaa = add_nsaa_scores(new_df, batch)
-            except KeyError:
-                print(full_file_name + " not found as entry in either 'nsaa_6mw_info', skipping...")
-                continue
+            if not args.new_subject:
+                try:
+                    new_df_nsaa = add_nsaa_scores(new_df, batch)
+                except KeyError:
+                    print(full_file_name + " not found as entry in either 'nsaa_6mw_info', skipping...")
+                    continue
+            else:
+                new_df_nsaa = new_df
             #Writes the new data to the same directory as before with the same name except with 'FR_' on the front
             split_full_file_name = full_file_name.split("\\")
             split_full_file_name[-1] = "FR_" + split_full_file_name[-1]
@@ -299,11 +307,14 @@ def main():
             #Recombine the now-reduced 'x' data with the source file name and label columns
             new_df = pd.DataFrame(np.concatenate((new_y, new_x), axis=1))
             #Add a column of NSAA scores to the DataFrame by referencing the external .csvs
-            try:
-                new_df_nsaa = add_nsaa_scores(new_df, batch)
-            except KeyError:
-                print(full_file_name + " not found as entry in either 'nsaa_6mw_info', skipping...")
-                continue
+            if not args.new_subject:
+                try:
+                    new_df_nsaa = add_nsaa_scores(new_df, batch)
+                except KeyError:
+                    print(full_file_name + " not found as entry in either 'nsaa_6mw_info', skipping...")
+                    continue
+            else:
+                new_df_nsaa = new_df
 
             #Writes the new data to the same directory as before with the same name except with 'FRC_' on the front
             split_full_file_name = full_file_name.split("\\")

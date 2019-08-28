@@ -1,66 +1,78 @@
-python ..\rnn.py NSAA position all dhc --seq_len=600 --seq_overlap=0.9 --discard_prop=0.9 --epochs=20 --leave_out=D3 --standardize --batch
-python ..\rnn.py NSAA position all overall --seq_len=600 --seq_overlap=0.9 --discard_prop=0.9 --epochs=20 --leave_out=D3 --standardize --batch
-python ..\rnn.py NSAA position all acts --seq_len=600 --seq_overlap=0.9 --discard_prop=0.9 --epochs=20 --leave_out=D3 --standardize --batch
-python ..\rnn.py NSAA sensorMagneticField all dhc --seq_len=600 --seq_overlap=0.9 --discard_prop=0.9 --epochs=20 --leave_out=D3 --standardize --batch
-python ..\rnn.py NSAA sensorMagneticField all overall --seq_len=600 --seq_overlap=0.9 --discard_prop=0.9 --epochs=20 --leave_out=D3 --standardize --batch
-python ..\rnn.py NSAA sensorMagneticField all acts --seq_len=600 --seq_overlap=0.9 --discard_prop=0.9 --epochs=20 --leave_out=D3 --standardize --batch
-python ..\rnn.py NSAA jointAngle all dhc --seq_len=600 --seq_overlap=0.9 --discard_prop=0.9 --epochs=20 --leave_out=D3 --standardize --batch
-python ..\rnn.py NSAA jointAngle all overall --seq_len=600 --seq_overlap=0.9 --discard_prop=0.9 --epochs=20 --leave_out=D3 --standardize --batch
-python ..\rnn.py NSAA jointAngle all acts --seq_len=600 --seq_overlap=0.9 --discard_prop=0.9 --epochs=20 --leave_out=D3 --standardize --batch
-python ..\rnn.py NSAA AD all dhc --seq_len=10 --seq_overlap=0.9 --epochs=100 --leave_out=D3 --standardize --batch
-python ..\rnn.py NSAA AD all overall --seq_len=10 --seq_overlap=0.9 --epochs=100 --leave_out=D3 --standardize --batch
-python ..\rnn.py NSAA AD all acts --seq_len=10 --seq_overlap=0.9 --epochs=100 --leave_out=D3 --standardize --batch
-python ..\rnn.py NSAA position all dhc --seq_len=600 --seq_overlap=0.9 --discard_prop=0.9 --epochs=20 --leave_out=D9 --standardize --batch
-python ..\rnn.py NSAA position all overall --seq_len=600 --seq_overlap=0.9 --discard_prop=0.9 --epochs=20 --leave_out=D9 --standardize --batch
-python ..\rnn.py NSAA position all acts --seq_len=600 --seq_overlap=0.9 --discard_prop=0.9 --epochs=20 --leave_out=D9 --standardize --batch
-python ..\rnn.py NSAA sensorMagneticField all dhc --seq_len=600 --seq_overlap=0.9 --discard_prop=0.9 --epochs=20 --leave_out=D9 --standardize --batch
-python ..\rnn.py NSAA sensorMagneticField all overall --seq_len=600 --seq_overlap=0.9 --discard_prop=0.9 --epochs=20 --leave_out=D9 --standardize --batch
-python ..\rnn.py NSAA sensorMagneticField all acts --seq_len=600 --seq_overlap=0.9 --discard_prop=0.9 --epochs=20 --leave_out=D9 --standardize --batch
-python ..\rnn.py NSAA jointAngle all dhc --seq_len=600 --seq_overlap=0.9 --discard_prop=0.9 --epochs=20 --leave_out=D9 --standardize --batch
-python ..\rnn.py NSAA jointAngle all overall --seq_len=600 --seq_overlap=0.9 --discard_prop=0.9 --epochs=20 --leave_out=D9 --standardize --batch
-python ..\rnn.py NSAA jointAngle all acts --seq_len=600 --seq_overlap=0.9 --discard_prop=0.9 --epochs=20 --leave_out=D9 --standardize --batch
-python ..\rnn.py NSAA AD all dhc --seq_len=10 --seq_overlap=0.9 --epochs=100 --leave_out=D9 --standardize --batch
-python ..\rnn.py NSAA AD all overall --seq_len=10 --seq_overlap=0.9 --epochs=100 --leave_out=D9 --standardize --batch
-python ..\rnn.py NSAA AD all acts --seq_len=10 --seq_overlap=0.9 --epochs=100 --leave_out=D9 --standardize --batch
-python ..\rnn.py NSAA position all dhc --seq_len=600 --seq_overlap=0.9 --discard_prop=0.9 --epochs=20 --leave_out=D11 --standardize --batch
-python ..\rnn.py NSAA position all overall --seq_len=600 --seq_overlap=0.9 --discard_prop=0.9 --epochs=20 --leave_out=D11 --standardize --batch
-python ..\rnn.py NSAA position all acts --seq_len=600 --seq_overlap=0.9 --discard_prop=0.9 --epochs=20 --leave_out=D11 --standardize --batch
-python ..\rnn.py NSAA sensorMagneticField all dhc --seq_len=600 --seq_overlap=0.9 --discard_prop=0.9 --epochs=20 --leave_out=D11 --standardize --batch
-python ..\rnn.py NSAA sensorMagneticField all overall --seq_len=600 --seq_overlap=0.9 --discard_prop=0.9 --epochs=20 --leave_out=D11 --standardize --batch
-python ..\rnn.py NSAA sensorMagneticField all acts --seq_len=600 --seq_overlap=0.9 --discard_prop=0.9 --epochs=20 --leave_out=D11 --standardize --batch
-python ..\rnn.py NSAA jointAngle all dhc --seq_len=600 --seq_overlap=0.9 --discard_prop=0.9 --epochs=20 --leave_out=D11 --standardize --batch
-python ..\rnn.py NSAA jointAngle all overall --seq_len=600 --seq_overlap=0.9 --discard_prop=0.9 --epochs=20 --leave_out=D11 --standardize --batch
-python ..\rnn.py NSAA jointAngle all acts --seq_len=600 --seq_overlap=0.9 --discard_prop=0.9 --epochs=20 --leave_out=D11 --standardize --batch
-python ..\rnn.py NSAA AD all dhc --seq_len=10 --seq_overlap=0.9 --epochs=100 --leave_out=D11 --standardize --batch
-python ..\rnn.py NSAA AD all overall --seq_len=10 --seq_overlap=0.9 --epochs=100 --leave_out=D11 --standardize --batch
-python ..\rnn.py NSAA AD all acts --seq_len=10 --seq_overlap=0.9 --epochs=100 --leave_out=D11 --standardize --batch
-python ..\rnn.py NSAA position all dhc --seq_len=600 --seq_overlap=0.9 --discard_prop=0.9 --epochs=20 --leave_out=D17 --standardize --batch
-python ..\rnn.py NSAA position all overall --seq_len=600 --seq_overlap=0.9 --discard_prop=0.9 --epochs=20 --leave_out=D17 --standardize --batch
-python ..\rnn.py NSAA position all acts --seq_len=600 --seq_overlap=0.9 --discard_prop=0.9 --epochs=20 --leave_out=D17 --standardize --batch
-python ..\rnn.py NSAA sensorMagneticField all dhc --seq_len=600 --seq_overlap=0.9 --discard_prop=0.9 --epochs=20 --leave_out=D17 --standardize --batch
-python ..\rnn.py NSAA sensorMagneticField all overall --seq_len=600 --seq_overlap=0.9 --discard_prop=0.9 --epochs=20 --leave_out=D17 --standardize --batch
-python ..\rnn.py NSAA sensorMagneticField all acts --seq_len=600 --seq_overlap=0.9 --discard_prop=0.9 --epochs=20 --leave_out=D17 --standardize --batch
-python ..\rnn.py NSAA jointAngle all dhc --seq_len=600 --seq_overlap=0.9 --discard_prop=0.9 --epochs=20 --leave_out=D17 --standardize --batch
-python ..\rnn.py NSAA jointAngle all overall --seq_len=600 --seq_overlap=0.9 --discard_prop=0.9 --epochs=20 --leave_out=D17 --standardize --batch
-python ..\rnn.py NSAA jointAngle all acts --seq_len=600 --seq_overlap=0.9 --discard_prop=0.9 --epochs=20 --leave_out=D17 --standardize --batch
-python ..\rnn.py NSAA AD all dhc --seq_len=10 --seq_overlap=0.9 --epochs=100 --leave_out=D17 --standardize --batch
-python ..\rnn.py NSAA AD all overall --seq_len=10 --seq_overlap=0.9 --epochs=100 --leave_out=D17 --standardize --batch
-python ..\rnn.py NSAA AD all acts --seq_len=10 --seq_overlap=0.9 --epochs=100 --leave_out=D17 --standardize --batch
-python ..\rnn.py NSAA position all dhc --seq_len=600 --seq_overlap=0.9 --discard_prop=0.9 --epochs=20 --leave_out=HC6 --standardize --batch
-python ..\rnn.py NSAA position all overall --seq_len=600 --seq_overlap=0.9 --discard_prop=0.9 --epochs=20 --leave_out=HC6 --standardize --batch
-python ..\rnn.py NSAA position all acts --seq_len=600 --seq_overlap=0.9 --discard_prop=0.9 --epochs=20 --leave_out=HC6 --standardize --batch
-python ..\rnn.py NSAA sensorMagneticField all dhc --seq_len=600 --seq_overlap=0.9 --discard_prop=0.9 --epochs=20 --leave_out=HC6 --standardize --batch
-python ..\rnn.py NSAA sensorMagneticField all overall --seq_len=600 --seq_overlap=0.9 --discard_prop=0.9 --epochs=20 --leave_out=HC6 --standardize --batch
-python ..\rnn.py NSAA sensorMagneticField all acts --seq_len=600 --seq_overlap=0.9 --discard_prop=0.9 --epochs=20 --leave_out=HC6 --standardize --batch
-python ..\rnn.py NSAA jointAngle all dhc --seq_len=600 --seq_overlap=0.9 --discard_prop=0.9 --epochs=20 --leave_out=HC6 --standardize --batch
-python ..\rnn.py NSAA jointAngle all overall --seq_len=600 --seq_overlap=0.9 --discard_prop=0.9 --epochs=20 --leave_out=HC6 --standardize --batch
-python ..\rnn.py NSAA jointAngle all acts --seq_len=600 --seq_overlap=0.9 --discard_prop=0.9 --epochs=20 --leave_out=HC6 --standardize --batch
-python ..\rnn.py NSAA AD all dhc --seq_len=10 --seq_overlap=0.9 --epochs=100 --leave_out=HC6 --standardize --batch
-python ..\rnn.py NSAA AD all overall --seq_len=10 --seq_overlap=0.9 --epochs=100 --leave_out=HC6 --standardize --batch
-python ..\rnn.py NSAA AD all acts --seq_len=10 --seq_overlap=0.9 --epochs=100 --leave_out=HC6 --standardize --batch
+REM Note that 'model_predictions_set_20.cmd' must have been executed first in order to execute the below lines correctly
+python ..\model_predictor.py NSAA sensorMagneticField D3 --add_dir=NMB --combine_preds --no_testset --batch
+python ..\model_predictor.py NSAA sensorMagneticField D9 --add_dir=NMB --combine_preds --no_testset --batch
+python ..\model_predictor.py NSAA sensorMagneticField D11 --add_dir=NMB --combine_preds --no_testset --batch
+python ..\model_predictor.py NSAA sensorMagneticField D17 --add_dir=NMB --combine_preds --no_testset --batch
 
-python ..\model_predictor.py NSAA position,sensorMagneticField,jointAngle,AD D3 --standardize --batch
-python ..\model_predictor.py NSAA position,sensorMagneticField,jointAngle,AD D9 --standardize --batch
-python ..\model_predictor.py NSAA position,sensorMagneticField,jointAngle,AD D11 --standardize --batch
-python ..\model_predictor.py NSAA position,sensorMagneticField,jointAngle,AD D17 --standardize --batch
-python ..\model_predictor.py NSAA position,sensorMagneticField,jointAngle,AD HC6 --standardize --batch
+python ..\model_predictor.py NSAA sensorMagneticField D3 --single_act=1 --add_dir=NMB --combine_preds --no_testset --batch
+python ..\model_predictor.py NSAA sensorMagneticField D3 --single_act=2 --add_dir=NMB --combine_preds --no_testset --batch
+python ..\model_predictor.py NSAA sensorMagneticField D3 --single_act=3 --add_dir=NMB --combine_preds --no_testset --batch
+python ..\model_predictor.py NSAA sensorMagneticField D3 --single_act=4 --add_dir=NMB --combine_preds --no_testset --batch
+python ..\model_predictor.py NSAA sensorMagneticField D3 --single_act=5 --add_dir=NMB --combine_preds --no_testset --batch
+python ..\model_predictor.py NSAA sensorMagneticField D3 --single_act=6 --add_dir=NMB --combine_preds --no_testset --batch
+python ..\model_predictor.py NSAA sensorMagneticField D3 --single_act=7 --add_dir=NMB --combine_preds --no_testset --batch
+python ..\model_predictor.py NSAA sensorMagneticField D3 --single_act=8 --add_dir=NMB --combine_preds --no_testset --batch
+python ..\model_predictor.py NSAA sensorMagneticField D3 --single_act=9 --add_dir=NMB --combine_preds --no_testset --batch
+python ..\model_predictor.py NSAA sensorMagneticField D3 --single_act=10 --add_dir=NMB --combine_preds --no_testset --batch
+python ..\model_predictor.py NSAA sensorMagneticField D3 --single_act=11 --add_dir=NMB --combine_preds --no_testset --batch
+python ..\model_predictor.py NSAA sensorMagneticField D3 --single_act=12 --add_dir=NMB --combine_preds --no_testset --batch
+python ..\model_predictor.py NSAA sensorMagneticField D3 --single_act=13 --add_dir=NMB --combine_preds --no_testset --batch
+python ..\model_predictor.py NSAA sensorMagneticField D3 --single_act=14 --add_dir=NMB --combine_preds --no_testset --batch
+python ..\model_predictor.py NSAA sensorMagneticField D3 --single_act=15 --add_dir=NMB --combine_preds --no_testset --batch
+python ..\model_predictor.py NSAA sensorMagneticField D3 --single_act=16 --add_dir=NMB --combine_preds --no_testset --batch
+python ..\model_predictor.py NSAA sensorMagneticField D3 --single_act=17 --add_dir=NMB --combine_preds --no_testset --batch
+python ..\model_predictor.py NSAA sensorMagneticField D9 --single_act=1 --add_dir=NMB --combine_preds --no_testset --batch
+python ..\model_predictor.py NSAA sensorMagneticField D9 --single_act=2 --add_dir=NMB --combine_preds --no_testset --batch
+python ..\model_predictor.py NSAA sensorMagneticField D9 --single_act=3 --add_dir=NMB --combine_preds --no_testset --batch
+python ..\model_predictor.py NSAA sensorMagneticField D9 --single_act=4 --add_dir=NMB --combine_preds --no_testset --batch
+python ..\model_predictor.py NSAA sensorMagneticField D9 --single_act=5 --add_dir=NMB --combine_preds --no_testset --batch
+python ..\model_predictor.py NSAA sensorMagneticField D9 --single_act=6 --add_dir=NMB --combine_preds --no_testset --batch
+python ..\model_predictor.py NSAA sensorMagneticField D9 --single_act=7 --add_dir=NMB --combine_preds --no_testset --batch
+python ..\model_predictor.py NSAA sensorMagneticField D9 --single_act=8 --add_dir=NMB --combine_preds --no_testset --batch
+python ..\model_predictor.py NSAA sensorMagneticField D9 --single_act=9 --add_dir=NMB --combine_preds --no_testset --batch
+python ..\model_predictor.py NSAA sensorMagneticField D9 --single_act=10 --add_dir=NMB --combine_preds --no_testset --batch
+python ..\model_predictor.py NSAA sensorMagneticField D9 --single_act=11 --add_dir=NMB --combine_preds --no_testset --batch
+python ..\model_predictor.py NSAA sensorMagneticField D9 --single_act=12 --add_dir=NMB --combine_preds --no_testset --batch
+python ..\model_predictor.py NSAA sensorMagneticField D9 --single_act=13 --add_dir=NMB --combine_preds --no_testset --batch
+python ..\model_predictor.py NSAA sensorMagneticField D9 --single_act=14 --add_dir=NMB --combine_preds --no_testset --batch
+python ..\model_predictor.py NSAA sensorMagneticField D9 --single_act=15 --add_dir=NMB --combine_preds --no_testset --batch
+python ..\model_predictor.py NSAA sensorMagneticField D9 --single_act=16 --add_dir=NMB --combine_preds --no_testset --batch
+python ..\model_predictor.py NSAA sensorMagneticField D9 --single_act=17 --add_dir=NMB --combine_preds --no_testset --batch
+python ..\model_predictor.py NSAA sensorMagneticField D11 --single_act=1 --add_dir=NMB --combine_preds --no_testset --batch
+python ..\model_predictor.py NSAA sensorMagneticField D11 --single_act=2 --add_dir=NMB --combine_preds --no_testset --batch
+python ..\model_predictor.py NSAA sensorMagneticField D11 --single_act=3 --add_dir=NMB --combine_preds --no_testset --batch
+python ..\model_predictor.py NSAA sensorMagneticField D11 --single_act=4 --add_dir=NMB --combine_preds --no_testset --batch
+python ..\model_predictor.py NSAA sensorMagneticField D11 --single_act=5 --add_dir=NMB --combine_preds --no_testset --batch
+python ..\model_predictor.py NSAA sensorMagneticField D11 --single_act=6 --add_dir=NMB --combine_preds --no_testset --batch
+python ..\model_predictor.py NSAA sensorMagneticField D11 --single_act=7 --add_dir=NMB --combine_preds --no_testset --batch
+python ..\model_predictor.py NSAA sensorMagneticField D11 --single_act=8 --add_dir=NMB --combine_preds --no_testset --batch
+python ..\model_predictor.py NSAA sensorMagneticField D11 --single_act=9 --add_dir=NMB --combine_preds --no_testset --batch
+python ..\model_predictor.py NSAA sensorMagneticField D11 --single_act=10 --add_dir=NMB --combine_preds --no_testset --batch
+python ..\model_predictor.py NSAA sensorMagneticField D11 --single_act=11 --add_dir=NMB --combine_preds --no_testset --batch
+python ..\model_predictor.py NSAA sensorMagneticField D11 --single_act=12 --add_dir=NMB --combine_preds --no_testset --batch
+python ..\model_predictor.py NSAA sensorMagneticField D11 --single_act=13 --add_dir=NMB --combine_preds --no_testset --batch
+python ..\model_predictor.py NSAA sensorMagneticField D11 --single_act=14 --add_dir=NMB --combine_preds --no_testset --batch
+python ..\model_predictor.py NSAA sensorMagneticField D11 --single_act=15 --add_dir=NMB --combine_preds --no_testset --batch
+python ..\model_predictor.py NSAA sensorMagneticField D11 --single_act=16 --add_dir=NMB --combine_preds --no_testset --batch
+python ..\model_predictor.py NSAA sensorMagneticField D11 --single_act=17 --add_dir=NMB --combine_preds --no_testset --batch
+python ..\model_predictor.py NSAA sensorMagneticField D17 --single_act=1 --add_dir=NMB --combine_preds --no_testset --batch
+python ..\model_predictor.py NSAA sensorMagneticField D17 --single_act=2 --add_dir=NMB --combine_preds --no_testset --batch
+python ..\model_predictor.py NSAA sensorMagneticField D17 --single_act=3 --add_dir=NMB --combine_preds --no_testset --batch
+python ..\model_predictor.py NSAA sensorMagneticField D17 --single_act=4 --add_dir=NMB --combine_preds --no_testset --batch
+python ..\model_predictor.py NSAA sensorMagneticField D17 --single_act=5 --add_dir=NMB --combine_preds --no_testset --batch
+python ..\model_predictor.py NSAA sensorMagneticField D17 --single_act=6 --add_dir=NMB --combine_preds --no_testset --batch
+python ..\model_predictor.py NSAA sensorMagneticField D17 --single_act=7 --add_dir=NMB --combine_preds --no_testset --batch
+python ..\model_predictor.py NSAA sensorMagneticField D17 --single_act=8 --add_dir=NMB --combine_preds --no_testset --batch
+python ..\model_predictor.py NSAA sensorMagneticField D17 --single_act=9 --add_dir=NMB --combine_preds --no_testset --batch
+python ..\model_predictor.py NSAA sensorMagneticField D17 --single_act=10 --add_dir=NMB --combine_preds --no_testset --batch
+python ..\model_predictor.py NSAA sensorMagneticField D17 --single_act=11 --add_dir=NMB --combine_preds --no_testset --batch
+python ..\model_predictor.py NSAA sensorMagneticField D17 --single_act=12 --add_dir=NMB --combine_preds --no_testset --batch
+python ..\model_predictor.py NSAA sensorMagneticField D17 --single_act=13 --add_dir=NMB --combine_preds --no_testset --batch
+python ..\model_predictor.py NSAA sensorMagneticField D17 --single_act=14 --add_dir=NMB --combine_preds --no_testset --batch
+python ..\model_predictor.py NSAA sensorMagneticField D17 --single_act=15 --add_dir=NMB --combine_preds --no_testset --batch
+python ..\model_predictor.py NSAA sensorMagneticField D17 --single_act=16 --add_dir=NMB --combine_preds --no_testset --batch
+python ..\model_predictor.py NSAA sensorMagneticField D17 --single_act=17 --add_dir=NMB --combine_preds --no_testset --batch
+
+python ..\predictions_selector.py 2031 2100 --best=overall,15 --batch
+python ..\predictions_selector.py 2031 2100 --best=pacp,15 --batch
+python ..\predictions_selector.py 2031 2100 --best=ppcs,15 --batch

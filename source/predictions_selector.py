@@ -24,10 +24,16 @@ parser.add_argument("--str_filt", type=str, nargs="?", const=True, default=False
                     help="Specify this with a string to filter rows to only those containing this string within "
                          "the 'Short file name' cell. Separate by commas if wishes to have more than one filter (note: "
                          "it acts as an 'OR' of comma-separate values, i.e. row can contain just one of the parts).")
+parser.add_argument("--batch", type=bool, nargs="?", const=True, default=False,
+                    help="Option that is only set if the script is run from a batch file to access the external files "
+                         "in a correct way.")
 args = parser.parse_args()
 
+
+local_model_pred_path = "..\\" + model_pred_path if args.batch else model_pred_path
+
 #Loads in the 'model_predictions.csv' file
-model_preds = pd.read_csv(model_pred_path)
+model_preds = pd.read_csv(local_model_pred_path)
 
 metrics = ["pacp", "ppcs", "overall"]
 
@@ -176,7 +182,6 @@ for i in range(len(selected_rows)):
                 df = df.sort_values(by=[col_names[i][4]], ascending=True)
         #Prints either the top or bottom 'best_worst_rows[i]' rows of the DataFrame, depending on the if it's printing
         #for '--best' or '--worst'
-        print(df[["Diff true/pred overall NSAA score"]].mean(axis=0))
         if args.mtd and len(args.mtd.split(",")) == 2:
             if i == 0:
                 print("\nBest performing " + str(best_worst_rows[i]) + " rows by " + col_names[i][4] +

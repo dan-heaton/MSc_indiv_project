@@ -296,7 +296,211 @@ Your abstract.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\part{System Preparation: Choices and Setup} 
+\part{System Preparation: Choices and Setup}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{System Choices: Language, IDE, and Libraries\\}
+
+
+%%%%%%%%%%%%%%%%%%
+\section{Python}
+
+\quad As with most software-related projects, one of the primary choices that must be made is what programming language to implement the components of the system in, along with what development environment it is to be built using. Both of these have a large impact in the time and ease it will take to develop the system, as well as how optimal it will be running in its final variation. For the choice of programming language, we chose to use \textbf{Python (3.6)} to build all scripts from for the following reasons:
+
+
+\begin{itemize}
+	\item It takes very few lines to implement many things when compared with other languages like Java; for example, the code below shows how a neural network can be implemented in Python in only 9 lines using the Keras library (a wrapper for TesorFlow):
+\begin{center}
+\includegraphics[scale=0.8]{project_figures/fig4_1}
+\end{center}
+	This enables faster development and easier testing of new ideas and concepts than other languages, as we can afford to care less about problems of tricky syntax (e.g. with using C++) and can instead move towards development ‘at the speed of thought’.
+	\item The open-source nature of Python's community means that there are very often libraries that others have built that fit the profile of what we need, so we don't need to 'reinvent the wheel' by creating our own version of it; this can be seen in the system’s reliance on external functions from ‘scikit-learn’ to compute metrics, along with ‘pandas’ to handle the reading and writing to and from ‘.csv’ files, as opposed to writing our own functions to carry out this functionality.
+	\item Python has seen extensive use for building and testing machine learning and deep learning models by research and business communities; thus, it is easily the most well-developed with regards to open-source libraries such as TensorFlow, with TensorFlow's Python API being most complete of its various language implementations [14].
+	\item Many of the frameworks and libraries that power the system we have built (e.g. NumPy and SciPy) build upon lower-layer Fortran and C implementations for fast and vectorized operations for multidimensional arrays, which helps overcome the inferior speed of a scripting language like Python when compared to these lower-level languages [15].
+	\item Further development of the system is easier, as being written in a language like Python (which is close to English) lends itself to the easier understanding of what is going on within each script. Coupled with variables having intuitive names and commenting where necessary, this helps with anyone undertaking edits or rewrites to one or more of the scripts in the future.
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%
+\section{Integrated Development Environment}
+
+\begin{center}
+\includegraphics[scale=1]{project_figures/fig4_2}
+\end{center}
+\quad With regards to where we shall develop the Python programs for this project, we have chosen to use the \textbf{PyCharm Community Edition 2016} integrated development environment. We can see above a screenshot of how the IDE is setup for this project. This has been chosen for the following reasons over a text editor or another IDE:
+
+\begin{itemize}
+	\item \underline{\textit{Multiple program tabs}}: This enables the easy transitions between different scripts. This is particularly useful when we are making changes to multiple scripts simultaneously (e.g. adding the same optional argument to both ‘rnn.py’ and ‘mode\_predictor.py’ that ensures certain models built by ‘rnn.py’ are then retrieved correctly by ‘model\_predictor.py’).
+	\item \underline{\textit{In-built terminal}}: This allows us to run programs from command line within the IDE itself without having to open a separate terminal window and navigating to the script directory every time it’s reopened. This is a major quality of life improvement, as most of the scripts are run from the command line with required and optional arguments.
+	\item \underline{\textit{Good compatibility with git}}: This has two main benefits. The first is that changes made to scripts and their specific lines of change from a previous commit are highlighted in blue, which helps with accounting for modifications made when writing commit messages and keeping track of all recent changes made. The other  benefit is the GUI approach to committing to the GitHub repo (as can be seen below) which is a much easier way to make regular commits and also highlights easier more subtle changes made (such as writing lines to output files).
+\begin{center}
+\includegraphics[scale=1]{project_figures/fig4_3}
+\end{center}
+	\item \underline{\textit{Previous experience}}: We’ve used it before for many previous Python projects, including in two professional roles, for a final-year undergraduate individual project, and for many pieces of coursework involving the use of several machine learning and deep learning libraries such as ‘scikit-learn’ and ‘TensorFlow’. Hence, this previous experience and the resultant familiarity with the environment helps make development of this project a more expedient and easier experience.
+	\item \underline{\text{Debugging and error handling}}: The layout of PyCharm makes for writing and immediate testing and modifying of code very simple, with debug options showing locations of compilation errors very easily and with clarity. This minimizes the time lost in development due to basic syntax errors and other basic software-engineering-related issues.
+	\item \underline{\text{Package implementation}}: It’s easy to add additional packages via 'Available Packages' in the 'Project Interpreter', which is useful as we need to add many additional libraries, from TensorFlow to simple libraries like ‘pyexcel’.
+\end{itemize}
+
+
+%%%%%%%%%%%%%%%%%%
+\section{TensorFlow}
+
+\quad For programming in Python, there are numerous options for which library we can use to implement our central RNN models. One option is the ‘Keras’ wrapper that wraps the TensorFlow framework. Although this is a lot simpler to use and has fewer aspects to manually code, there are numerous advantages that TensorFlow has over this that includes the following:
+
+\begin{itemize}
+	\item More extensive and highly detailed documentation and examples for TensorFlow.
+	\item Higher amount of direct control over the RNN models with things such as weights and optimizers.
+	\item Better performance with TensorFlow through threading and queues to speed up the training process.
+	\item Availability of the TensorBoard visualization tool to help understand our models.
+\end{itemize}
+
+\quad Thus, using TensorFlow will hopefully lead to more successful RNN models that can better learn from raw measurements and computed statistical values that can thus better operate on newly-presented subject data. Preparatory work for using this framework includes prior use as the engine for an undergraduate individual project, along with reading Chapter 14 and 16 of [15] where we learned:
+
+\begin{itemize}
+	\item The benefits of using TensorFlow for neural network training performance in utilizing GPU cores, where using a high-end GPU resulting in ~15 times more floating-point calculations per second than using an equivalently-priced CPU.
+	\item Concepts of graphs, sessions, ranks, tensors and operations, which gave clarity to the concepts of the computational graph structure used by TensorFlow.
+	\item The 'placeholder' concept of  TensorFlow where a variable is an 'empty' variable that expects data input (in our case, these 'placeholders' will be implemented for \textit{x\_train}/\textit{x\_test}).
+	\item How aspects specific to an RNN works in TensorFlow, such as implementing layers as LSTM cells and initial/final states for the variables.
+\end{itemize}
+
+\quad With this obtained knowledge from the above textbook, along with examination of other examples found primarily on GitHub or the TensorFlow documentation website, we felt confident enough in our knowledge of the TensorFlow library that, coupled with prepared input data, our RNN models could now be created.
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{System Setup: Software and Data Preparation\\}
+
+%%%%%%%%%%%%%%%%%%
+\section{Overview}
+
+\quad A necessity to either continue further work on this system, validate the results we obtained in experimentation and elaborate upon in this report, or produce one’s own results through system use is to setup the required components to run the system. Before being able to modify or run parts of the system, there are several things that must be setup beforehand. This includes:
+
+\begin{itemize}
+	\item Obtaining relevant system resources.
+	\item Downloading the requisite data sets and setting them up in the correct directories.
+	\item Setting up Python and ‘pip’, along with the IDE and necessary packages.
+	\item Running all the setup scripts that are run via the‘setup.cmd’ script.
+	\item Setup of TensorFlow to use a GPU.
+\end{itemize}
+
+\quad Once these steps are all completed, the editing of scripts, building of models, testing of files, and so on can be done by the user. In this part of the report, we shall be going through all the necessary steps to run the system on a different workstation; the hope is that, with the steps completed in this section, any user with the necessary computational resources can build models, reproduce results, and carry out additional experiments using the suit data captured that is used as part of the project.
+
+%%%%%%%%%%%%%%%%%%
+\section{Necessary System Resources}
+
+\quad As this system works with large amounts of data and requires a heavy computational workload in order to build and test models, among other tasks, anyone running parts of this system requires a workstation setup with the necessary resources to execute many of the scripts, store the data, and so on. The vast majority of the work done on this project has been undertaken on a ‘Dell XPS 15 (9570)’ laptop with the following specs:
+
+\begin{itemize}
+	\item \underline{\textit{CPU}}: 'Intel Core i7-8750H’
+	\item \underline{\textit{RAM}}: ‘16GB DDR4, 2666MHz’
+	\item \underline{\textit{GPU}}: ‘Nvidia GeForce GTX 1050Ti with 4GB GDDR5’
+	\item \underline{\textit{Storage}}: ‘512GB SSD’
+\end{itemize}
+
+A system with similar specs should be adequate to run the system; however, the following is ideal:
+
+\begin{itemize}
+	\item \underline{\textit{CPU}}: At least a 7th gen Intel i5 or i7 (or AMD equivalent). A lot of the data preparation, computing of statistical values, reading from and writing to ‘.csv’s, and so on are done using the CPU (i.e. anything the system does that’s not including the training, testing, and assessing of models); hence, a good CPU will enable the user to run these scripts in reasonable time.
+	\item \underline{\textit{RAM}}: Minimum of 10GB needed; some of the larger datasets we look at (e.g. when multiple raw measurements’ data are combined into one data set for a data shape of (~16000, 60, ~180)) require in excess of 8GB of memory just for the data, not including resources required for the IDE and other parts of the script being run. Any less than 10GB, therefore, may risk system instability or limit the user from carrying out certain parts of the experimentation outlined in this report. Additionally, DDR4 is recommended so as to increase the speed at which data is able to be written and read from memory.
+	\item \underline{\textit{GPU}}: We make heavy use of TensorFlow running using the inbuilt GPU; the alternative would be to use the CPU, which by our estimation is approximately 10x slower to train models than using the GPU. Hence, to realistically build models in this system we need a good GPU. Ideally, the user would use an ‘Nvidia’ card as that is the easiest to setup with TensorFlow and, preferably, the card would have many CUDA cores (the 1050ti has 768) to enable faster parallel processing when training models.
+	\item \underline{\textit{Storage}}: As of writing, the total storage required for all data sets contained within the ‘local directory’ (including ‘.mat’ files for NSAA assessments, 6-minute walks, natural movement behaviour, and the intermediate data extracted from all files via the data pipeline) amounts to over 170GB, while the system itself contained within the ‘project directory’ requires approximately 725MB of space; hence at least this much storage is required, ideally on an SSD to enable fast read speed from storage (which will happen a lot during the setup scripts). See the chapter on the ‘Project and Local Directories’ for more information about what these specific directories contain.
+\end{itemize}
+
+
+%%%%%%%%%%%%%%%%%%
+\section{Data Sets Setup}
+
+\quad With a workstation obtained with the requisite resources, the next step is obtaining the data sets required by the system. There are two approaches that can be taken: the first involves being able to access the link shown below (which should be possible for anyone with Imperial College London credentials), which contains all the data used as part of this project (i.e. that also contains all the intermediate data constructed via the scripts that make up the data pipeline). Hence, a user that downloads all the data from this link would not need to run the Python scripts contained within the ‘setup.cmd’ script, only the pip installation commands. The second approach should be taken if the user either doesn’t have Imperial College London credentials or otherwise can’t access the files, or if one wishes to run the pipeline ‘from scratch’ (i.e. computing ones own intermediate data files via the data pipeline); this does require the user to fully run the ‘setup.cmd’ script. Note that the below explanations assume the user already has access to the complete ‘project directory’ if one is reading this report; however if not, consult the chapter on ‘Project and Local Directories’ for guidance on how to access this.\\
+
+The first approach is as follows:
+
+\begin{enumerate}
+	\item Setup a base directory in the user’s storage directory; the default name for this that has been used thus far has been ‘C:\textbackslash msc\_project\_files\textbackslash ’; however, a more intuitive name can be chosen by the user if desired. This becomes the user’s ‘local directory’ for the project.
+	\item Download each of the directories contained within the OneDrive link: \url{https://imperiallondon-my.sharepoint.com/:f:/g/personal/djh18\_ic\_ac\_uk/Euymu00dXG1Cmmeoz3xxq24BekH57ZuDmU9uZtoSr60xfg?e=L5C62Z} and place each directory in the ‘msc\_project\_files’ directory (e.g. ‘left-out’, ‘allmatfiles’, etc.) within the user’s created ‘local directory’.
+	\item Modify the requisite line within ‘$<$project directory$>$\textbackslash source\textbackslash settings.py’ to point to this new location. For example, if the user has setup the ‘local directory’ as ‘example’ in ‘C:\textbackslash’, then they should modify the ‘local\_dir’ variable (line 7) to now contain: ‘local\_dir=”C:\textbackslash example\textbackslash”. In doing this, it ensures that all other scripts that need to access the data files in ‘example’ are correctly pointed to it.
+	\item Once the steps outlined in the section below on Python, pip, PyCharm, and the necessary packages have been undertaken, open ‘$<$project directory$>$\textbackslash source\textbackslash\\ batch\textbackslash setup.cmd’ for editing in a text editor, comment out line 19 and onward (as these create the intermediate data from the pipeline which we now already have), save the file, and run it to setup the Python packages.
+\end{enumerate}
+
+The second approach is as follows:
+
+\begin{enumerate}
+	\item Setup a base directory in the user’s storage directory; the default name for this that has been used thus far has been ‘C:\textbackslash msc\_project\_files\textbackslash’; however, a more intuitive name can be chosen by the user if desired. This becomes the user’s ‘local directory’ for the project.
+	\item Obtain permission from the owners of the data sets used as part of the KineDMD research initiative to access and download the directories.
+	\item Create another directory within the ‘local directory’ called ‘output\_files’. This shall contain a number of things produced by the scripts and by the models, including the ‘.csv’ files of computed statistical values, the constructed models themselves, among other parts of the system.
+	\item The user should have links to the following data sets (though if they don’t the requisite permission for each must be obtained by the relevant parties): ‘NSAA’, ‘NMB’, ‘allmatfiles’, ‘6MW-matFiles’, and ‘6minutewalk-matfiles’. Each of these directories should then be downloaded and directly placed within ‘local\_dir’.
+	\item Once the steps outlined in the section below on Python, pip, PyCharm, and the necessary packages have been undertaken, run the ‘setup.cmd’ in full to obtain the necessary Python packages for the project and compute the intermediate data used as part of the project.
+\end{enumerate}
+
+\quad With these steps done, the data should now be in a form in which all the scripts that form the system should be able to access with the necessary directories constructed.
+
+
+%%%%%%%%%%%%%%%%%%
+\section{Setup of Python, Pip, Necessary Packages, and PyCharm}
+
+\quad We now turn our attention to the setting up of the language, the ‘pip’ tool for package installation, and the libraries required to run the scripts. The first step is the installation of Python; the version this system runs on is ‘3.6.0’ and, while installing any subsequent versions should be acceptable, we shall install this version to avoid any possible complications to do with the language further down the line. Version ‘3.6.0’ can be downloaded from \url{https://www.python.org/downloads/release/python-360/} and by selecting the relevant installer from ‘Files’. With the installation window open, ensure that the ‘Add Python 3.6 to PATH’ box is checked; this shall ensure that the user is able to run Python commands from the command line or terminal:
+
+\begin{center}
+\includegraphics[scale=0.8]{project_figures/fig5_1}
+\end{center}
+
+\quad With this installed, we can ensure that Python is setup correctly with the required version by entering ‘python --version’ at the command line:
+
+\begin{center}
+\includegraphics[scale=0.8]{project_figures/fig5_2}
+\end{center}
+
+\quad It should be noted that the installation window for the user should also say that it is installing ‘pip’. This can be asserted to have been installed for the user by entering ‘pip’ at the command line, which should show output of something like this:
+
+\begin{center}
+\includegraphics[scale=0.8]{project_figures/fig5_3}
+\end{center}
+
+\quad If, for whatever reason, ‘pip’ has not been installed, follow the steps outlined at \url{https://pip.pypa.io/en/stable/installing/}, which includes the modification of the PATH environment variable to ensure that we are able to use ‘pip’ correctly.\\
+
+\quad Once ‘pip’ has been installed and/or asserted to be setup ready to use, we are able to install the required packages. Navigate to the ‘$<$project directory$>$\textbackslash source\textbackslash batch\_files’ directory and execute the ‘setup.cmd’ script. This will setup the required packages to run the project. Not only that, but it will ensure that the versions of each of the packages installed for this system will also be setup by the user; this should minimize the chances that the user will encounter dependency issues between packages (different versions of ‘tensorflow’ have been shown to interact badly with certain versions of ‘numpy’, for example). It should be noted that ‘setup.cmd’ will also run all the Python scripts within the ‘source’ directory that are used to setup the files for other scripts such as ‘rnn.py’ and ‘model\_predictor.py’, so if the user doesn’t wish to run these at this time, the recommended way is to comment out each of these lines. This can be done by commenting out each of these setup lines (line 19 and onward) by inserting ‘REM ‘ at the beginning of each line. Note that this means that ‘setup.cmd’ must be run later when the user wishes to prepare the data for the system and if the user doesn’t already have the intermediate data.
+
+
+%%%%%%%%%%%%%%%%%%
+\section{Installation of PyCharm (IDE)}
+
+\quad If the user is intending to do any long-term modifications to the system, or if they simply want a more convenient place to launch the scripts from, then it is recommended that they install an IDE for the project; specifically, PyCharm Community Edition. Using this provides several advantages to the user:
+
+\begin{itemize}
+	\item An in-built terminal to run the scripts of the system with the necessary arguments.
+	\item Easy interaction with Git to work from the project code in GitHub/GitLab.
+	\item Syntax assistance when editing any files.
+	\item Multiple tabs to help with editing multiple files simultaneously along with the script variable explorer.
+\end{itemize}
+
+To setup the IDE, the following steps should be undertaken:
+
+\begin{enumerate}
+	\item Download the community edition of PyCharm, the link for which can be found at: \url{https://www.jetbrains.com/pycharm/download/#section=windows}.
+	\item In the ‘Installation Options’ window, it’s recommended that the user selects the ‘Add “Open Folder as Project”’ option (to allow opening the ‘project directory’ as a PyCharm project) and the ‘.py’ association (so Python files open in PyCharm as default).
+	\item Launch PyCharm and select ‘Do not import settings’.
+	\item From the ‘Customize PyCharm’ window, click ‘Skip Remaining and Set Defaults’.
+	\item Prior to continuing with PyCharm setup, we first must setup Git if the user doesn’t have it already. The following section applies to Windows, but the equivalent can easily be done for iOS or Linux.
+	\begin{enumerate}
+		\item Download Git from \url{https://git-scm.com/download/win}.
+		\item Run the installation, making note of where Git is installed, with the default settings.
+	\end{enumerate}
+	With this now completed (or not, depending on whether Git is already installed), the user should launch PyCharm and in the ‘Welcome to PyCharm’ window, click ‘Configure’ and ‘Settings’, followed by navigating to ‘Version Control’ and Git. In the ‘Path to Git executable’, enter the location of the ‘git.exe’ program that was just installed (or previously installed). This can be found within the ‘Git\textbackslash bin\textbackslash’ directory within the location where Git was setup. Click ‘Apply’ and ‘OK’.
+	\item In the ‘Welcome to PyCharm’ window, select ‘Check out from Version Control’ and Git. This is because we will be directly installing the ‘project directory’ directly from ‘GitHub’. Note that it’s recommended doing this even if the source directory has already been downloaded and setup elsewhere, as doing it this way ensures that it is easily to modify and commit to git if any changes to the scripts are to be made. Within this new window, enter the URL: \url{https://github.com/dan-heaton/MSc_indiv_project} within the URL window and click ‘Clone’ to clone the repository. Alternatively, if one wishes to clone from GitLab instead, swap the URL above with: \url{https://gitlab.doc.ic.ac.uk/djh18/MSc_indiv_project}.
+	\item The final step is to associate PyCharm with the Python interpreter we have previously installed. To do so, with the project opened in PyCharm, navigate to ‘File’ and ‘Settings’. Under ‘Project: MSc\_indiv\_project’ and ‘Project Interpreter’, click the settings icon and ‘Add...’. Under ‘System Interpreter’ the Python executable should already be detected within ‘Python36\textbackslash’ as ‘python.exe’. However, modify this path to the ‘python.exe’ file if has not done so already. Click ‘OK’, ‘Apply’, and ‘OK’. In the main PyCharm window, it may take a few seconds to configure this interpreter but, once done, the user will be able to edit and run the scripts of the system within PyCharm.
+\end{enumerate}
+
+
+%%%%%%%%%%%%%%%%%%
+\section{Configuring of TensorFlow to Use the GPU}
+
+\quad The following section works on the assumption that the user is working on a workstation containing a GPU. This is more or less a necessity to build models using ‘rnn.py’: while a reasonable GPU with $>$700 CUDA cores builds a typical model in 5-15 minutes, building these using an equivalently-priced CPU would take 1-3 hours. While the necessary steps to undertake the complete setup of a GPU are somewhat arduous, there exists a useful guide to doing so at \url{https://www.tensorflow.org/install/gpu}, along with a CUDA installation guide at \url{https://docs.nvidia.com/cuda/} for multiple OS’s. This includes details on setting up the CUDA toolkit and the CuDNN (CUDA Deep neural Network library), which are required to run TensorFlow on the GPU. With this setup, TensorFlow with subsequently run as default in all scripts using the GPU to create models as opposed to using the CPU.
+
+
+
+
+
+
 
 
 
@@ -304,6 +508,213 @@ Your abstract.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \part{System Overview and Explanation} 
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Project and Local Directories: Overview and Explanations\\}
+
+
+%%%%%%%%%%%%%%%%%%
+\section{Background}
+
+\quad Prior to undertaking an in-depth discussion of the individual scripts, their uses, and the various experiment and model prediction sets we undertook as part of this project, it’s worth giving a brief explanation of the two types of directories that we are concerned with for this project. There are two directories that we are concerned with: the ‘project directory’ (containing the source files, the documentation used and written to, among other things) and the ‘local directory’ (containing the source ‘.mat’ files that we use as inputs to scripts and some of the outputs of the models, including the models themselves). Below, we cover each of the two in turn, how to access and/or set them up, and so on. The aim is thus to educate any users on how the project is laid out and how each part of the system connects to each other.
+
+
+%%%%%%%%%%%%%%%%%%
+\section{The Project Directory}
+
+\quad The project directory is the directory containing all of the source code, the information required about the NSAA subjects (‘nsaa\_6mw\_info.xlsx’), the documents containing the results of the experiment sets and model prediction sets, and other reports and presentations constructed throughout the duration of the project. Hence, this is where the majority of the deliverables of the project lie, with the exception of the majority of the models that were created throughout the project and the data that is required to train the models. The reason we keep these apart (i.e. why project directory and local directory are not synonymous) is as follows:
+
+\begin{itemize}
+	\item The local directory requires $>$170GB of storage for all the data sets that is used in the project. However, we’ve been making extensive use of storing the project directory within DropBox and as a Git repository and, as it would be not possible and very impractical, respectively, to store the local directory on both DropBox and within GitHub or GitLab, we chose to keep these separate.
+	\item When we run several of the data pipeline scripts (e.g. ‘comp\_stat\_vals.py’ or ‘ext\_raw\_measures.py’) we end up producing a lot of new files within the local directory). Therefore, to avoid constant DropBox synchronizations or many new or deleted files to appear in each Git commit, it was felt that it would be easier to simply keep the data aspects apart from the source code and other documentation.
+	\item Permission may be required to deal with certain data directories contained within the local directory, as this contains data about ongoing subjects of a research initiative that is not freely available. Hence, it was the desire to keep the project directory available to whoever wished to access it, without predicating access on also being able to access the data required to populate the local directory (e.g. if one wished simply to browse or borrow ideas from the scripts within the project directory); this also enables and encourages an easier transition to applying the project to other data sets possibly for other domains.
+\end{itemize}
+
+\quad To access the complete project, the advisable way to obtain it would be to clone it via GitHub. The repo can be accessed at \url{https://github.com/dan-heaton/MSc\_indiv\_project} and cloned via \url{https://github.com/dan-heaton/MSc\_indiv\_project.git}. Alternatively, one can access it via GitLab at \url{https://gitlab.doc.ic.ac.uk/djh18 /MSc\_indiv\_project} and clone with \url{https://gitlab.doc.ic.ac.uk/djh18/MSc\_indiv\_project.git}.  The current name for the project directory as used in its local form for development has been ‘indiv\_proj; however, one could rename this freely without requiring any other changes to the scripts. However, it’s recommended that the directories without the project directory should not be changed (e.g. ‘source’ or ‘documentation’), as doing so would require rewriting of several of the scripts that hardcoded paths to access things outside of its own directory.
+
+Broadly speaking, the directories can be broken down as the following:
+
+\begin{itemize}
+	\item \textbf{background\_research}: this folder contains some preparatory programs that were written (with help from sources cited in the scripts themselves) to familiarize oneself with the building of RNNs with the chosen libraries in order to make using them for the actual project later that much easier; hence, these aren't used by the rest of the project at all and are included for historical documentation reasons only.
+	\item \textbf{documentation}: contains a number of files pertaining to the outputs of the data pipeline for the project. This includes the following:
+	\begin{itemize}
+		\item \textit{'RNN Results.xlsx'}, which covers the performances of various model setups on test data (i.e. a large proportion of the experimentation that covers different types of raw measurements, sequence lengths, overlaps, etc., source their results from here). These are what form the basis of our later discussion on the experiment sets.
+		\item \textit{'model\_predictions.csv'}, which (unlike 'RNN Results.xlsx') shows the performance of using 'model\_predictor.py' to assess the performance of pretrained models on whole data files. These provide the information needed for the model predictions sets, as discussed later. 
+		\item \textit{'model\_shapes.xlsx'}, which is just to be used by 'model\_predictor.py' to set the sequence length to the correct value (and is not particularly relevant to the user).
+		\item \textit{'nsaa\_6mw\_info.xlsx'}, which contains a table of the subject names and their corresponding single-act and overall NSAA scores (this provides the necessary \textit{y\_labels} for many RNN models).
+		\item \textit{'nsaa\_17subtasks\_matfiles.csv'}, which is the Google annotations sheet that was collaboratively created by others within the wider research initiative that contains the file names and times within said files where the 17 NSAA activities are performed by each of subjects. This is determined by watching the source videos of the ‘.mov’ files of the subjects performing the activities and recording at what times in the video these activities occur, along with making use of the ‘dis\_3d\_pos.py’ script; this sheet is then used by ‘mat\_act\_div.py’ to create the single-act files used in later model predictions sets.\\
+	We also have several other subdirectories in ‘documentation’:
+		\item \textbf{Graphs}: all graphs created by 'graph\_creator.py' are placed in here. These source from 'RNN Results.xlsx' and 'model\_predictions.csv' to create graphs that are easier to display the results of groups of experiments done than it would be to display the same information using a table. We see many of these graphs later on within the discussion of the experiment sets.
+		\item \textbf{Script Explanations}: collection of 'READMEs' for each of the scripts within 'project\_files\textbackslash source'. The idea is that, if one wishes to find out what each script does, why it was written, etc., then reading its relevant 'README' should provide sufficient detail. Much of these READMEs form the basis of our script overview later on.
+	\end{itemize}
+	\item \textbf{paper\_reviews}: contains paper reviews done of research papers that are believed to be relevant to the project. These predominantly focus on the use of RNNs when applied to real-world human movement data, and each paper consists of a slightly-shortened bullet-pointed version of the paper and then a section of the most significant points from these bullet points. Hence, these papers are useful in justifying decisions taken with respect to model choices, experimentation directions, etc.
+	\item \textbf{presentations}: contains a collection of presentations that have been created to display to group members about the project's progress thus far (which were kept in order to aid in final report writings).
+	\item \textbf{report\_stuff}: contains several initial reports and other documentations of project progress thus far, and also 'MSc Project Plan.ods', which is where the already-completed and upcoming task lists are stored; this is particularly useful if one wishes to see what is currently being worked on or has recently been completed. The vast majority of the contents of this directory, however, are contained within this report.
+	\item \textbf{source}: contains all of the scripts that are needed by the project pipeline to run. This includes the core Python scripts (such as 'comp\_stat\_vals.py' and 'rnn.py'), along with some 'supporting' scripts, such as 'settings.py' (to contain global variables that are used across several scripts). For information about how to run each of these scripts, run the script of interest through the command line/terminal with the ‘--help' optional argument set (e.g. ‘python comp\_stat\_vals.py --help'). This will display each of the arguments that are available to be set, the significance of each, how they interact with other arguments (if relevant), etc.
+	\begin{itemize}
+		\item \textbf{Batch files}: within this, we contain the batch scripts that are used to automate some of the running of the scripts. For further info about the significance of any or all of the scripts, consult the 'README(s)' for the relevant scripts in '$<$project directory$>$\textbackslash documentation\textbackslash Script Explanations\textbackslash', the script ecosystem overview in 'plans\_and\_presentations', or the diagram of the scripts and their connections to each other found at the beginning of the ‘Script Ecosystem Overview’ chapter. Along with some of the simpler automation of the tasks, we also run each of the model predictions sets from their respective batch files, as many of them require building many models and testing many different combinations of files, which require many runs of ‘rnn.py’ and ‘model\_predictor.py’; hence, the automation of this makes the process of replication hopefully much easier for the user.
+	\end{itemize}
+\end{itemize}
+
+
+%%%%%%%%%%%%%%%%%%
+\section{The Local Directory}
+
+\quad The local directory is considered to have two purposes: to store the data sets that we make use of in this project, and to store the direct outputs of the ‘rnn.py’ scripts that include the models themselves and the ‘.csv’ output predictions that are written directly on a sequence by sequence basis (e.g. for a model created with ‘rnn.py’ using a test set of 1000 sequences, there will exist within this ‘.csv’ each 1000 predicted value and true value, depending on the output type set by the user). There are three reasons why we include this ‘rnn.py’ output within the local directory:
+
+\begin{itemize}
+	\item As we create many models as part of this project, the size of this directory has become an issue and thus we would prefer to keep it separate from the project directory for space reasons. We therefore want to keep a lot of this data ‘clutter’ apart from the what is considered the ‘core’ of the project with the project directory.
+	\item We also want to keep a consistent philosophy with which we consider to be ‘intermediate data’, which is data that exists as a product of one script and that is used by other scripts: in this case, the models produced are intermediate data in that they are created by ‘rnn.py’ and used by ‘model\_predictor.py’. This holds for other forms of intermediate data such as data produced by ‘comp\_stat\_vals.py’ and ‘ext\_raw\_measures.py’, and so we wish to do the same for the models and ‘rnn.py’ predictions output.
+	\item The majority of these models are only used once as part of one particular experiment set or model predictions set, and therefore they don’t form a part of the ‘complete’ system (with the exception of the final selected models that are contained within the ‘source’ directory, though this is only a small number of the overall number of created models). Thus, we keep these models separate from the ones constituting the completed system at the end of all experimentation; in other words, the models that are intended to be used by a user to do assessments with specific subjects are contained within the project directory, while the models created during all experimentation are contained within the local directory.
+\end{itemize}
+
+\quad To access the complete local directory of files that we have been used for this project, use the OneDrive link given as \url{https://imperiallondon-my.sharepoint.com/:f:/g/personal/djh18\_ic\_ac\_uk/Euymu00dXG1Cmmeoz3xxq24BekH57ZuDmU9uZtoSr60xfg?e=L5C62Z} where one can find a directory given as ‘msc\_project\_files’. This is the local directory as used during the development of the project. Download and store it while modifying the local variable in ‘settings.py’ (as directed in the ‘System Setup’ chapter). Note that the total directory is in excess of 170GB, so sufficient space may need to be made for it beforehand.
+
+
+%%%%%%%%%
+\subsection{The Local Directory: 'rnn.py' Outputs}
+
+\quad We first look at the two sub-directories within the local directory containing the outputs of ‘rnn.py’:
+
+\begin{itemize}
+	\item \textbf{output\_files\textbackslash rnn\_models}: this contains all models that have been produced by ‘rnn.py’ throughout the course of the project, including the final models used that are contained within the project directory. Each model’s contents are the product of the TensorFlow library working through ‘rnn.py’ and each model consists of a directory that looks something like this:
+\begin{center}
+\includegraphics[scale=0.3]{project_figures/fig6_1}
+\end{center}
+
+\quad These files constitute a single model in the eyes of ‘model\_predictor.py’, which is the only script that makes used of these models. For instance, within these files contains the model input and output shapes, the numbers of hidden layers, other hyperparameter settings, and the weights of each of the neuron connections. In other words, it’s a fully trained model that is ready to be used by ‘model\_predictor.py’ to be used on a whole subject’s data file.\\\\
+\quad The names of the models may seem unnecessarily long and complex, but they are in fact simply the exact arguments used to invoke the instance of ‘rnn.py’ that creates this specific model, excluding the always-necessary ‘python rnn.py’ parts of the argument sequence. There are two reasons why we do this:
+	\begin{itemize}
+		\item This creates the names of the directories automatically, which takes much of the human-element of labelling each directory out of the process based on what experiment set or model prediction set it is used for.
+		\item In having them written by name based on the ‘rnn.py’ arguments, we can ensure that ‘model\_predictor.py’ will always use the correct models during experimentation by writing a simple set of rules within ‘model\_predictor.py’. For instance, if we want ‘model\_predictor.py’ to use models that have been created with added Gaussian noise, we can ensure that it uses only model directories that contain ‘--noise' within their names. Hence, it’s an easier way to determine the correct models to use rather than analysing the contents of the model directory (e.g. which would mean looking into the ‘model.ckpt.meta’ file) to determine if it’s a model we need to use.
+	\end{itemize}
+	\item \textbf{output\_files\textbackslash RNN\_outputs}: each model that is built by ‘rnn.py’ that is also tested on a test partition of data (i.e. if the ‘--no\_testset’ argument is not set) writes a separate ‘.csv’ file to this directory. Each file contains, for a given created model, the arguments used to invoke it (in the form of the ‘.csv’ file name), the ‘overall’ results of the test set on the model (e.g. MAE of data for the ‘overall’ output type, accuracy of data for the ‘dhc’ output type, etc.), the individual predictions made for each test sequence versus their true values, and the model hyperparameter settings. An example of this can be seen below:
+\begin{center}
+\includegraphics[scale=0.2]{project_figures/fig6_2}
+\end{center}
+\end{itemize}
+
+\quad The contents of this file are entirely optional to use, however, as all the requisite information about the test set performance (that is to be inputted into ‘RNN Results.xlsx’ and then used as part of experiment sets) are also produced as console output, which is easier to copy over for the user. However, this files serve as a log of model performance through time as we continue to create more models if we wish to use them as a reference at any point.
+
+
+
+%%%%%%%%%
+\subsection{The Local Directory: Data Sets}
+
+\quad With the directories containing model outputs having been covered, we shall now look at the directories containing the raw data sets, what is contained within each directory, and what ‘type’ of data these directories contain. It should be noted that the ‘source’ scripts assume that each of these directories are a constant (i.e. that any other users don’t modify the names of the directories); any changes made to the names here require modifications to the necessary variables within ‘settings.py’ (e.g. the ‘sub\_dirs’ variable).\\
+
+\quad Prior to looking at each data set in turn, it’s preferable to briefly discuss the general locations of raw source data (e.g. as source ‘.mat’ files) and intermediate data. This becomes particularly relevant when we shall shortly be discussing the contents of each data directory, and knowing what produced intermediate data and where is conducive towards understanding the data pipeline. Below, we can see how each script within the data pipeline produces data and where the data is stored:
+
+\begin{enumerate}
+	\item \textbf{'comp\_stat\_vals.py'}: This script takes the data stored as source ‘.mat’ files from within the data directories within the local directory and outputs data to the corresponding path within 'output'. For example, if ‘comp\_stat\_vals.py’ intends to operate on ‘NSAA’ (based on the ‘dir’ argument passed to it), it sources its data from '$<$local directory$>$\textbackslash NSAA\textbackslash matfiles' as ‘.mat’ files and produce the computed statistical values in '$<$local directory$>$\textbackslash output\_files\textbackslash NSAA\textbackslash AD' as ‘.csv’ files. This functions in the same way for other source data sets (e.g.' 6minwalk-matfiles') where the path to the computed statistical value files is more-or-less the same as the source directory path with 'output\_files' appended after the path to the local directory.
+	\item \textbf{'ext\_raw\_measures.py'}: Unlike computed statistical values, the produced raw measurement files are instead stored within subdirectories of the source data set directory that they are sourced from, as opposed to a subdirectory of 'output\_files'. For example, if ‘ext\_raw\_measures.py’ intends to extract the raw measurements from the '6minwalk-matfiles' directory, it retrieves files from '$<$local directory$>$\textbackslash 6minwalk-matfiles\textbackslash all\_data\_mat\_files' and writes each measurement extracted per file to a sub-directory with a name matching the measurement name (e.g. ‘D4’s joint angle data is written to '$<$local directory$>$\textbackslash 6minwalk-matfiles\textbackslash all\_data\_mat\_files\textbackslash jointAngle' as ‘D4-6MinWalk-jointAngle.csv’ while its position data is written to '$<$local directory$>$\textbackslash 6minwalk-matfiles\textbackslash all\_data\_mat\_files\textbackslash position' as ‘D4-6MinWalk-position.csv’, and so on).
+	\item \textbf{'mat\_act\_div.py'}: It should be noted first that, as this script extracts single-act files from complete-act files, it therefore only expects to be used on the 'NSAA' directory, as only files from 'NSAA' contain NSAA activities. When activities are divided, they are placed either within 'act\_files' or 'act\_files\_concat' (depending on whether ‘--single\_act\_concat’ was set for the script) within the 'NSAA' directory itself, much like ‘ext\_raw\_measures.py’. For example, ‘mat\_act\_div.py’ would pull source ‘.mat’ files from '$<$local directory$>$\textbackslash NSAA\textbackslash matfiles' and write single-act files (non-concatenated) to '$<$local directory$>$\textbackslash NSAA\textbackslash matfiles\textbackslash act\_files' as source ‘.mat’ files but only containing single-activities within each. Note that if ‘ext\_raw\_measures.py’ then operates on these single-act files, they get written to a subdirectory within here, much like how it would operate on complete-act files; hence, drawing the joint angle files from the above case would write the files to '$<$local directory$>$\textbackslash NSAA\textbackslash matfiles\textbackslash act\_files\textbackslash jointAngle'. Similarly, when we compute the statistical values of single-act files, they get written to the 'output\_files' directory; in the above case, the computed statistical values of the single-act NSAA files would be written to '$<$local dir$>$\textbackslash output\_files\textbackslash NSAA\textbackslash AD\textbackslash act\_files'.
+	\item \textbf{'ft\_sel\_red.py'}: To simplify the process of storing the feature-reduced variants of the ‘.csv’ outputs of ‘comp\_stat\_vals.py’, we decided to store the files in the exact same directory as the files they operate on. For example, if we wish to reduce the dimensions of the computed statistical value files for the 'NMB' source data directory, we would write the feature-reduced files to '$<$local directory$>$\textbackslash output\_files\textbackslash NMB\textbackslash AD', where the computed statistical values are already stored. The difference here, however, is that the feature-reduced equivalents will have ‘FR\_’ appended to the front of each of the files. For example, the computed statistical values for the ‘D4’ subject whose data is from 'NMB' will be stored within the above path as ‘AD\_D4\_stats\_features.csv’, and when ‘ft\_sel\_red.py’ operates on this subject, it will take the data from this file and write to a file stored in the above path as ‘FR\_AD\_D4\_stats\_features.csv’ (alternatively, if the feature-reduced-concatenation option is set within ‘ft\_sel\_red.py’ it will instead be stored as ‘FRC\_AD\_D4\_stats\_features.csv’). This naming convention ensures that ‘rnn.py’ fetches the feature reduced variants of files to ensure that models of input nodes size >4000 isn’t required.
+	\item \textbf{'rnn.py'}: Although this is considered part of the data pipeline, this simply fetches the data from all of the above locations dependent on the arguments given, while we have already discussed the output locations of ‘rnn.py’ in the previous section.
+\end{enumerate}
+
+\quad With the relationship between the data pipeline scripts and the data set directories having been established, we now move on to examining the data that’s contained within each of these directories. The data directories are as follows:
+
+\begin{itemize}
+	\item \textbf{6minwalk-matfiles}: This contains the 6-minute walk data of many (but not all) of the subjects within two sub-directories within this directory: 'all\_data\_mat\_files' and 'joint\_angles\_only\_matfiles'. The former contains the source ‘.mat’ files for all available measurements for the subjects’ walking assessments, while the latter contains source ‘.mat’ files with only joint angles. Therefore, what we consider ‘JA’ and ‘DC’ files (‘Joint Angle’ and ‘Data Cube’, respectively) that are referenced in experiment set 1 comes from 'joint\_angles\_only\_matfiles', while in most other cases when we use the data of 6-minute walk assessments, we use the 'all\_data\_mat\_files' directory.
+	\item \textbf{6MW-matFiles}: This directory also contains some of the 6-minute walk assessment files for some of the subjects and, while some of the files overlap with '6minwalk-matfiles', it also contains assessment data that is not found in the other directory. Additionally, we don’t see any ‘joint angle only’ data within this data set, and so all source ‘.mat’ files are stored directly within this directory.
+	\item \textbf{allmatfiles}: This contains the natural movement behaviour as source ‘.mat’ files that contains only the joint angle data (much like '6minwalk-matfiles\textbackslash joint\_angles\_only\_matfiles' files). As we only had the natural movement in ‘joint angle only’ form for quite a while (until we were given the 'NMB' data set), we had to make use of this for several of the later model predictions sets, though we later received the natural movement behaviour in true ‘AD’ form (i.e. containing all the measurements data for each subject) as 'NMB'.
+	\item \textbf{left-out}: This is a small sample of data files that have been excluded from the main data sets that can act as data that is left-out of any of the data sets used to train models. It should be noted the difference between assessing using ‘model\_predictor.py’ on files from left-out as opposed to 'left-out' subjects (as used in many model predictions sets): assessing a file from the 'left-out' directory will assess a model that is familiar with the subject (through having been trained on other files of the same subject), while assessing a complete left-out subject will assess a model that is not familiar with \underline{any} files for the specific subject.
+	\item \textbf{NMB}: This is the complete ‘AD’ data for the natural movement behaviour, as opposed to 'allmatfiles' which only contains the joint angle data in source ‘.mat’ file form. As a result of receiving this data late in the project lifecycle, we are only able to use this data set in later model predictions sets. It should be noted the sheer number of files per subject: many of the subjects have up to 30 files captured from each of them that will have captured a variety of ‘natural’ activities, such as sitting, playing, eating, and so on. The data contained within these files, therefore, is much more ‘unstructured’ than either the 6-minute walk or NSAA assessment data.
+	\item \textbf{NSAA}: This contains the data for each of the subjects’ full NSAA assessments, and the source ‘.mat’ files specifically are contained within the 'NSAA\textbackslash matfiles' subdirectory. It should be noted that, for some subjects, their assessments are split over several files. We account for this when extracting raw measurements and computing statistical values by simply concatenating these source files with respect to time, while we select the correct file to use to get the single-act files via ‘mat\_act\_div.py’ by referencing the file name columns within the Google annotations sheet.
+\end{itemize}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Reference Documents Explanation\\}
+
+%%%%%%%%%%%%%%%%%%
+\section{Background}
+
+\quad As we can see from the system overview diagram shown at the beginning of the ‘Script Ecosystem Overview’ chapter, as well as having many Python and batch scripts that play integral roles within the system we also make heavy use of several documents that provide much needed information for training models and serve as places to store the results of experiments. These include the Google sheet of single-act annotations, the reference document containing the overall and individual scores of each subject used in the project, the ‘model\_predictions.csv’ file, and the ‘RNN Results.xlsx’ file. Each of these files in turn can be found within the project source directory within the ‘$<$project directory$>$\textbackslash documentation’ directory. In the section below, we will discuss file each in turn, from the information they contain to how and where they are used within the system (i.e. what other scripts depend on them and what scripts feed into the documents). The aim here, therefore, is to give a more concrete understanding of what these documents contain prior to seeing them referenced in the results discussion and general system overview sections.
+
+%%%%%%%%%%%%%%%%%%
+\section{Google Annotations Sheet ('nsaa\_17subtasks\_matfiles.csv')}
+
+\begin{center}
+\includegraphics[scale=0.4]{project_figures/fig7_1}
+\end{center}
+
+\quad As part of the wider research initiative, we collaboratively undertook to analyse and record the times of each activity undertaken by the subjects as part of the initiative. The information that was collected into this document, therefore, was intended to be used as part of several projects that relied on the start and end times of each activity undertaken by the subjects. As a result, the subjects’ corresponding activity videos were divided into three parts and each of us determined the activity times for our given subjects.\\
+
+\quad The process to undertake these annotations was as follows:
+
+\begin{enumerate}
+	\item Load either the source video that corresponds to the ‘.mat’ file (which is provided in the data sets as ‘.mov’ files) OR use the corresponding ‘.mat’ file with the ‘dis\_3d\_pos.py’ script to load a basic 3D dynamically updating image through the ‘matplotlib’ library (more on this in the ‘Script Ecosystem Overview’ chapter).
+	\item For each activity of the NSAA assessment set (e.g. ‘raise from floor’, ‘run’, ‘step up using right foot’, etc.), observe the time in seconds (or frames) the activity starts and finishes in the file. Note that we only count the \textbf{first completed} activity within the source file and we try to be slightly accommodating of the start time (for example, if the activity started between 3s and 4s in the file, we record it as having started at 3s to ensure we capture the complete activity with a bit of ‘slack’).
+	\item For the subject in question and for the activity in question, record the start and end times in \textbf{frames} in the ‘start’ and ‘end’ columns for the activity (note that if the time was observed in seconds, simply multiply this by 60 as the suit samples at 60Hz), along with recording the name of the file that the activity occurred in (as this will be the same name as the corresponding ‘.mat’ file the suit data for this video will be in, just with a ‘.mat’ file extension instead of ‘.mov’).
+\end{enumerate}
+
+\quad In the image above, we can see a snapshot of several activities that have been recorded for some of the subjects, including the file names containing the activity in question for the subjects, along with the start and end times within the respective files. It should be noted that not every activity could be drawn from each of the subjects’ files. This could be due to the subject simply not performing the activity they were told to perform or were otherwise unable to perform the activity. In these cases, the start and end times will be marked with either a ‘-1’ or ‘0’, with a ‘0’ sometimes signifying an incomplete activity annotation done by the annotator.\\
+
+\quad For our project, the main use of this document is as a tool for the ‘mat\_act\_div.py’ script. For each of the source files that the script wishes to divide up, it will look in the table for the name of the subject in question for that source file, find the row corresponding to that file and, for each activity, get the start and end times for that activity and extract the corresponding frames from the source file (making sure its name matches that of the activity’s ‘filename’ column entry). So while these single-act ‘.mat’ files will be further processed by other scripts (such as ‘comp\_stat\_vals.py’ and ‘ext\_raw\_measures.py’), ‘mat\_act\_div.py’ is the only file that directly relies on the Google annotations sheet, and no file within the system modifies it in any way.
+
+
+%%%%%%%%%%%%%%%%%%
+\section{NSAA Scores Reference Document (‘nsaa\_6mw\_info.xlsx’)}
+
+\begin{center}
+\includegraphics[scale=0.4]{project_figures/fig7_2}
+\end{center}
+
+\quad The next script in the system is the reference file which we use to create the $y$ labels used by every model that is built in the system. As a result of it being the only place that contains the $y$ label information for each of the subjects, it’s referenced by several scripts including ‘ft\_sel\_red.py’, ‘rnn.py’, and ‘model\_predictor.py’. The script itself was a collaboration of several other scripts found within the source data directories for ‘NSAA’ and ‘6minwalk-matfiles’, including ‘KineDMD data updates Feb 2019.xlsx’ and ‘nsaa\_matfiles.xlsx’. Some of these scripts contain information about certain subjects that others don’t; hence, rather than having the scripts checking each of the files in turn, it was felt that it would be easier to combine the information from all of them into one file.\\
+
+\quad Each of the models that are built by the ‘rnn.py’ script are built to target one output type, which will be either ‘dhc’ (the D/HC label), ‘overall’ (the overall NSAA score), ‘acts’ (the 17 individual activity scores), or ‘indiv’ (the score of the individual activity assuming the input are single-act files) for each of the sequences the model is training and subsequently assessing on (see the ‘Data Forms and Types’ chapter for more information on each of these output types). For the ‘dhc’ output type, we don’t need to reference this file, as this can be determined simply by the file name. For example, in preprocessing the data into $x$ and $y$ components within ‘rnn.py’, if the given data that is currently being preprocessed for a given file is from a file called ‘D4\_position.csv’, then we know that the ‘dhc’ label would be ‘D’ (or 1 when being fed into the network), while if the data came from the ‘HC6\_position.csv’ file the label would be ‘HC’ (or 0).\\
+
+\quad However, for the other types of $y$ labels that we use to train our ‘rnn.py’ to target the other output types, it’s not as simple as observing the name of the file. This is where the NSAA score reference file comes in. As we can see in the above image, it contains the information for every subject we have (that was collected by the initial assessors of the subjects) that includes their individual activity scores and their overall NSAA score. Hence, by finding the relevant row within the document, we get all the information we need for the other output types. For example, let’s say the preprocessing function of ‘rnn.py’ is extracting data from the file corresponding to subject ‘D16’.\\
+
+\quad Once the data file has been separated into their sequences with necessary sequence overlap and an optional proportion of the sequence dropped (more on these later in the discussion of experiment sets), we then need to get the corresponding label for this sequence. If the model is being trained for the ‘overall’ output type, then we check the table for the value in the ‘D16’ subject’s ‘NSAA’ column, which corresponds to ‘23’. This is the $y$ label that each sequence extracted from the ‘D16’ source file would get if we are training for the ‘overall’ output type. Alternatively, if the model output type was instead ‘acts’, the $y$ label would be a list of values ‘[2, 2, 1, 2, 2, 1, 1, 1, 1, 2, 0, 2, 1, 2, 1, 1, 1]’ or, if the source file was a specific single act file for the subject, e.g. ‘D16\_position\_act4.csv’, then it would get the label ‘2’ (both of which are determined by the above table. This process of label extraction is identical across multiple scripts, be it for training models in ‘rnn.py’ or getting the true values of assessing subjects in ‘model\_predictor.py’, and so on.
+
+
+%%%%%%%%%%%%%%%%%%
+\section{Results for Experiment Sets (‘RNN Results.xlsx’)}
+
+\begin{center}
+\includegraphics[scale=0.35]{project_figures/fig7_3}
+\end{center}
+\begin{center}
+(continued)
+\end{center}
+\begin{center}
+\includegraphics[scale=0.35]{project_figures/fig7_4}
+\end{center}
+
+\quad With the two main reference files used by the project covered, we now move onto the first of the two documents containing the results of the various experiment sets and model predictions sets that we run. The first of those, ‘RNN Results.xlsx’, contains the information of building various models within the ‘Experiment Set’s section of the results discussion which we cover later on. These include testing different measurements with which to build models, examining different sequence lengths and sequence overlap proportions, and so on. What separates this document from the ‘model\_predictions.csv’ document that we shall discuss shortly is that ‘RNN Results.xlsx’ contains the results obtained from just analysing the testing data sets supplied to the ‘rnn.py’: this is generally 20\% of the source data set that is fed into the ‘rnn.py’ script. Hence, the results contained in each cell of the ‘Results’ column for this document covers the performance of various model setups on this testing data. In contrast, for most of the ‘model\_predictions.csv’ sets these are the results of feeding in complete files of subjects to be assessed on prebuilt models via the ‘model\_predictor.py’ script. Therefore, ‘RNN Results.xlsx’ gets its results from the direct console output of building models in ‘rnn.py’, while ‘model\_predictions.csv’ gets its results from running ‘model\_predictor.py’ on models already built in ‘rnn.py’ and assessing on complete files.
+
+\quad Another difference from ‘model\_predictions.csv’ is that ‘RNN Results.xlsx’ has its information manually inserted into the table, as opposed to having it automatically done in ‘model\_predictions.csv’ via the ‘DataFrame.writecsv()’ method called in ‘model\_predictor.py’. The reason this is manually done is that, for each model that is created that we wish to write to a row of in ‘RNN Results.xlsx’, there is additional information that ‘rnn.py’ has no knowledge about and therefore cannot write to the table. This includes a short description of the model that has been created and what prior scripts were needed to have been run in order to preprocess the data that is required for this model (such as ‘comp\_stat\_vals.py’ or ‘ext\_raw\_measures.py’). Therefore, when we wish to write a row of data to ‘RNN Results.xlsx’, we manually fill in parts of the table ourselves and copy/paste in other parts of the console output (here, into the ‘Results’ column). Additionally, along with the description, necessary prior scripts with arguments to have been run, and the results of the model, we also output the general model configuration that includes the shape of the data and several of the more significant hyperparameters. The idea is that anyone examining our results in the results discussion section can refer back to this table fairly easily and see exactly how the models were built.
+
+\quad The way these results from ‘RNN Results.xlsx’ are generally assessed is via the ‘graph\_creator.py’ script. This script reads directly from the file, grabs the requested rows, and plots one or more of the columns against each other depending on the arguments (for example, one configuration of ‘graph\_creator.py’ could plot the results of the MAE of the overall NSAA score against the sequence lengths of the corresponding rows, which we do so in experiment set 8). This is therefore the primary way with which we use the ‘RNN Results.xlsx’ file in this report, though it also serves the purpose of providing results which can be compared to via other users using the system.
+
+
+%%%%%%%%%%%%%%%%%%
+\section{Results for Model Predictions Sets (‘model\_predictions.csv’)}
+
+\begin{center}
+\includegraphics[scale=0.4]{project_figures/fig7_5}
+\end{center}
+\begin{center}
+(continued)
+\end{center}
+\begin{center}
+\includegraphics[scale=0.4]{project_figures/fig7_6}
+\end{center}
+
+\quad The final document that we make heavy use of in the system is the ‘model\_predictions.csv’ document. This is where any assessments made by the ‘model\_predictor.py’ script is stored (and by extension ‘test\_altdirs.py’ which calls ‘model\_predictor.py’ numerous times) and as such corresponds to the model predictions sets that are discussed later in the ‘Experiments and Results Discussion’ chapter. As all the information that we wish to write to the file is known by the ‘model\_predictor.py’ at run time, this processed is automated via the script itself and does not require the user to enter information into the table manually. As the primary differences between the two documents have already been outlined, it just remains to outline the types of information that is recorded in the table along with how we make use of this when assessing various model setups and investigating performance of different variations of subject files in the model predictions sets.\\
+
+\quad Each assessment made by ‘model\_predictor.py’ writes one row of information to this table. This contains the name of the subject we are assessing on, along with extra strings that signify different types of models that subject was assessed on or any other preprocessing steps that were taken for the subject file(s) (see the relevant model prediction set descriptions to see to what each of these additional strings correspond). The name of the directory that the subject file(s) are sourced from is also included, along with any other directories that act as alternative directories from which to source files (see model prediction set 1 for an example of this). We also include the different measurements extracted from this subject’s file(s) that were used to act as input to the necessary models (the exact models that are chosen therefore depend on the types of measurement that are extracted from the subject file in question).\\
+
+\quad The rest of the columns contain the assessed results of the subject for all the output types we are testing the subject on (which is generally the ‘overall’, ‘acts’, and ‘dhc’ output types). For example, the ‘Predicted ‘D/HC Label’’ reflects the results of the assessing the subject on models built for the ‘dhc’ output type, while the ‘True ‘Overall NSAA Score’’ and ‘Predicted ‘Overall NSAA Score’’ reflects the results of assessing on models built for the ‘overall’ output type. Therefore, we use all the information from subject assessments on various types of models to create tables comparing different subjects and setups (as shown in many model predictions sets) or to be used via ‘graph\_creator.py’, which can access ‘model\_predictions.csv’ in a similar way to ‘RNN Results.xlsx’ in order to create graphs over various rows of the table, based on the arguments passed to ‘graph\_creator.py’.
+
+
 
 
 

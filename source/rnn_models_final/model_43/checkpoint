@@ -1,0 +1,2 @@
+model_checkpoint_path: "C:\\msc_project_files\\output_files\\rnn_models\\NSAA_position_all_acts_--seq_len=600_--seq_overlap=0.9_--discard_prop=0.9_--epochs=20_--no_testset_--batch\\model.ckpt"
+all_model_checkpoint_paths: "C:\\msc_project_files\\output_files\\rnn_models\\NSAA_position_all_acts_--seq_len=600_--seq_overlap=0.9_--discard_prop=0.9_--epochs=20_--no_testset_--batch\\model.ckpt"

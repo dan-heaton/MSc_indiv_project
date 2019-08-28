@@ -72,3 +72,7 @@ python ..\model_predictor.py NSAA position,sensorMagneticField,jointAngle D17 --
 python ..\model_predictor.py NSAA position,sensorMagneticField,jointAngle D17 --single_act=15 --batch
 python ..\model_predictor.py NSAA position,sensorMagneticField,jointAngle D17 --single_act=16 --batch
 python ..\model_predictor.py NSAA position,sensorMagneticField,jointAngle D17 --single_act=17 --batch
+
+python ..\predictions_selector.py 522 591 --best=overall,15 --batch
+python ..\predictions_selector.py 522 591 --best=pacp,15 --batch
+python ..\predictions_selector.py 522 591 --best=ppcs,15 --batch

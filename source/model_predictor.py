@@ -102,6 +102,14 @@ parser.add_argument("--new_subject", type=bool, nargs="?", const=True, default=F
 parser.add_argument("--leave_out_version", type=str, nargs="?", const=True, default=False,
                     help="Specify this with the name of a version of subjects (e.g. 'V2') to assess the 'fn' file "
                          "on models with the specified version of files not used to train the models.")
+parser.add_argument("--final_models", type=bool, nargs="?", const=True, default=False,
+                    help="Specify this if wishing to use the 'final' model directory within the project directory "
+                         "instead of the default directory within the local directory. This is used by several of the "
+                         "'assess_' batch scripts so one can assess files entirely using the project directory.")
+parser.add_argument("--no_nsaa_flag", type=bool, nargs="?", const=True, default=False,
+                    help="Flag that is set if the previous 'ft_sel_red.py' script has not added any NSAA information to "
+                         "the 'AD' file. This is used in cases where we are assessing a 'new' subject, e.g. via "
+                         "the 'assess_nsaa_nmb_file.py' script.")
 args = parser.parse_args()
 
 
@@ -142,6 +150,11 @@ if args.single_act_concat:
     if not args.single_act_concat == "src_sac" and not args.single_act_concat == "src_normal":
         print("'--single_act_concat' must be set to one of 'use_sac' or 'use_normal'...")
         sys.exit()
+
+#Ensures that, if the '--final_models' optional argument is set, the directory of models within the project
+#directory is used
+if args.final_models:
+    model_dir = "..\\rnn_models_final\\" if args.batch else "rnn_models_final\\"
 
 fts, sds = [], []
 for ft in args.ft.split(","):
@@ -263,6 +276,16 @@ if args.alt_dirs:
 else:
     search_dirs = [args.dir]
 
+#If the '--final_models' optional argument is set, get the mapping of long description names of models to
+#short names as contained within 'rnn_models_final' and use these to select the models we need
+model_map_dict = {}
+if args.final_models:
+    df = pd.read_excel("rnn_models_final\\model_map.xlsx")
+    model_map_dict = pd.Series(df.ModNum.values,index=df.ModString).to_dict()
+    model_names = list(model_map_dict.keys())
+else:
+    model_names = os.listdir(model_dir)
+
 #The models that are to be tested by the script are selected based on their names; e.g. if 'dir'=NSAA and 'ft'=position,
 #then 'NSAA_position_all_acts', 'NSAA_position_all_dhc', and 'NSAA_position_all_overall' will be loaded as directory
 #names containing the trained models
@@ -276,7 +299,7 @@ for sd in search_dirs:
         #If the '--use_ft_concat' arg is set, for each of the output types, find the model that contains all of the
         #file types that are given to 'model_predictor' within its title
         if args.use_ft_concat:
-            match_dirs = [fn for fn in os.listdir(model_dir) if fn.split("_")[0] == sd and
+            match_dirs = [fn for fn in model_names if fn.split("_")[0] == sd and
                           fn.split("_")[3] == ot]
             for md in match_dirs:
                 if "--pca=" + args.use_ft_concat in md and all(ft for ft in args.ft.split(",") if ft in md):
@@ -292,7 +315,7 @@ for sd in search_dirs:
                             break
             inner_models.append(inner_inner_models)
         elif args.ft_red:
-            match_dirs = [fn for fn in os.listdir(model_dir) if fn.split("_")[0] == sd and
+            match_dirs = [fn for fn in model_names if fn.split("_")[0] == sd and
                           fn.split("_")[3] == ot and "--pca=" + args.ft_red in fn]
             for ft in fts:
                 for md in match_dirs:
@@ -309,21 +332,21 @@ for sd in search_dirs:
             for i, ft in enumerate(fts):
                 #Handles the special case when we're using NSAA files that are placed in the 'left-out' source dir
                 if args.dir == "left-out":
-                    inner_inner_models.append([md for md in os.listdir(model_dir) if md.split("_")[0] == "NSAA"
+                    inner_inner_models.append([md for md in model_names if md.split("_")[0] == "NSAA"
                                                and md.split("_")[1] == ft and md.split("_")[3] == ot
                                                and "--leave_out" not in md and "--balance" not in md
                                                and "--other_dir" not in md][0])
-                elif any(fn for fn in os.listdir(model_dir) if fn.split("_")[0] == sd and
+                elif any(fn for fn in model_names if fn.split("_")[0] == sd and
                                                              fn.split("_")[3] == ot and fn.split("_")[1] == ft):
                     #Gets the first inner model directory that match the file type, directory name, and output type, with
                     #additional preference of model trained on 'left out file' if one exists in 'model_dir. Also
                     #ensures that if '--add_dir' is used that its value is within the directory name, otherwise ensures
                     #that any models containing '--add_dir' values aren't used.
                     if not args.add_dir:
-                        match_dirs = [fn for fn in os.listdir(model_dir) if fn.split("_")[0] == sd and
+                        match_dirs = [fn for fn in model_names if fn.split("_")[0] == sd and
                                       fn.split("_")[3] == ot and fn.split("_")[1] == ft]
                     else:
-                        match_dirs = [fn for fn in os.listdir(model_dir) if fn.split("_")[3] == ot and
+                        match_dirs = [fn for fn in model_names if fn.split("_")[3] == ot and
                                       fn.split("_")[1] == ft and sd in fn.split("_")[0] and
                                       args.add_dir in fn.split("_")[0]]
                     #Ensures that if '--other_lo' is used that its value is within the directory name, otherwise ensures
@@ -392,6 +415,11 @@ for sd in search_dirs:
             inner_models.append(inner_inner_models)
     models.append(inner_models)
 
+#If the '--final_models' optional argument is set, maps the description names of the models to their true names
+#within 'rnn_models_final' by mapping using the 'model_map.csv' file
+if args.final_models:
+    models = [[[model_map_dict[inner_inner_model] for inner_inner_model in inner_inner_models]
+               for inner_inner_models in inner_models] for inner_models in models]
 
 #Removes empty 'inner_model' lists (i.e. ones only populated by 'Nones') in the case where all measurements don't have
 #a specific output type model
@@ -431,6 +459,8 @@ def preprocessing(full_file_name, sequence_length):
     #the 'leftover' data at the end of 'df_x' that does not fit into a (60, 50) shape is discarded.
     if not "AD" in full_file_name.split("\\")[-1]:
         df_x = pd.read_csv(full_file_name, index_col=0).values
+    elif "AD" in full_file_name.split("\\")[-1] and args.no_nsaa_flag:
+        df_x = pd.read_csv(full_file_name, index_col=0).iloc[:, 2:].values
     else:
         df_x = pd.read_csv(full_file_name, index_col=0).iloc[:, 20:].values
 
@@ -819,6 +849,7 @@ if not args.new_subject:
     else:
         with open(model_pred_path, 'a', newline='') as file:
             output_strs_df.to_csv(file, header=False)
+    print("Results have been written to '" + model_pred_path + "'...")
 
 #If '--new_subject' is set (i.e. we're using a subject with a new version or a completely new subject altogether that
 #doesn't exist within the 'nsaa_6mw_info' table), then write to 'model_predictions_newfiles.csv'
@@ -869,3 +900,4 @@ else:
     else:
         with open(model_pred_newfiles_path, 'a', newline='') as file:
             output_strs_df.to_csv(file, header=False, index=False)
+    print("Results have been written to '" + model_pred_newfiles_path + "'...")
