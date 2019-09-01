@@ -4,7 +4,7 @@
 
 
 #Note: CHANGE THIS to location of the 3 sub-directories' encompassing directory local to the user.
-local_dir = "C:\\msc_project_files_two\\"
+local_dir = "C:\\msc_project_files\\"
 
 #Other locations and sub-dir nameswithin 'local_dir' that will contain the files we need, as dictated by assuming the
 #user has previously run the required scripts (e.g. 'comp_stat_vals', 'ext_raw_measures', etc.)
