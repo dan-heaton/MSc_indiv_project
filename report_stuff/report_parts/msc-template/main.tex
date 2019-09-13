@@ -100,13 +100,23 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{abstract}
-Your abstract.
+\quad In recent years, recurrent neural networks have shown great promise in being able to learn from sequential-based biomedical data and, in particular, data representing different human movement behaviours with corresponding classifications or regression scores associated with degrees of severity of the movement-based condition. Duchenne muscular dystrophy (DMD) is one such condition, which primarily affects young males and a range of their movements including walking, standing upright, and getting up from the floor, and progressively worsens over time. To measure the severity of the condition in a subject, the North Star Ambulatory Assessment is often used to assess the subject on 17 basic activities, with a score of 0, 1, or 2 for each activity obtained based on the ability for the subject to perform each activity. As part of a wider research initiative within the Brain and Behaviour Lab at Imperial College London and in collaboration with Great Ormond Street Hospital to study the application of AI technologies to help with breakthroughs in DMD research, data is captured via the Xsens MVN body suit system of multiple subjects undertaking the NSAA assessments, along with a 6-minute walk assessment and multiple natural movement behaviours, with corresponding NSAA scores recorded at the hospital by assessors.\\
+
+\quad Using this movement data and the associated NSAA scores for the subjects, we have built a complete system that extracts a variety of different measurements from the source data files, computes statistical values from these, divides the data into sequences, and trains models using both raw measurements and the statistical values as a measurement, along with supplementary scripts to help with data analysis and individual file assessments on pre-built models. Extensive experimentation was then done to find the optimal setups for the models, with different measurement combinations, sequence extraction techniques, and other preprocessing steps considered. We also explored different adaptations of the system, from the assessment of new subjects in the initiative in order to predict their corresponding scores, to new assessments of existing subjects in order to evaluate the progress of their condition over time. In doing so, we have managed to draw numerous insights into the nature of DMD-based movement data, from the most significant measurements to draw from the suit data to the time-context window needed to capture many of the activities ideally, along with finding the best system setup to generalise towards the assessment new and existing subjects, which eventually lead to a wrapper script for the system that would aid specialists in assessing of subjects through the use of an AI-based tool.
 \end{abstract}
 
 \clearpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%\section*{Acknowledgments}
-%Comment this out if not needed.
+\section*{Acknowledgments}
+
+\quad I would like to thank the following people, without whom this project would not have been possible:
+
+\begin{itemize}
+	\item Dr Balasundaram Kadirvelu, who provided regular and important guidance about the direction of the project, inspiration for new directions to take the project in, and considerable help with the providing and explanation of the large, suit-extracted, MATLAB data sets that were integral to the project.
+	\item Dr Aldo Faisal, who provided much-needed input into the general goals of project and how it should fit into the wider research initiative.
+	\item Adam Dayan and Tristan Clark, who helped in our regular group meetings with evaluating the progress made on the project at various points and with considering different viewpoints and coming up with new ideas to overcome project obstacles.
+	\item The Brain and Behaviour Lab at Imperial College London and Great Ormond Street Hospital for providing the opportunity to work on a project that could really have a positive impact on the lives of those with DMD.
+\end{itemize}
 
 %\clearpage{\pagestyle{empty}\cleardoublepage}
 
@@ -145,7 +155,7 @@ Your abstract.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{Project Overview and Background\\}
+\chapter{Project Overview and Background\\~\\}
 
 
 %%%%%%%%%%%%%%%%%%
@@ -184,7 +194,7 @@ Your abstract.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{Basis of Research Project\\}
+\chapter{Basis of Research Project\\~\\}
 
 %%%%%%%%%%%%%%%%%%
 \section{Duchenne Muscular Dystrophy}
@@ -235,7 +245,7 @@ Your abstract.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{Overview of Recurrent Neural Networks\\}
+\chapter{Overview of Recurrent Neural Networks\\~\\}
 
 %%%%%%%%%%%%%%%%%%
 \section{Outline}
@@ -365,12 +375,40 @@ Your abstract.
 
 
 
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Literature Review\\~\\}
+
+\quad An important aspect of this project thus far has been the background research; namely, the examination of other studies that can help to provide insight into how we should carry out this project whilst exposing us to other types of models and their applications with real-world data. This is, therefore, an integral part of the initial stages of the project, which has provided us with numerous justifications of methodologies and architectural decisions, ideas on which directions to explore within the experiment sets and model predictions sets, and proof of concept insofar as the adaptation of recurrent neural networks to the learning from and assessing of human activity recognition.\\
+
+\quad Deep learning is shown to be of high applicability to the more elaborate behaviours in human activity recognition (HAR), as it substitutes the manually designed feature extraction process with its own internal feature extraction, which is a great improvement over manual feature extraction as human activity lacks the robust physiological basis that benefits other fields such as speech recognition [16]. However, a prominent problem highlighted in previous research was the problem of training long sequences: training a sufficiently large RNN may result in it memorising the entire input-output sequence implicitly, leading to poor generalisation. A proposed solution to this was to introduce ‘breaks’ into the RNN where internal states are reset to 0, while the resets occur after every training batch with a fixed probability of occurrence; this is a technique to bear in mind if our RNN has trouble generalising when the sequence length is particularly long [16]. The importance of utilizing LSTM units to replace some layers of the RNN to solve problems of input-output weight conflict has also been heavily explored in previous research, along with the pros and cons of segmenting what is usually sequence data, with models being trained on segmented data due to the ease of training with corresponding labels but then being able to adapt to work with sequential data [17].\\
+
+\quad Different ways of utilizing the outputs of RNNs have also been explored: one study takes full advantage of deep RNNs in modelling long-term contextual information of temporal sequences by proposing a hierarchical RNN system for skeletal-based action recognition, where the skeleton is divided into 5 parts. Each part is sent through separate RNNs, the results of which are then further combined in stages until we have only one output. This enables us to capture temporal representations of both low-level body parts and higher-level parts [18]. Bidirectional RNNs are also used here so each part of each sequence utilizes both past and future context [18]. Both of these architectural features need to be kept in mind as a possible implementation in our model to model both low- and high-level features as well as both past and future context.\\
+
+\quad The combination of using LSTM-based RNNs on the outputs of convolutional neural networks (CNNs) for HAR in videos has also shown to be of great potential, with the ability to take 3D images (i.e. 2D images over time as video) of human movement, extract features from these, and use these to train an RNN which is used to recognize actions based on the temporal evolution of features [19]. These sorts of architectures are significant in that they learn compositional representations in both space (through CNNs) and time (through RNNs), which allow for the images of data to be learned by the models to learn temporal dynamics and perceptual representations and, for sequences of 2D activity data, lead to stronger results for activity classification than similar shallower models where temporal relationships can be more easily lost [20]. This type of architecture (where we would apply a CNN to an ‘image’ of suit-data) may prove to be a viable option if raw measurements or computed statistical values do not serve as viable sources of inputs to the RNNs.\\
+
+\quad It’s also been shown that this sort of architecture is also extensible to activity recognition in sensor-based data (as opposed to only from images) using a combination of convolutional and LSTM recurrent layers, which specifically has shown promise in the use of accelerometer, gyroscopic, and magnetic sensor data to HAR tasks, while having further justified that LSTM-based models take advantage of learning the temporal feature activation dynamics which CNNs are not fully capable of modelling on their own [21]. Skeleton-based HAR using RNN models with LSTM units have been further explored within [22], where there was an emphasis on the use of joint-based measurements as data and on the use of dropout for regularization of the LSTM neurons to achieve better model performance; this partially influenced our project to focus on joint-based measurements from the suit data (e.g. ‘jointAngle’, ‘jointVelocity’, etc.) and also to include dropout regularization within the ‘rnn.py’ script. Further justification of the importance of analysing joint information of 3D skeletons for HAR within each frame (e.g. looking at each individual joint location within each frame) via spatio-temporal-based LSTM units within an RNN is highlighted in [23], which serves as a possible approach for our system if better contextual information is needed to be drawn from joint angle data.
+
+
+
+
+
+
+
+
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \part{System Preparation: Choices and Setup}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{System Choices: Language, IDE, and Libraries\\}
+\chapter{System Choices: Language, IDE, and Libraries\\~\\}
 
 
 %%%%%%%%%%%%%%%%%%
@@ -407,8 +445,8 @@ Your abstract.
 \includegraphics[scale=1]{project_figures/fig4_3}
 \end{center}
 	\item \underline{\textit{Previous experience}}: We’ve used it before for many previous Python projects, including in two professional roles, for a final-year undergraduate individual project, and for many pieces of coursework involving the use of several machine learning and deep learning libraries such as ‘scikit-learn’ and ‘TensorFlow’. Hence, this previous experience and the resultant familiarity with the environment helps make development of this project a more expedient and easier experience.
-	\item \underline{\text{Debugging and error handling}}: The layout of PyCharm makes for writing and immediate testing and modifying of code very simple, with debug options showing locations of compilation errors very easily and with clarity. This minimizes the time lost in development due to basic syntax errors and other basic software-engineering-related issues.
-	\item \underline{\text{Package implementation}}: It’s easy to add additional packages via 'Available Packages' in the 'Project Interpreter', which is useful as we need to add many additional libraries, from TensorFlow to simple libraries like ‘pyexcel’.
+	\item \underline{\textit{Debugging and error handling}}: The layout of PyCharm makes for writing and immediate testing and modifying of code very simple, with debug options showing locations of compilation errors very easily and with clarity. This minimizes the time lost in development due to basic syntax errors and other basic software-engineering-related issues.
+	\item \underline{\textit{Package implementation}}: It’s easy to add additional packages via 'Available Packages' in the 'Project Interpreter', which is useful as we need to add many additional libraries, from TensorFlow to simple libraries like ‘pyexcel’.
 \end{itemize}
 
 
@@ -439,7 +477,7 @@ Your abstract.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{System Setup: Software and Data Preparation\\}
+\chapter{System Setup: Software and Data Preparation\\~\\}
 
 %%%%%%%%%%%%%%%%%%
 \section{Overview}
@@ -582,7 +620,7 @@ To setup the IDE, the following steps should be undertaken:
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{Project and Local Directories: Overview and Explanations\\}
+\chapter{Project and Local Directories: Overview and Explanations\\~\\}
 
 
 %%%%%%%%%%%%%%%%%%
@@ -700,7 +738,7 @@ Broadly speaking, the directories can be broken down as the following:
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{Reference Documents Explanation\\}
+\chapter{Reference Documents Explanation\\~\\}
 
 %%%%%%%%%%%%%%%%%%
 \section{Background}
@@ -788,7 +826,7 @@ Broadly speaking, the directories can be broken down as the following:
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{Data Forms and Types\\}
+\chapter{Data Forms and Types\\~\\}
 
 %%%%%%%%%%%%%%%%%%
 \section{Background}
@@ -956,7 +994,7 @@ Broadly speaking, the directories can be broken down as the following:
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{Script Ecosystem Overview}
+\chapter{Script Ecosystem Overview\\~\\}
 
 %%%%%%%%%%%%%%%%%%
 \section{Overview and Script Diagram}
@@ -1530,7 +1568,7 @@ Broadly speaking, the directories can be broken down as the following:
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{Background\\}
+\chapter{Background\\~\\}
 
 
 
@@ -1608,7 +1646,7 @@ Broadly speaking, the directories can be broken down as the following:
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{Experiment Sets\\}
+\chapter{Experiment Sets\\~\\}
 
 
 %%%%%%%%%%%%%%%%%%
@@ -1686,7 +1724,7 @@ Broadly speaking, the directories can be broken down as the following:
 \includegraphics[scale=0.4]{project_figures/fig10_9}
 \end{center}
 
-\quad With this experiment set, we now turn our attention to looking exclusively at raw measurements. This is primarily due to the much better performance of models trained on raw measurements compared with ones trained on computed statistical values stat values from ‘AD’ files, as seen in experiment sets 1 and 2. The question we thus ask is: can we show similarly high performance when we train models on types of raw measurements from the suit data other than just joint angles? To this end, we look at 9 raw measurements in total that are contained within the ‘AD’ files and that are recorded by the suit during use: ‘position’, ‘velocity’, ‘acceleration’, ‘angularAcceleration’, ‘angularVelocity’, ‘sensorFreeAcceleration’, ‘sensorMagneticField’, ‘jointAngle’, and ‘jointAngleXZY’. Unlike the joint angle measurements, we don’t have the other raw measurements in separate, unique files. Therefore, we make extensive use of the ‘ext\_raw\_measures.py’ script in order to extract, for every file and for every raw measurement, the measurement data and store them in separate files as ‘.csv’ files. From here, these are then able to train and test an RNN model in the same way.\\
+\quad Note that the $x$-axis labels in each of the above graphs are 'position', 'velocity', 'acceleration', 'angularVelocity', 'angularAcceleration', 'sensorFreeAcceleration', 'sensorMagneticField', 'jointAngle', and 'jointAngleXZY'. With this experiment set, we now turn our attention to looking exclusively at raw measurements. This is primarily due to the much better performance of models trained on raw measurements compared with ones trained on computed statistical values stat values from ‘AD’ files, as seen in experiment sets 1 and 2. The question we thus ask is: can we show similarly high performance when we train models on types of raw measurements from the suit data other than just joint angles? To this end, we look at 9 raw measurements in total that are contained within the ‘AD’ files and that are recorded by the suit during use: ‘position’, ‘velocity’, ‘acceleration’, ‘angularAcceleration’, ‘angularVelocity’, ‘sensorFreeAcceleration’, ‘sensorMagneticField’, ‘jointAngle’, and ‘jointAngleXZY’. Unlike the joint angle measurements, we don’t have the other raw measurements in separate, unique files. Therefore, we make extensive use of the ‘ext\_raw\_measures.py’ script in order to extract, for every file and for every raw measurement, the measurement data and store them in separate files as ‘.csv’ files. From here, these are then able to train and test an RNN model in the same way.\\
 
 \quad For this experiment set, we are exclusively concerning ourselves now with NSAA assessment files rather than 6-minute walk files. This is more a choice based on the intended direction of the project to be more concerned with assessing and making predictions concerning the NSAA assessments and how that is connected to natural movement data (more on this later) than the 6-minute walk data. Thus, each of the entries along the $x$-axis of the graphs represents a single model trained on that particular raw measurement data for every NSAA file we have available. Currently, we are just looking at how the models performs on testing data from subjects it has already seen before, rather than complete subjects being left out of the training set, though this shall be explored later on with ‘left out’ subjects in trained models for various model predictions sets. Furthermore, though each of the models are trained with the same number of files and each with the same sequence length (due to the fact that at every time step the suit records all raw measurements), the feature size will vary; in other words, if the training shape to the RNN models are of shape ($x$, $y$, $z$), $x$ and $y$ will always be the same between raw measurements but $z$ will vary: for raw measurements based on segment measurements of the suit $z$ will be 69, while for angle-based measurements it will be 66 and for sensor readings it will be 51.
 
@@ -1754,7 +1792,7 @@ Broadly speaking, the directories can be broken down as the following:
 \includegraphics[scale=0.4]{project_figures/fig10_12}
 \end{center}
 
-\quad This is the first experiment set that makes use of ‘mat\_act\_div.py’ to use the source ‘.mat’ files and the annotated Google sheet to experiment with what we call ‘single-act’ files. These are files that contain only a single NSAA assessment within it and no other activities. For example, if we take the ‘D4’ source ‘.mat’ file, we then create 17 new files containing the 17 NSAA assessments, with each new file being a name like ‘D4\_act1.mat’, ‘D4\_act2.mat’, etc. This process obviously contains files that are a lot smaller than the source file, as well as cutting out a lot of the bits in between the assessments in the original file. For example, the original file will contain a complete recording of the suit data for a subject; this includes the data where a subject isn’t doing anything particularly relevant (e.g. standing around before beginning the next activity of the assessment or trying but failing to do one of the assessments). For more details on how this is done, see the section within the ‘Script Ecosystem Overview’ chapter on ‘mat\_act\_div.py’.\\
+\quad  Note that the $x$-axis labels in each of the above graphs are 'position', 'velocity', 'acceleration', 'angularVelocity', 'angularAcceleration', 'sensorFreeAcceleration', 'sensorMagneticField', 'jointAngle', and 'jointAngleXZY'. This is the first experiment set that makes use of ‘mat\_act\_div.py’ to use the source ‘.mat’ files and the annotated Google sheet to experiment with what we call ‘single-act’ files. These are files that contain only a single NSAA assessment within it and no other activities. For example, if we take the ‘D4’ source ‘.mat’ file, we then create 17 new files containing the 17 NSAA assessments, with each new file being a name like ‘D4\_act1.mat’, ‘D4\_act2.mat’, etc. This process obviously contains files that are a lot smaller than the source file, as well as cutting out a lot of the bits in between the assessments in the original file. For example, the original file will contain a complete recording of the suit data for a subject; this includes the data where a subject isn’t doing anything particularly relevant (e.g. standing around before beginning the next activity of the assessment or trying but failing to do one of the assessments). For more details on how this is done, see the section within the ‘Script Ecosystem Overview’ chapter on ‘mat\_act\_div.py’.\\
 
 \quad The aim of this experiment was to build models that are trained on one type of raw measurement. This is similar to experiment set 3 but with two differences: we’re now assessing on the single activity score for the file in question (i.e. a value of 0, 1, or 2), and we’re now using files that contain a single activity from a subject rather than all of the assessments (in most cases, though some smaller source files exist that contain only a handful of activities). We wanted to see whether or not the same raw measurements were as comparatively useful for single act source files as they were for the original files that contained all of the data; in a sense, we wanted to see if the measurements were as consistent when we removed a lot of the ‘non-assessment’ data from the source files (that is, data within the source files that don’t have an activity being undertaken). If this was the case, then we can conclude fairly conclusively that these raw measurements are informative for NSAA assessments. Also, it’s worth noting that the ‘y’ labels assigned to each sequence coming from a ‘single-act’ file is now based on not only the file name but also what activity it represents; these two features are used to lookup the relevant value from the annotated Google sheet to get the assessed value of the activity.
 
@@ -1915,7 +1953,7 @@ Broadly speaking, the directories can be broken down as the following:
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{Model Predictions Sets\\}
+\chapter{Model Predictions Sets\\~\\}
 
 
 
@@ -2448,7 +2486,7 @@ Broadly speaking, the directories can be broken down as the following:
 
 
 %%%%%%%%%%%%%%%%%%
-\section{Model Predictions Set 20: Model Performance for 5 Subjects w/ All Chosen Measurements from Natural Movement Behaviour Data}
+\section{Model Predictions Set 20: Model Performance for 5 Subjects w/ All Chosen Measurements from NMB Data Set}
 
 \begin{center}
 \includegraphics[scale=0.8]{project_figures/fig11_27}
@@ -2649,7 +2687,109 @@ $abs(19,27)+abs(22,32)+abs(27,25)+abs(33,31)+abs(34,33)=8+10+2+2+1=23$
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{Project Timeline and Gantt Chart\\}
+\chapter{Final Evaluation Results\\~\\}
+
+%%%%%%%%%%%%%%%%%%
+\section{Conclusions from Experiment Sets and Model Predictions Sets}
+
+\quad Now that all the experimentation with the system and corresponding experiment sets and model predictions sets have been completed, it’s worth conducting an overview of the primary takeaways from the various aspects of experimentation. As these covered different parts and applications of the system, some of the conclusions we can draw are somewhat disconnected from others, and there isn’t a particularly unifying concept surrounding many of them. However, all conclusions drawn can fall under the umbrella of drawing insights about how RNNs can learn from human movement data and what is needed from the data in order to effectively do so. It should also be noted that some of the experimentation results are contradicted by later results obtained due to the modification of the system (e.g. MPS 4’s claim that aggregating the measurements for all output types is an ideal method is later contradicted by MPS 20’s claim that sensor magnetic field is the best measurement type to use on its own); as these later results are obtained by extensive system modification to obtain more accurate file assessments, the results from the later experimentation are generally asserted to be the most likely to be true.\\
+
+\quad The following are some of the more significant takeaways from the experimentation which most likely have the potential to impact other studies and that hold the most significance in the building of a file assessment system within the project, along with the experiment sets and/or model predictions sets that support these claims. Many of these help justify architectural decisions made in creating the final models to be used as ‘production’ models to assess new files (more on this in the following section), whilst others serve as insights into the DMD data (and hence the subjects themselves) which may prove to be useful to specialists:
+
+\begin{itemize}
+	\item The most important activities within the NSAA assessment (whose usefulness in assessing a subject for their true overall NSAA score is greater than other activities) seems to be those using the left-leg in more muscular-demanding activities and also involving the subject standing upright throughout the activity.
+	\begin{itemize}
+		\item MPS 23
+	\end{itemize}
+	\item When it comes to assessing a left-out subject, the ‘V2’ versions of subjects, or assessing files trained on ‘alt directories’, the use of only the sensor magnetic field data is preferable to the use of any other raw measurement data, computed statistical values, or any other combination of said measurements.
+	\begin{itemize}
+		\item MPS 20, 21, 22
+	\end{itemize}	
+	\item It’s very possible, and possibly even ideal, to assess models built on one data set (e.g. ‘NSAA’) with files from a different data set (e.g. ‘NMB’) than was used to train the model, as these show very accurate overall NSAA score predictions upon the assessed file which the models have not seen before.
+	\begin{itemize}
+		\item MPS 22
+	\end{itemize}
+	\item While we do not have the true overall and single-act NSAA scores for the ‘V2’ files within the data sets, we do see that models that are trained on ‘V1’ files and tested on ‘V2’ files (e.g. ‘D4V2-sensorMagneticField.csv’) show results that seem very plausible (e.g. on average predicting a drop in NSAA performance for the subject over the 6-month period between the versions) and therefore the system could be easily adapted to monitor subjects’ progress over time given regular or semi-regular suit data inputs.
+	\begin{itemize}
+		\item MPS 21
+	\end{itemize}
+	\item The use of only sensor magnetic field data from the NSAA data set with additional files from the NMB data set, the full data set being used for the training set, and computing an aggregated overall NSAA score over all output types gives the models the best ability to generalize its assessments to new subjects.
+	\begin{itemize}
+		\item MPS 16, 18, 19, 20
+	\end{itemize}
+	\item The addition of noise to the data set, the extraction of only a single sequence from the assessing file to assess the file with, the feature reduction of raw measurement data, the addition of 6-minute walk data to train NSAA-based models, the concatenation of features for multiple raw measurements, the downsampling of the NSAA data set, the reduction of NSAA source ‘.mat’ files to only their 17 activity components, the removal of the outlier subject from the data set, and the changing of how the computed statistical values have their features reduced all have either no effect or an outright negative effect on the models’ ability to generalize to unseen subjects.
+	\begin{itemize}
+		\item MPS 5, 8, 9, 10, 11, 13, 14, 15, 17
+	\end{itemize}
+	\item Optimal model performance for this type of movement data was found to be using a very large sequence length for raw measurements (e.g. sequence length of 600 which covered a 10 second time-context window) but with a discard proportion of 0.9 (i.e. only keeping every 10th row of the 600 to be inputted into the RNN) and a sequence overlap of 0.9 (so 90\% of each sequence overlaps with the next sequence), so we get a context window of DMD movement of 10 seconds while keeping the sequence input into the models as limited as possible with a high overlap so the possibility of an NSAA activity not being completely captured by a sequence is limited.
+	\begin{itemize}
+		\item ES 10
+	\end{itemize}
+	\item A sequence length for computed statistical values was also found to be ideal at 10 with a high sequence overlap of 0.9 (that increased the total amount of sequences we could use and increased the likelihood of capturing complete activities in a single sequence) and features of the reduced-dimensionality data set to 30 which (as this corresponds to a 10 second time-context window per sequence) shows therefore that, for any type of measurement, a 10 second context window is ideal for this particular type of movement data.
+	\begin{itemize}
+		\item ES 4, 7, 8, 9
+	\end{itemize}
+	\item Building models and then assessing them on 20\% of the data from the total data set but with no specific subject left-out of the data set (i.e. the test set therefore being data that the models haven’t seen before but from subjects it has seen before) shows incredibly accurate results for all 4 output types in both classification- and regression-based tasks, with the position, sensor magnetic field, joint angle, and joint angle XZY measurements being the far more useful raw measurements to draw from the ‘AD’ files to build models from than other measurements like velocity and acceleration to train models; however, this degree of performance doesn’t translate to as good performance on left-out subjects or to new versions of existing subjects.
+	\begin{itemize}
+		\item ES 1, 2, 3
+	\end{itemize}
+\end{itemize}
+
+
+
+%%%%%%%%%%%%%%%%%%
+\section{Final Models Directory}
+
+\quad With all the experimentation now complete and the optimal setups of models ascertained (including the different hyperparameters, input types to use, etc.), we wished to extract the models from the set of all created models that we have used for the project. In total, there were 762 models created, many of which were only used for a single experiment set or model predictions set. Therefore, in any effort to separate the models created for experimentation purposes and those being used for ‘production’ (in other words, the models called upon by a user assessing a file in it’s final state), we copied the necessary models from the ‘rnn\_models’ directory located within the local directory and added them to another directory, ‘rnn\_models\_final’, within the project directory under ‘$<$project directory$>$\textbackslash source\textbackslash’. This was done for several reasons:
+
+\begin{itemize}
+	\item It allows one to use the system completely free of the local directory (thus not requiring the large amount of data to download or models to setup via the data pipeline and the ‘rnn.py’ script). Thus, a user would only need the models within ‘rnn\_models\_final’ to assess files using ‘model\_predictor.py’ and/or the wrapper ‘assess\_nsaa\_nmb\_file.py’ script.
+	\item As the project directory contains the majority of what constitutes the project deliverables, we add in the chosen models as another deliverable in the form of a distinct sub-directory; these are the deliverables as a consequence of many experiment sets and model predictions sets where we looked for the best possible model setups to solve the problems set out in the ‘Aims and Objectives’ section of the ‘Project Overview’ chapter.
+	\item We wouldn’t necessarily want to include all created models in ‘rnn\_models\_final’ as these will not be accessed via the ‘assess\_nsaa\_nmb\_file.py’ script, as by definition they would not be the best models to assess with via ‘model\_predictor.py’ (as they have been proven to be the inferior option via the various experiment sets and model predictions sets); furthermore, they are a form of intermediate data and thus predominantly lie within the scope of the local directory, along with other forms of intermediate data (such as computed statistical values and extracted raw measurements).
+\end{itemize}
+
+\quad With regards to the models themselves, they broadly fall under three categories, which encompass all 48 models contained within ‘rnn\_models\_final’:
+
+\begin{enumerate}
+	\item Models trained on all the subjects (i.e. no left-out subjects) contained within the NSAA data set, with supplementary data from NMB (maximum of 3 files per subject), all of the data available used for training, a sequence length of 600, a sequence overlap of 0.9, a discard proportion of 0.9, and the number of training epochs set to 20. One model is trained per combination of input types (joint angle, sensor magnetic field, position, and AD) and output types (‘dhc’, ‘overall’, and ‘acts’) for 12 total models.
+	\item Models trained on all the subjects (i.e. no left-out subjects) except for files of ‘V2’ subjects (e.g. a file containing ‘D4V2’ would not be used) contained within the NSAA data set, with supplementary data from NMB (maximum of 3 files per subject), all of the data available used for training, a sequence length of 600, a sequence overlap of 0.9, a discard proportion of 0.9, and the number of training epochs set to 20. One model is trained per combination of input types (joint angle, sensor magnetic field, position, and AD) and output types (‘dhc’, ‘overall’, and ‘acts’) for 12 total models.
+	\item Models trained exclusively on either the NSAA or NMB data set with no subjects left-out, which is then useful in analyzing subject files from an alternative directory. All of the data available in either data set is used for training, along with a sequence length of 600, a sequence overlap of 0.9, a discard proportion of 0.9, and the number of training epochs set to 20. One model is trained per directory used for model training (NSAA and NMB), per combination of input types (joint angle, sensor magnetic field, position, and AD) and output types (‘dhc’, ‘overall’, and ‘acts’) for 24 total models.
+\end{enumerate}
+
+\quad It should be noted that categories 2 and 3 will have been created and used by the user undertaking model predictions sets 21 and 23, respectively, while models from category 1 will have been created independently by running the ‘models\_no\_leftout.cmd’ script found in ‘$<$project directory$>$\textbackslash source\textbackslash batch\_files’. This is because, while we have very similar models that will have been created in MPS 20, these all contain one subject left-out of the training set (so as to assess this subject on the models to test generalization ability). If we wish to test subject files in production, we want to use models that have been trained on all available training data that we currently have; hence, the ‘models\_no\_leftout.cmd’ script is run to create these models, which constitutes category 1.
+
+
+
+%%%%%%%%%%%%%%%%%%
+\section{Utilizing the Final Models to Assess New NSAA/NMB Files}
+
+\quad Having chosen the best performing models to generalize towards new files and that have been trained on all available NSAA data we have (along with being supplemented by NMB data where necessary), we were now in a position to create a final Python script that was properly able to utilize these models. While ‘model\_predictor.py’ was written in order to assess a variety of files on different models with different arguments set, the ‘assess\_nsaa\_nmb\_files.py’ script was written to exclusively operate using only several of the models built in total (specifically, a selection of those in ‘rnn\_models\_final’). The script itself calls ‘model\_predictor.py’ with the setting of certain arguments based on user input supplied to ‘assess\_nsaa\_nmb\_files.py’. Additionally, it also does a lot of the preparation of the data that is to be fed through ‘model\_predictor.py’. In other words, ‘assess\_nsaa\_nmb\_file.py’ is a wrapper that sits over many of the other scripts that, based on user supplied input at runtime (as opposed to through arguments), runs the appropriate parts of the data pipeline and loads the models to use from ‘rnn\_models\_final’ to assess the file. For further information about the script and an exact breakdown of how it works, see the section on ‘assess\_nsaa\_nmb\_file.py’ within the ‘Script Ecosystem Overview’ chapter.\\
+
+\quad While the majority of the Python and associated batch scripts would be used by other users if they were intending to either replicate results outlined in this report or to continue the work already done by the project, the ‘assess\_nsaa\_nmb\_file.py’ script has a slightly different focus in that it’s intended to be able to used as a tool in a production setting. Below, we consider several use-cases of the script where the project directory has been obtained, the Python language (and requisite packages) have been installed to run the script, and the user has one or more source ‘.mat’ files that they wish to analyze:
+
+\begin{itemize}
+	\item Given the ‘.mat’ file data of a brand-new subject (either of natural movement or an NSAA assessment) to the research initiative, one could use the script to give the system’s opinions regarding the subject’s overall and individual NSAA scores (the D/HC will most likely already be known to the user).
+	\begin{itemize}
+		\item In the case where it is of an NMB data file, it would allow the user to possibly avoid the requirement of doing an NSAA assessment for the subject if the subject isn’t able or willing to do so but can instead provide them with natural movement data obtained with the suit.
+		\item In the case where it is an NSAA file, it would be able to be assess the subject who’s file it corresponds to and give a supplementary opinion regarding their scores (e.g. if the assessor is unsure about certain scores or for whatever reason has not provided them).
+	\end{itemize}
+	\item Given a new ‘.mat’ file of a new ‘version’ of an existing subject (e.g. the suit data of a subject’s 2nd assessment, 6-months apart from their previous one, at the hospital), it could provide an easy way for the assessor to see how much worse the subject has gotten between their true previous scores (i.e. for their ‘V1’ visit) and what the model predicts as their scores from their new ‘V2’ visit.
+	\item If the user was unsure about the results they achieved either from the system or from their own assessment, they could opt to test the ‘.mat’ file on models trained on an alternative directory to that of the source ‘.mat’ file so as to receive a different opinion from a different set of models.
+\end{itemize}
+
+
+
+
+
+
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Project Timeline and Gantt Chart\\~\\}
 
 \quad In this chapter, we shall give a brief overview of the project’s timeline between it’s beginning with background research at the start of April until it’s conclusion with final report construction at the beginning of September. During the 5-months of undertaking this project, an ongoing lists of tasks completed and tasks needed to be completed have been compiled so others could keep track of the project’s progress if necessary and also to provide good immediate- and long-term directions to take the project in. This can be found in the base directory of the project directory as a ‘.ods’ file entitled ‘MSc Project Plan’. However as opposed to simply referencing this file, as simply a list of tasks ordered by completion date, we’ve repurposed this as a Gantt chart, which is displayed further below within this section. It should be noted that, as this covers 5-months’ worth of work and in many cases several tasks were completed per day, there are in excess of 200 individual tasks completed, which requires us to display the chart over multiple images.\\
 
@@ -2695,7 +2835,7 @@ $abs(19,27)+abs(22,32)+abs(27,25)+abs(33,31)+abs(34,33)=8+10+2+2+1=23$
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{Further Improvements and Additional Project Adaptations\\}
+\chapter{Further Improvements and Additional Project Adaptations\\~\\}
 
 %%%%%%%%%%%%%%%%%%
 \section{Background}
@@ -2789,9 +2929,48 @@ $abs(19,27)+abs(22,32)+abs(27,25)+abs(33,31)+abs(34,33)=8+10+2+2+1=23$
 
 
 
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Conclusions\\~\\}
+
+\quad In this report, we have discussed the totality of the work done for the project, from its initials stages in the formation of aims and objectives along with the necessary background research undertaken, to the construction of the complete system needed to build a flexible solution to the assessments of different source ‘.mat’ files on different models, to the necessary experimentation done to optimise the system settings and investigate characteristics inherent to DMD-based movement data, and finally to drawing conclusions from this experimentation that would hopefully be of use to specialists in DMD research and assessors at Great Ormond Street Hospital, along with the building of an easy-to-use wrapper script over the system to assess subjects on pre-built models. Below, we can see several of the most important aims of the project and how we felt that they have been achieved:
+
+
+\begin{itemize}
+	\item Build models that, when presented with new, unseen ‘.mat’ files of body suit data, can give a good approximation of individual and overall NSAA activity scores.
+	\begin{itemize}
+		\item In using models built from NSAA files and with an additional selection of NMB files, along with using the entirety of the data set as training, aggregating predictions from all output types for a new predicted overall NSAA score, and only using the sensor magnetic field data measurement, we managed to achieve on average an overall NSAA score for subjects left-out of the training sets of 2.4 away from the true overall NSAA score, which shows good potential for the models to be used in the assessment of new subjects.
+	\end{itemize}
+	\item Use the built models to gain insights into the most influential activities and measurements from ‘.mat’ files on overall NSAA score that correlate the highest with the overall assessment.
+	\begin{itemize}
+		\item We found that the NSAA activities that involved the use of one’s left-leg and activities that involve standing up were most likely to be assessed by the models to give a close approximation of the subject’s true overall NSAA score, which thus implied that these were the most useful activities from the assessment for the subject to undertake. Additionally, the most useful measurements that came from the source ‘.mat’ files were shown to be position, sensor magnetic field, joint angle, and joint angle XZY, with sensor magnetic field data being particularly useful in its ability to train models to generalize to new subjects or new files of familiar subjects.
+	\end{itemize}
+	\item Investigate the impact of training models on different types of source data sets.
+	\begin{itemize}
+		\item We found that, while NSAA was (unsurprisingly) the best data set to use to train models in order to assess subjects for their D/HC classification and individual/overall NSAA scores (as opposed to only using 6-minute walk assessment or natural movement data), we found that models generalised to new subjects and new files of existing subjects better with the addition of natural movement behaviour data to NSAA-based models.
+	\end{itemize}
+	\item Look into how possible it is to build models that generalise well to new subjects.
+	\begin{itemize}
+		\item Along with the already-mentioned system performance on new subjects, we also saw promising results in training models on files of subjects’ initial NSAA assessments (‘V1’ files, e.g. ‘D4\_sensorMagneticField.csv’) and assessing them on follow-up assessments done 6-months later (‘V2’ files, e.g. ‘D4V2\_sensorMagneticField.csv’), as while we didn’t have the true corresponding scores for the ‘V2’ files the models did predict an average decrease in overall NSAA score per subject of 4.89 over the 6-month period, which is a realistic and expected decrease that therefore indicates potential for the system to be used as a monitoring tool for the progress of the DMD condition of subjects given the necessary data files of future versions of the subjects.
+	\end{itemize}
+\end{itemize}
+
+\quad The system thus holds the potential to be directly applicable for those working with and assessing DMD subjects, which may help improve the lives of those living with the condition and possibly aid in potential breakthroughs to be made in DMD research, whilst also having great potential to be taken further to possibly be built into other systems that assess other conditions in an equally promising way in the future.
+
+
+
+
+
+
+
+
+
 \appendix
 
-\chapter{Source code}
+\chapter{Source code\\~\\}
 
 \section{'assess\_nsaa\_nmb\_file.py'}
 \pythonexternal{code/assessnsaanmbfile.py}
@@ -2825,8 +3004,156 @@ $abs(19,27)+abs(22,32)+abs(27,25)+abs(33,31)+abs(34,33)=8+10+2+2+1=23$
 \pythonexternal{code/testaltdirs.py}
 
 
+\chapter{Glossary\\~\\}
+
+\section{Acronyms}
+
+\begin{itemize}
+	\item \underline{\textbf{AD}}: All data
+	\item \underline{\textbf{BPTT}}: Backpropagation through time
+	\item \underline{\textbf{CRF}}: Conditional random field
+	\item \underline{\textbf{D}}: Duchenne (subject)
+	\item \underline{\textbf{DC}}: Data cube
+	\item \underline{\textbf{DMD}}: Duchenne muscular dystrophy
+	\item \underline{\textbf{ES}}: Experiment set
+	\item \underline{\textbf{FFNN}}: Feedforward neural network
+	\item \underline{\textbf{FFT}}: Fast Fourier transform
+	\item \underline{\textbf{FRC}}: Feature-reduced via concatenation
+	\item \underline{\textbf{HC}}: Healthy control (subject)
+	\item \underline{\textbf{GOSH}}: Great Ormond Street Hospital
+	\item \underline{\textbf{HMM}}: Hidden Markov model
+	\item \underline{\textbf{JA}}: Joint angle
+	\item \underline{\textbf{LSTM}}: Long short-term memory
+	\item \underline{\textbf{MAE}}: Mean average error
+	\item \underline{\textbf{MD}}: Muscular dystrophy
+	\item \underline{\textbf{MPS}}: Model predictions set
+	\item \underline{\textbf{MSE}}: Mean squared error
+	\item \underline{\textbf{NMB}}: Natural movement behaviour
+	\item \underline{\textbf{NSAA}}: North Star Ambulatory Assessment
+	\item \underline{\textbf{PCA}}: Principal component analysis
+	\item \underline{\textbf{RMSE}}: Root mean squared error
+	\item \underline{\textbf{RNN}}: Recurrent neural network
+\end{itemize}
+
+\section{Commonly Used Terms}
+
+\begin{itemize}
+	\item \underline{\textbf{Activity times}}: Refers to the start and end times of an observable NSAA activity within a source ‘.mat’ file.
+	\item \underline{\textbf{Acts}}: Output type that corresponds to the model classifying an input sequence with a series of 17 numbers, each of which containing either a 0, 1, or 2 (i.e. not continuous values) that corresponds to the models’ guess as to the individual acts scores it believes are for the source file to which the single sequence originates from.
+	\item \underline{\textbf{AD (referring to file)}}: The most common type of source ‘.mat’ file that we work with that contains all the captured information by the body suit for a single subject. This contrasts with ‘JA’ and ‘DC’ file types, which only contain joint angle measurements captured by the suit.
+	\item \underline{\textbf{AD (referring to input type or measurement)}}: Short hand (that is, recorded within ‘model\_predictions.csv’ and referenced elsewhere) for computed statistical values; hence, in places where measurements include ‘AD’ along with other raw measurements, for example, simply take this to mean ‘computed statistical values’.
+	\item \underline{\textbf{Additional directory (or 'add dir')}}: Refers to the RNN models using more than one source directory for the files to train the model. For example, a model might use processed (e.g. raw-measurement-extracted) files from the ‘NSAA’ directory and also the ‘6minwalk-matfiles’ additional directory to use as ‘x’ and ‘y’ data in the training/testing process. 
+	\item \underline{\textbf{Alternative directory (or 'alt dir')}}: Refers to the ‘model\_predictor.py’ script using models trained on directories that are not the same as the directory of the assessing file(s). For example, ‘model\_predictor.py’ might assess subject ‘D4’s files from ‘NSAA’ on models trained on ‘allmatfiles’ directory files.
+	\item \underline{\textbf{Annotator}}: Anyone who has made active contributions to the Google annotations sheet regarding inputting start and end activity times for the subjects by observing videos of the NSAA assessments or otherwise.
+	\item \underline{\textbf{Argument}}: Console arguments that are provided along with the name of the script being invoked by the user (or by a batch script) that change what the script does or otherwise sets values that impact what is produced by the script.
+	\item \underline{\textbf{Assessor}}: Any medical professional who directs and guides subjects through the NSAA and 6-minute walk assessments, whilst writing down corresponding NSAA scores for each activity.
+	\item \underline{\textbf{Complete-act file}}: In contrast to a single-act file, this generally refers to any file input to an RNN model for any measurement that does not originate from a single-act file (e.g. ‘D4\_acceleration.csv’); these are thus the most common type of source ‘.mat’ file of which we make use.
+	\item \underline{\textbf{Computed statistical values}}: Values that are computed over all the measurements of a given source ‘.mat’ files that include means, variances, eigenvalues of covariance matrices, etc., over all the features and several combinations of features of measurements. The results are stored in separate ‘.csv’ files as ‘$<$subject short name$>$\_stat\_features.csv’, which are expected to be operated upon by ‘ft\_sel\_red.py’ to reduce the dimensionality.
+	\item \underline{\textbf{Console output}}: The output of various scripts that is printed directly to whatever console was used to invoke the scripts. Contains information about the results of building models, assessing subjects (that is also written to ‘model\_predictions.csv’), and current progress of executing a longer script such as ‘comp\_stat\_vals.py’.
+	\item \underline{\textbf{Curse of dimensionality}}: Refers to the consequences of using higher-dimensionality data that makes learning from said data increasing more difficult as the dimensionality increases; feature selection/reduction techniques are generally chosen in order to combat these effects.
+	\item \underline{\textbf{D/HC classification}}: The act of classifying either a single sequence or a complete file/subject as being (from) either a ‘D’ subject (i.e. a subject with DMD) or (from) an ‘HC’ subject (i.e. a healthy control subject).
+	\item \underline{\textbf{Data file type}}: Refers to the different forms the data from the suit can take that includes ‘AD’, ‘JA’ and ‘DC’.
+	\item \underline{\textbf{Data pipeline}}: The part of the system that ingests data in various forms and produces intermediate data in other forms that link together; generally includes ‘comp\_stat\_vals.py’, ‘ft\_sel\_red.py’, ‘mat\_act\_div.py’, ‘ext\_raw\_measures.py’, and ‘rnn.py’.
+	\item \underline{\textbf{Dhc}}: Output type that corresponds to the model classifying on a single output node that outputs a ‘D’ or ‘HC’ value based on whether the model believes the inputted sequence comes from a ‘D’ or ‘HC’ file, respectively.
+	\item \underline{\textbf{Discard proportion}}: The process of discarding a proportion of the frames from within a single sequence of data, generally used with a large sequence overlap and a very long sequence. For example, if the discard proportion is set to ‘0.9’ and we have a sequence of length ‘600’, we keep only every 10th frame within the sequence to end up with a sequence of length ‘60’ that is actually fed into the model but has the time context window of the original ‘600’.
+	\item \underline{\textbf{Downsampling}}: The process of removing a large amount of data from a data set to end up with a smaller data set whose $y$ labels are evenly distributed. For example, if we have 6 $x$ sequences of $y$ labels [‘1’, ‘1’, ‘2’, ‘2’, ‘2’, ‘3’], we would observe that the least frequent label amount is 1 (for ‘3’), so we would randomly sample (with replacement) 1 sample of each $x$ sequence and corresponding $y$ label to reduce to a sequence length of 3 with corresponding labels [‘1’, ‘2’, ‘3’].
+	\item \underline{\textbf{Experiment set}}: Set of experiments that generally involve several models being built with different input types or model hyperparameter settings to assess whether or not the models improve on the test set with respect to these changes, with the results being determined by evaluation on the test set and recorded within ‘RNN Results.xlsx’.
+	\item \underline{\textbf{Familiar/non-familiar}}: Refers to models that have either seen part of the respective subject during the model training process or have not, respectively.
+	\item \underline{\textbf{Fature concat}}: The act of, instead of building separate models for different input types, concatenating horizontally the input data for all the input types prior to building a single model. In other words, instead of having data shapes for three models for three input types of shape ($a$, $b$, $c$), ($a$, $b$, $d$), and ($a$, $b$, $e$), we instead get a single model with a data shape of ($a$, $b$, $c+d+e$).
+	\item \underline{\textbf{Feature reduced via concatenation}}: Refers to a process within ‘ft\_sel\_red.py’ where the dimensionality is reduced over all the input files in the same way (i.e. all files are projected to the same feature subspace), as opposed to the standard way ‘ft\_sel\_red.py’ where each file has their dimensions reduced in turn.
+ 	\item \underline{\textbf{Features}}: Generally refers to the dimensions of a certain measurement that is determined either by the settings of the suit (i.e. joint angle measurements use 66 features that is set by the suit because it measures 22 joint angles in three dimensions) or determined by ‘ft\_sel\_red.py’; in the general $x$ data shape of ($a$, $b$, $c$) going into a model, $c$ corresponds to the number of features.
+	\item \underline{\textbf{Frame}}: A single row of a sequence or data prior to being divided into sequences, which is a single vector with a number of values equal to the number of features of the measurement we are concerned with. This can be a single row of data within a source ‘.mat’ file, a row within a sequence that is to be fed into a model, or a row of data of a complete matrix of $x$ data; in the general $x$ data shape of ($a$, $b$, $c$) going into a model, $b$ corresponds to the number of frames.
+	\item \underline{\textbf{Indiv}}: Output type that corresponds to the model regressing on a single output node that outputs a continuous value between 0 or 2 for input data from single-act files.
+	\item \underline{\textbf{Individual NSAA score}}: A single-activity NSAA score, as determined by an assessor, which is either a 0, 1, or 2, with a 0 being from the subject being unable to complete the activity, a 1 being from the subject completing the activity with difficulty, and a 2 being the subject completing the activity perfectly as a healthy control would do.
+	\item \underline{\textbf{Input file}}: (see ‘Data file type’; not to be confused with ‘Input type’).
+	\item \underline{\textbf{Input type}}: The different types of data obtained from the source ‘.mat’ files that can be used to train a model and is thus mostly synonymous with the definition of ‘measurement’.
+	\item \underline{\textbf{Intermediate data}}: Data that exists as a product of one script and that is consumed by another script. For example, raw measurement data that is produced by ‘ext\_raw\_measures.py’ and subsequently used by ‘rnn.py’ is a form of intermediate data that is in contrast to the raw data contained within the source ‘.mat’ files.
+	\item \underline{\textbf{Left-out subject}}: A subject where none of their data was used as part of the training process, and hence the assessment on this subject by ‘model\_predictor.py’ as part of a model predictions set is equivalent to the model performing on a brand-new, never-seen-before subject (i.e. how it would function in production).
+	\item \underline{\textbf{Local directory}}: The location where all the data that is used and created by the system is stored for the user. The location of this is generally set by modifying the ‘local\_dir’ variable within ‘settings.py’.
+	\item \underline{\textbf{Measurement}}: Refers to a specific type of data that can be extracted from the suit data source ‘.mat’ files that contain suit data measurements from the subjects carrying out assessments (e.g. NSAA or 6-minute walk) or natural movement behaviour. Can be either a raw measurement that is taken directly from the source ‘.mat’ file via the ‘ext\_raw\_measure.py’ script (e.g. ‘jointAngle’ or ‘acceleration’) or computed statistical values that are created via the ‘comp\_stat\_vals.py’ script.
+	\item \underline{\textbf{Metric}}: Usually refers to a calculation done to assess the performance of an experiment or model prediction for a given output type; examples of metrics include ‘MAE of overall NSAA scores in the test set’ and ‘the percent of correctly predicted sequences for D/HC classification’.
+	\item \underline{\textbf{Model}}: Used as a noun, this refers to a single TensorFlow-built recurrent neural network that’s built by ‘rnn.py’ on one or more input types (i.e. measurements such as joint angles or computed statistical values) and to target one specific output type, such as regression to the overall NSAA score (‘overall’) or classifying D/HC labels (‘dhc’). These models are trained on sequenced data, stored in directories within ‘rnn\_models’ and/or ‘rnn\_models\_final’, and are loaded via ‘model\_predictor.py’ to predict on (generally) unseen complete subjects.
+	\item \underline{\textbf{Model directory}}: The location with respect to the local directory (‘local\_dir’ of ‘settings.py’) of the models created by various runs of ‘rnn.py’. The path to this is given as ‘$<$local directory$>$\textbackslash output\_files\textbackslash rnn\_models’.
+	\item \underline{\textbf{Model predictions set}}: A set of predictions for (generally) various left-subjects with respect to different model variations to investigate generalization performance. In other cases, refers to the process of utilizing ‘model\_predictor.py’ in other ways, such as with the ‘test\_altdirs.py’ script.
+	\item \underline{\textbf{Natural movement behaviour}}: The suit capture data of subjects moving in non-assessment environments doing activities such as playing, eating, and otherwise interacting with others, among other activities; this is in contrast to the specific more rigid assessments of NSAA and 6-minute walks.
+	\item \underline{\textbf{NSAA}}: Generally refers to the assessment involving 17 activities that subjects carry out for assessors to score each of on a 0 to 2 discrete scale, the accumulation of which is the overall NSAA score.
+	\item \underline{\textbf{Output type}}: The different types of output that we can configure the RNN models to produce that includes ‘overall’, ‘dhc’, ‘acts’, and ‘indiv’.
+	\item \underline{\textbf{Overall}}: Output type that corresponds to the model regressing on a single output node that outputs a continuous value between 0 or 34 for the model’s prediction of the overall NSAA score of the file that the inputted sequence comes from. While producing a continuous value, it’s generally rounded to the nearest integer before being presented to the user as a result.
+	\item \underline{\textbf{Overall NSAA score}}: The summation of the individual activity scores for a given subject that will therefore range between 0 (i.e. none of the activities having been completed) or 34 (i.e. all activities completed adequately, in the case of ‘HC’ subjects).
+	\item \underline{\textbf{Preprocessing}}: The steps undertaken by either ‘rnn.py’, ‘model\_predictor.py’, or ‘ft\_sel\_red.py’ to carry out a variety of steps to prepare the data for input into the model including (but not limited to) pulling all the necessary data from the specified directories, creating sequences with specified length and overlap, and dividing the data into training and testing components. Generally this is all done by the ‘preprocessing()’ function in each of the scripts above.
+	\item \underline{\textbf{Production}}: Refers to the act of using this system in its ‘final’ state (i.e. with all experiments completed) and using it as a tool for a subject file’s assessment.
+	\item \underline{\textbf{Project directory}}: Refers to the location of the directory that contains all parts of the project that does NOT include the raw data needed (which instead is stored within the local directory) and the intermediate data produced; this includes the source code, documentation, batch scripts, code README files, etc.
+	\item \underline{\textbf{Raw measurement}}: A measurement that is directly extracted from source ‘.mat’ files and subsequently fed directly into models, as opposed to computed statistical values that are instead fed through ‘comp\_stat\_vals.py’ and ‘ft\_sel\_red.py’.
+	\item \underline{\textbf{Reference documents}}: A collection of documents that provides necessary information to provide the data with $y$ labels and divide up complete-act files into single-act files, along with storing the results of experiment sets and model predictions sets.
+	\item \underline{\textbf{Sampling rate}}: The rate at which the suit samples data from each of its sensors for the different measurements; this is fixed at 60Hz, i.e. 60 rows of data produced each second for every measurement.
+	\item \underline{\textbf{Script}}: Generally refers to either a Python file (with a ‘.py’ extension) that encompasses the core parts of the system or batch files (with a ‘.cmd’ extension) that are used to run model prediction sets or carry out other tasks that involve the calling of Python files and the setting up of the system.
+	\item \underline{\textbf{Sequence}}: A two-dimensional grouping of data that the RNN will treat as a single sample that is fed in, with a number of rows equal to the number of frames used and the number of columns equal to the number of features that the input type in question contains (e.g. 66 if we’re using joint angle data).
+	\item \underline{\textbf{Sequence length}}: The number of frames of values within a single sequence. For example, if the sequence length is set to 10 for position data (which has 69 features), then each sequence has a shape of (10, 69).
+	\item \underline{\textbf{Sequence overlap}}: The proportion of frames within a sequence that overlap with the adjacent sequence. For example, with a sequence overlap of 0.2, then for a sequence of shape (10, 69) the bottom 2 rows of ‘69’ values will be the first two frames of data for the next sequence also of shape (10, 69).
+	\item \underline{\textbf{Single-act concat}}: The process of ‘mat\_act\_div.py’ extracting the single-act files from the source ‘.mat’ files as normal but, instead of keeping them as individual files, vertically concatenating these files. This creates complete-act files (as the files were originally) but now with any data from ‘between’ the activities in time being removed.
+	\item \underline{\textbf{Single-act file}}: The product of the ‘mat\_act\_div.py’ script, these are ‘.mat’ files that contain only the movement data of a single activity of the NSAA assessment for a given subject. For example, the source ‘.mat’ file ‘D4\_nsaa.mat’ would have (generally speaking) 17 new files created by ‘mat\_act\_div.py’ with names such as ‘D4\_act$<$activity number$>$\_nsaa.mat’. See the relevant section in the ‘Script Ecosystem Overview’ chapter on ‘mat\_act\_div.py’ for more information as to how this is done and for what reasons.
+	\item \underline{\textbf{Source '.mat' file(s)}}: These are the MATLAB data files in their initial states that are provided to us directly as part of the project that have been directly translated from their ‘.mvnx’ equivalent files, as produced by the suit. Hence, these are the files for each subject that we are concerned with prior to extracting any raw measurements or computing statistical values.
+	\item \underline{\textbf{Specialist}}: Any medical specialist involved in the process of human analysis of the severity of DMD for each of the subjects.
+	\item \underline{\textbf{Standard approach}}: Used in the context of model prediction sets, this tends to refer to the ‘best’ approach to building models and having them generalize to ‘left-out’ subjects. This often means MPS 3, which for many model predictions sets is determined to be the currently optimal setup and hence is used as the default comparison to whichever approach we are currently investigating.
+	\item \underline{\textbf{Subject}}: Refers to the participants of the wider Imperial College London and Great Ormond Street Hospital DMD study that includes approximately 20 ‘D’ subjects (i.e. subjects with varying degrees of DMD) and approximately 10 ‘HC’ subjects (healthy control subjects that don’t have DMD).
+	\item \underline{\textbf{Subject assessment}}: Can either refer to the assessment made by assessors with the subject carrying out the NSAA or 6-minute walk assessments, or an assessment made by the ‘model\_predictor.py’ or ‘assess\_nsaa\_nmb\_file.py’ scripts on a subject or specific file, the results of which appear in the ‘model\_predictions.csv’ or ‘model\_predictions\_newfiles.csv’ files, respectively.
+	\item \underline{\textbf{Subject short name}}: The names that the subjects go by in this project to make it easier to refer to them at various points in the project and to keep certain aspects of anonymity intact; e.g. ‘D4’, ‘D16’, ‘HC2’, etc.
+	\item \underline{\textbf{System}}: The complete set of scripts and supporting documents that are used to carry out all the experiment sets and model predictions sets in an effort to realise the aims of the project, and that encompasses the primary body of the work done for the project; does not include the local computational resources the user uses to execute any parts of the system, as the system is intended to be fairly platform independent.
+	\item \underline{\textbf{Vector sample}}: (see ‘Frame’).
+	\item \underline{\textbf{$X$ data}}: The sequences themselves of the data being fed into the RNN models. After preprocessing, this will be of shape ($a$, $b$, $c$), where $a$ is the number of sequences to train and test the model on (note: this is considering the data before the train and test split process), $b$ is the sequence length, and $c$ is the number of features for the given input type.
+	\item \underline{\textbf{$Y$ data}}: The labels that correspond to each sequence of data that can be either binary values (for the ‘dhc’ output type), continuous values between 0 and 2 (for the ‘indiv’ output type), continuous values between 0 and 34 (for the ‘overall’ output type), or lists of 17 values each of either 0, 1, or 2 (for the ‘acts’ output type). Note that the number of these labels is the same as the number of sequences of data in $x$ data’.
+\end{itemize}
 
 
+
+
+
+
+
+\chapter{References\\~\\}
+
+
+\quad [1] De Fauw, J., Ledsam, J.R., Romera-Paredes, B., Nikolov, S., Tomasev, N., Blackwell, S., Askham, H., Glorot, X., O-Donoghue, B., Visentin, D., and van den Driessche, G. Clinically applicable deep learning for diagnosis and referral in retinal disease. In \textit{Nature medicine, VOL 24, NO. 9}, page 1342.\\ \\
+\quad [2] \textit{NHS Hospitals Turn to Deep Learning and Advanced Algorithms to Fight Heart Disease} (2018). Available at: \url{https://www.heartflow.com/newsroom/nhs-hospitals-turn-to-deep-learning-and-advanced-algorithms-to-fight-heart-disease}. Accessed: 26th August 2019.\\ \\
+\quad [3] Hsu, J. (2019) ‘Will Artificial Intelligence Improve Health Care for Everyone?’, \textit{Smithsonian} (31st July 2019). Available at: \url{https://www.smithsonianmag.com/innovation/will-artificial-intelligence-improve-health-care-for-everyone-180972758/}. Accessed 26th August 2019.\\ \\
+\quad [4] Sayers, M., Brogan, C. ‘AI trial to help accelerate future treatments for Duchenne muscular dystrophy’. Available at \url{https://www.imperial.ac.uk/news/184530/ai-trial-help-accelerate-future-treatments/}. Accessed (22nd Aug 2019).\\ \\
+\quad [5] \textit{Duchenne Muscular Dystrophy (DMD)} (no date). Available at: \url{https://www.mda.org/disease/duchenne-muscular-dystrophy}. Accessed: 5th Aug 2019.\\ \\
+\quad [6] \textit{What is Duchenne?} (no date). Available at: \url{https://www.duchenneuk.org/pages/faqs/category/what-is-duchenne}. Accessed: 6th Aug 2019.\\ \\
+\quad [7] \textit{Muscular dystrophy – NHS} (2018). Available at: \url{https://www.nhs.uk/conditions/muscular-dystrophy/}. Accessed: 5th Aug 2019.\\ \\
+\quad [8] \textit{North Star Ambulatory Assessment} (no date). Available at: \url{https://www.physio-pedia.com/North\_Star\_Ambulatory\_Assessment}. Accessed 13th Aug 2019.\\ \\
+\quad [9] Mazzone, E.S., Messina, S., Vasco, G., Main, M., Eagle, M., D’Amico, A., Doglio, L., Politano, L., Cavallaro, F., Frosini, S., and Bello, L. Reliability of the North Star Ambulatory Assessment in a multicentric setting. In \textit{Neuromuscular Discorders, 19(7)}, pages 258-261, 2009.\\ \\
+\quad [10] Mayhew, A., Cano, S., Scott, E., Eagle, M., Bushby, K., and Muntoni, F. On Behalf of the NorthStar Clinical Network for Paediatric Neuromuscular Disease: Moving towards meaningful measurement: Rasch analysis of the North Star Ambulatory Assessment in Duchenne muscular dystrophy. \textit{Dev Med Child Neurol}, 52, pages 535-542, 2011.\\ \\
+\quad [11] \textit{KineDMD Study: developing an activity monitoring biomarker} (2019). Available at: \url{https://www.duchenne.org.uk/project/activity-monitoring-biomarker/}. Accessed (22nd Aug 2019).\\ \\
+\quad [12] Goodfellow, I., Bengio, Y, and Courville, A. \textit{Deep Learning}. MIT Press, 2016\\ \\
+\quad [13] Olah, C. ‘Understanding LSTM Networks’. \textit{colah's blog}, 27th August 2015. Available at: \url{https://colah.github.io/posts/2015-08-Understanding-LSTMs/}.\\ \\
+\quad [14] \textit{API Documentation}. Available at: \url{https://www.tensorflow.org/api\_docs} (Accessed 27th August 2019).\\ \\
+\quad [15] Raschka, S. \textit{Python Machine Learning}. Pack Publishing Ltd, 2015.\\ \\
+\quad [16] Hammerla, N. Y., Halloran, S., and Plötz, T. Deep, convolutional, and recurrent models for human activity recognition using wearables. \textit{arXiv preprint arXiv:1604.08880}, 2016.\\ \\
+\quad [17] Inoue, M., Inoue, S., and Nishida, T. Deep recurrent neural network for mobile human activity recognition with high throughput. \textit{Artificial Life and Robotics, VOL 23, NO. 2}, pages 173-185, 2018.\\ \\
+\quad [18] Du, Y., Wang, W., and Wang, L. Hierarchical recurrent neural network for skeleton based action recognition. In \textit{Proceedings of the IEEE conference on computer vision and pattern recognition}, pages 1110-1118, 2015.\\ \\
+\quad [19] Baccouche, M., Mamalet, F., Wolf, C., Garcia, C., and Baskurt, A. Sequential Deep Learning for Human Activity Recognition. In \textit{International Workshop on Human Behaviour Understanding}, pages 29-39, 2011.\\ \\
+\quad [20] Donahue, J., Hendricks, L. A., Guadarrama, S., Rohrbach, M., Venugopalan, S., Saenko, K., and Darrell, T. Long-term Recurrent Convolutional Networks for Visual Recognition and Description. In \textit{Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition}, 2014.\\ \\
+\quad [21] Ordóňez, F. J., and Roggen, D. Deep Convolutional and LSTM Recurrent Neural Networks for Multimodal Wearable Activity Recognition. In \textit{Sensors, VOL 16}, NO. 1, page 115, 2016.\\ \\
+\quad [22] Zhu, W., Lan, C., Xing, J., Zeng, W., Li, Y., Shen, L., and Xie, X. Co-Occurrence Feature Learning for Skeleton Based Action Recognition Using Regularized Deep LSTM Networks. In \textit{Thirtieth AAAI Conference on Artificial Intelligence}, 2016.\\ \\
+\quad [23] Liu, J., Shahroudy, A., Xu, D., and Wang, G. Spatio-Temporal LSTM with Trust Gates for 3D Human Action Recognition. In \textit{European Conference for Computer Vision}, pages 816-883, 2016.\\ \\
+
+
+
+
+
+
+
+\chapter{Legal and Ethical Considerations\\~\\}
+
+\quad The work carried out for this project requires the use of a large amount of data collected from an Xsens body suit that captures the movements of various participants of the ‘KineDMD’ research initiative at Great Ormond Street Hospital. While the body of the work done for this project is easily accessible for use via GitHub and/or GitLab, the work contained therefore specifically does not contain any of the data captured from the subjects in order to keep this data from being publicly available so as to protect the data of the participants in the initiative. Furthermore, the way to access the suit data sets would require either an Imperial College London login for OneDrive (in the case of accessing it via the URL provided in the ‘System Setup’ chapter) or specific access given by the relevant authority within the Brain and Behaviour Lab; we believe that this ensures the data remain as private as possible whilst also enabling those within the lab to access it if needed so as to validate and/or continue the work completed within this project. It should also be noted that no copyrighted code has been used and all external works that were used as part of this project have been sufficiently referenced. For further details, see the Ethics Checklist below.
+
+\begin{center}
+\includegraphics[scale=0.55]{project_figures/LegEth1}
+\end{center}
+
+\begin{center}
+\includegraphics[scale=0.55]{project_figures/LegEth2}
+\end{center}
 
 
 

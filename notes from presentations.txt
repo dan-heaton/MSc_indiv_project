@@ -1,0 +1,23 @@
+
+---- 'Overview of Presentation' - remove sub points parts of notes
+
+---- 'Aims of Project' - cut down to only 'build RNN models to regress clinical scores from either NSAA 
+and NMB data', with secondary aim as : 'build framework' etc etc....
+
+---- Combine both 'DMD' and 'NSAA' slides into one
+
+---- Simplify 'RNN' slide
+
+---- Remove all text from the System Overview slides and replace each image with 'snips' of images
+
+---- 'Conclusions' - add 'GitHub' links and info about project report
+
+---- Cut out 'Purpose and Overview of System'
+
+---- 'Overview of Experimentation' - change MPS definition to be 'left one subject out' definition
+
+
+
+add to 'Experiment Results' a slide also on MPS ~18 (i.e. using NSAA and supplmeneted NMB to train)
+
+
