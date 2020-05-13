@@ -85,11 +85,15 @@ elif dir == "NMB":
         f = sub("^HC ", "HC", f)
         f = sub("^HC0", "HC", f)
         f = sub("7l", "7", f)
-        f = sub("v2", "V2", f)
+        f = sub("V", "v", f)
+        if "v" not in f:
+            f = f.split("-")[0] + "v1-" + f.split("-")[1]
         f = sub("\)\.mat", ".mat", f)
         f = sub("- \(", "-", f)
         f = sub(" \(", "-", f)
         f = f.split("-")[0] + "-" + '{0}'.format(f.split("-")[1].split(".")[0]).zfill(3) + ".mat"
+        if fn != f:
+            print(f"Changing '{fn}' to '{f}'...")
         new_file_names.append(f)
 else:
     for fn in files_kept:

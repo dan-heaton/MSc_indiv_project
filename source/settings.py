@@ -4,7 +4,7 @@
 
 
 #Note: CHANGE THIS to location of the 3 sub-directories' encompassing directory local to the user.
-local_dir = "C:\\msc_project_files\\"
+local_dir = "D:\\msc_project_files\\"
 
 #Other locations and sub-dir nameswithin 'local_dir' that will contain the files we need, as dictated by assuming the
 #user has previously run the required scripts (e.g. 'comp_stat_vals', 'ext_raw_measures', etc.)
@@ -15,7 +15,7 @@ sub_dirs = ["6minwalk-matfiles\\", "6MW-matFiles\\", "NSAA\\", "direct_csv\\", "
 sub_sub_dirs = ["AD\\", "JA\\", "DC\\"]
 
 #Other paths to documentation files that are referenced in several locations within 'source'
-doc_path = "..\\documentation\\"
+doc_path = "\\documentation\\"
 model_pred_path = doc_path + "model_predictions.csv"
 results_path = doc_path + "RNN Results.xlsx"
 nsaa_6mw_path = doc_path + "nsaa_6mw_info.xlsx"

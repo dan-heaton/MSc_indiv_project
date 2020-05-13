@@ -556,21 +556,22 @@ def combine_preds(output_strs):
 
     #Gets the numerical predictions made for each of the output metrics as contained within 'output_strs'
     acts_sum_pred = sum(eval([out_str for out_str in output_strs if "Predicted 'Acts Sequence'" in out_str][0].split(" = ")[1]))
-    dhc_pred = [out_str for out_str in output_strs if "Predicted 'D/HC Label'" in out_str][0].split(" = ")[1]
-    dhc_prop_pred = float([out_str for out_str in output_strs if "Percentage of predicted '" + dhc_pred + "' sequences"
-                in out_str][0].split(" = ")[1].split("%")[0])/100
+    #dhc_pred = [out_str for out_str in output_strs if "Predicted 'D/HC Label'" in out_str][0].split(" = ")[1]
+    #dhc_prop_pred = float([out_str for out_str in output_strs if "Percentage of predicted '" + dhc_pred + "' sequences"
+    #            in out_str][0].split(" = ")[1].split("%")[0])/100
     overall_pred = int([out_str for out_str in output_strs if "Predicted 'Overall NSAA Score'" in out_str][0].split(" = ")[1])
 
     #Gets the median value of all the subjects true overall NSAA scores according to the 'nsaa_6mw_info.xlsx' file
     #and uses this as the basis for the overall NSAA score associated with the 'D' label
-    df_y = pd.read_excel(local_nsaa_6mw_path)
-    df_y = df_y.loc[df_y["ID"].str.startswith("D")]
-    d_median = int(np.median(df_y["NSAA"].tolist()))
+    #df_y = pd.read_excel(local_nsaa_6mw_path)
+    #df_y = df_y.loc[df_y["ID"].str.startswith("D")]
+    #d_median = int(np.median(df_y["NSAA"].tolist()))
 
     #Averages the overall NSAA scores made by each of the predictions, with the average of the predicted overall NSAA
     #score, the sum of the indivudal acts predictions, and the assigned numerical value for the 'D' or 'HC' label
-    dhc_value = 34 if dhc_pred == "HC" else d_median
-    average_pred = round((acts_sum_pred + overall_pred + (dhc_value*dhc_prop_pred)) / (2 + dhc_prop_pred))
+    #dhc_value = 34 if dhc_pred == "HC" else d_median
+    #average_pred = round((acts_sum_pred + overall_pred + (dhc_value*dhc_prop_pred)) / (2 + dhc_prop_pred))
+    average_pred = round((acts_sum_pred + overall_pred) / 2)
 
     output_strs.append("Aggregated predicted 'Overall NSAA Score' = " + str(average_pred))
 

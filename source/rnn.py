@@ -114,9 +114,19 @@ parser.add_argument("--no_testset", type=bool, nargs="?", const=True, default=Fa
                     help="Specify this to set the train/test ratio to 0 so to use all the available data as training. "
                          "Note that this results in no results being written to console or the 'RNN Results' directory.")
 parser.add_argument("--leave_out_version", type=str, nargs="?", const=True, default=False,
-                    help="Specify this with the name of a version of subjects (e.g. 'V2') to leave out of the files "
-                         "used to train the models. Use this if wish to train models on one version of subjecst to "
+                    help="Specify this with the name of a version of subjects (e.g. 'v2') to leave out of the files "
+                         "used to train the models. Separate multiple by a comma if want to specifically exclude "
+                         "several. Use this if wish to train models on one version of subjects to "
                          "then evaluate model generalisation to other versions of already-seen subjects.")
+parser.add_argument("--combined", type=bool, nargs="?", const=True, default=False,
+                    help="Set this in order to use raw measurement combined files (e.g. the concatenated "
+                         "files contained within the 'combined' subdirectory of 'local_dir\<dir>\<measurement>'.")
+parser.add_argument("--max_lines_per_file", type=int, nargs="?", const=True, default=False,
+                    help="Set this to set the maximum number of lines of data to draw from a single file so as to "
+                         "limit the amount of raw data we have to hold in memory at any one time.")
+parser.add_argument("--model_path", type=str, nargs="?", const=True, default=False,
+                    help="Set this to the name of the directory to creat within 'output_files/rnn_models/', as "
+                         "opposed to using all the arguments provided")
 args = parser.parse_args()
 
 #If no optional argument given for '--seq_len', defaults to seq_len = 10, i.e. defaults to splitting files into
@@ -146,9 +156,10 @@ if args.balance:
         sys.exit()
 
 
-#Location at which to store the created model that will be used by 'model_predictor.py'
-model_path = local_dir + "output_files\\rnn_models\\" + '_'.join(sys.argv[1:]) + "\\model.ckpt"
-
+#Location at which to store the created model that will be used by 'model_predictor.py' (overrides the use of arguments
+#if the '--model_path' argument is selected
+inner_model_path = args.model_path if args.model_path else '_'.join(sys.argv[1:])
+model_path = local_dir + "output_files\\rnn_models\\" + inner_model_path + "\\model.ckpt"
 
 #Available choices of model outputs for 'choice' argument to take and available measurement names for 'ft' to take 
 #if not one of 'sub_sub_dirs'
@@ -259,6 +270,11 @@ def preprocessing(dir, ft):
               "\'JA', or \'DC\' (unless dir is give as 'NSAA', where 'ft' can be a measurement name).")
         sys.exit()
 
+    # Ensures that, if the '--combined' optional argument is set, then modify the source directory to point to within
+    # the 'combined' subdirectory of the measurement folder to use the 'allfiles' .csv files
+    if args.combined:
+        source_dir += "combined\\"
+
     #Appends to the list of files the single file name corresponding to the 'fn' argument or all available files within
     #'source_dir' if 'fn' is 'all'
     if args.fn.lower() != "all":
@@ -304,15 +320,18 @@ def preprocessing(dir, ft):
         print("No files found in given directory for given args...")
         sys.exit()
 
-    #Removes any file that contains in the name the optional argument '--leave_out', split by commas
+    #Removes any file that contains in the name the optional argument '--leave_out', split by commas; ensures also that
+    #any left-out subject version has all versions left out of training (e.g. '--leave_out=D5v1' would ensure that
+    #D5v1, D5v2, and D5v3 files are all left out of the training set
     if args.leave_out:
         lo_names = args.leave_out.split(",")
         for lo_n in lo_names:
-            file_names = [fn for fn in file_names if lo_n not in fn]
+            file_names = [fn for fn in file_names if lo_n.split("v")[0] not in fn]
 
     #Removes any file that contains in the name the optional argument '--leave_out_version'
     if args.leave_out_version:
-        file_names = [fn for fn in file_names if args.leave_out_version not in fn]
+        lovs = args.leave_out_version.split(",")
+        file_names = [fn for fn in file_names if all(lov not in fn for lov in lovs)]
 
     #If the '--balance_allmatfiles' optional argument is set, rebalance the 'allmatfiles' data set to use a reduced
     #number of files
@@ -365,13 +384,23 @@ def preprocessing(dir, ft):
         print("Reduced number of files within 'NMB' to use to train models (max = " +
               str(args.balance_nmb) + " per subject) : " + str(len(file_names)))
 
+    # Removes any files that will be used as the training set from files representing now-ambulatory patients
+    ambulatory = ["D4v3", "D10v2", "D22v1"]
+    file_names = [fn for fn in file_names if all(amb not in fn for amb in ambulatory)]
+
     #For each file name that we are dealing with (all files names in 'source_dir' if 'fn' is 'all, else a single
     #file name), adds 'y' labels based on what type of model output we are training for and divide up both 'x' and 'y'
     #data into sequences
     for file_name in file_names:
         print("Extracting '" + file_name + "' to x_data and y_data....")
         #Read in the data from the corresponding .csv
+        # TODO: add the NEW NSAA score file to 'nsaa_6mw_path' once new table is obtained
         data = pd.read_csv(source_dir + file_name)
+
+        # If the 'max_lines_per_file' argument is set with an int value, use this to limit the number of lines of data
+        # to draw from each file (for memory reasons
+        if args.max_lines_per_file:
+            data = data.iloc[:args.max_lines_per_file, :]
 
         #If the model output type is 'overall', add the NSAA scores if they aren't included already,
         #and get the overall NSAA score from the first row's first cell in the file as the 'y_label'
@@ -681,8 +710,7 @@ def add_nsaa_scores(file_df):
 
     #Adds column of overall NSAA scores at position 0 of every row of the data values, with the NSAA score being
     #appended determined by the short file name of the data as found at the beginning of each row of the data
-    nss = [nsaa_overall_dict[i.upper()[:-2] if i.upper().endswith("V2") else i.upper()]
-           for i in [j.split("_")[0] for j in file_df.iloc[:, 0].values]]
+    nss = [nsaa_overall_dict[i] for i in [j.split("_")[0] for j in file_df.iloc[:, 0].values]]
     file_df.insert(loc=0, column="NSS", value=nss)
 
     #Loads the data that contains information about single act NSAA scores from the .xlsx file, extracts the
@@ -702,7 +730,7 @@ def add_nsaa_scores(file_df):
     for i in range(len(nsaa_act_labels)):
         inner = []
         for j in range(len(file_df.index)):
-            fn = file_df.iloc[j, 1].split("_")[0].upper()
+            fn = file_df.iloc[j, 1].split("_")[0]
             fn = fn[:-2] if fn.endswith("V2") else fn
             if fn in nsaa_single_dict:
                 inner.append(nsaa_single_dict[fn][i])
@@ -889,6 +917,7 @@ class RNN(object):
                         print("Epoch: %d/%d Iteration: %d | Train loss: %.5f" % (epoch+1, num_epochs, iteration, loss))
                     iteration += 1
             self.saver.save(sess, model_path)
+            sys.exit()
         print("\n\n")
 
 
