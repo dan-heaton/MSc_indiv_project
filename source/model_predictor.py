@@ -110,6 +110,9 @@ parser.add_argument("--no_nsaa_flag", type=bool, nargs="?", const=True, default=
                     help="Flag that is set if the previous 'ft_sel_red.py' script has not added any NSAA information to "
                          "the 'AD' file. This is used in cases where we are assessing a 'new' subject, e.g. via "
                          "the 'assess_nsaa_nmb_file.py' script.")
+parser.add_argument("--mps", type=str, nargs="?", const=True, default=False,
+                    help="Specify this if wish to use model directories that begin with the name of the model "
+                         "prediction set it's used for (e.g. 'MPS1_velocity_D3v1_overall').")
 args = parser.parse_args()
 
 
@@ -187,6 +190,8 @@ for ft in args.ft.split(","):
         sds.append(local_dir + "NMB\\" + ft + "\\")
     elif args.dir == "NMB":
         sds.append(source_dir + "NMB\\AD\\")
+    elif args.dir == "6MW" and ft != "AD":
+        sds.append(local_dir + "6MW\\" + ft + "\\")
     else:
         print("Second arg ('ft') must be a name of a sub-subdirectory within source dir and must be one of \'AD\',"
               "\'JA', or \'DC\' (unless dir is give as 'NSAA', where 'ft' can be a measurement name), and each part "
@@ -205,8 +210,8 @@ local_nsaa_6mw_path = "..\\" + nsaa_6mw_path if args.batch else nsaa_6mw_path
 fns = []
 for ft, sd in zip(fts, sds):
     if args.dir == "allmatfiles":
-        if any(args.fn.upper() == s.split("jointangle")[-1].split(".mat")[0].upper() for s in os.listdir(sd)):
-            fns.append([s for s in os.listdir(sd) if args.fn.upper() == s.split("jointangle")[-1].split(".mat")[0].upper()][0])
+        if any(args.fn == s.split("jointangle")[-1].split(".mat")[0].upper() for s in os.listdir(sd)):
+            fns.append([s for s in os.listdir(sd) if args.fn == s.split("jointangle")[-1].split(".mat")[0].upper()][0])
         else:
             print("Cannot find '" + str(args.fn) + "' in '" + sd + "'")
             sys.exit()
@@ -216,16 +221,18 @@ for ft, sd in zip(fts, sds):
         fns.append([s for s in os.listdir(sd) if args.fn in s][0])
     elif args.dir == "NMB":
         fns.append([s for s in os.listdir(sd) if "FR_AD_" + args.fn.split("-")[0] + "_" in s][0])
-    elif ("AD\\" in sd and any(args.fn.upper().split("-")[0] == s.upper().split("_")[2] for s in os.listdir(sd)
+    elif args.dir == "6MW":
+        fns.append([s for s in os.listdir(sd) if args.fn in s][0])
+    elif ("AD\\" in sd and any(args.fn.split("-")[0] == s.upper().split("_")[2] for s in os.listdir(sd)
                                if s.endswith(".csv"))) \
-            or any(args.fn.upper() == "-".join(s.upper().split("-")[:2]) for s in os.listdir(sd)) \
-            or any(args.fn.upper() == s.upper().split("-")[0] for s in os.listdir(sd)) \
-            or any(args.fn.upper() == s.upper().split("_")[2] for s in os.listdir(sd) if s.endswith(".csv")):
+            or any(args.fn == "-".join(s.upper().split("-")[:2]) for s in os.listdir(sd)) \
+            or any(args.fn == s.upper().split("-")[0] for s in os.listdir(sd)) \
+            or any(args.fn == s.upper().split("_")[2] for s in os.listdir(sd) if s.endswith(".csv")):
         if "AD\\" in sd:
             if not args.single_act:
-                fns.append([s for s in os.listdir(sd) if args.fn.upper().split("-")[0] == s.upper().split("_")[1]][0])
+                fns.append([s for s in os.listdir(sd) if args.fn.split("-")[0] == s.upper().split("_")[1]][0])
             else:
-                fns.append([s for s in os.listdir(sd) if args.fn.upper() == s.upper().split("_")[1]
+                fns.append([s for s in os.listdir(sd) if args.fn == s.upper().split("_")[1]
                             and "act" + str(args.single_act) + "_" in s][0])
         else:
             if not args.single_act:
@@ -237,13 +244,13 @@ for ft, sd in zip(fts, sds):
                     print("Act " + str(args.single_act) + " not found for " + args.fn + " in '" + sd + "', skipping...")
                     sys.exit()
     elif ft == "AD" and args.single_act:
-        fns.append([s for s in os.listdir(sd) if args.fn.upper() == s.upper().split("_")[1]
+        fns.append([s for s in os.listdir(sd) if args.fn == s.upper().split("_")[1]
                     and "act" + str(args.single_act) + "_" in s][0])
     elif args.single_act_concat:
         try:
-            fns.append([s for s in os.listdir(sd) if args.fn.upper() == s.upper().split("_")[0]][0])
+            fns.append([s for s in os.listdir(sd) if args.fn == s.upper().split("_")[0]][0])
         except IndexError:
-            print("Cannot find subject '" + args.fn.upper() + "' in " + sd + "...")
+            print("Cannot find subject '" + args.fn + "' in " + sd + "...")
             sys.exit()
     else:
         print("Cannot find '" + str(args.fn) + "' in '" + sd + "'")
@@ -415,6 +422,14 @@ for sd in search_dirs:
             inner_models.append(inner_inner_models)
     models.append(inner_models)
 
+
+
+if args.mps:
+    dirs = [args.dir, *[d for d in args.add_dir.split(",")]] if args.add_dir else [args.dir]
+    model_str = f"MPS{args.mps}_{args.ft}_{args.fn}"
+    models = [[[model]] for model in os.listdir(model_dir) if model_str in model]
+
+
 #If the '--final_models' optional argument is set, maps the description names of the models to their true names
 #within 'rnn_models_final' by mapping using the 'model_map.csv' file
 if args.final_models:
@@ -434,7 +449,10 @@ models = new_models
 model_shapes_path = "..\\" + model_shapes_path if args.batch else model_shapes_path
 model_shape = pd.read_excel(model_shapes_path)
 
-if args.add_dir:
+
+if args.mps:
+    sequence_lengths = [[[60]] for inner_model in models]
+elif args.add_dir:
     sequence_lengths = [[[model_shape.loc[(model_shape["dir"] == model.split("_")[0].split(",")[0]) &
                                           (model_shape["ft"] == model.split("_")[1]) &
                                           (model_shape["measure"] == model.split("_")[3])].iloc[
@@ -489,21 +507,21 @@ def preprocessing(full_file_name, sequence_length):
     #and 'y_label_acts' gets the 17 individiual NSAA acts as a list as scores between 0 and 2
     df_y = pd.read_excel(local_nsaa_6mw_path)
     if args.dir != "direct_csv" and not source_dir.startswith(local_dir):
-        y_label_dhc = 1 if full_file_name.split("\\")[-1].split("_")[2][0].upper() == "D" else 0
+        y_label_dhc = 1 if full_file_name.split("\\")[-1].split("_")[2][0] == "D" else 0
     elif source_dir.startswith(local_dir):
         if "FR_" in full_file_name or "FRC_" in full_file_name:
-            y_label_dhc = 1 if full_file_name.split("\\")[-1].split("_")[2][0].upper() == "D" else 0
+            y_label_dhc = 1 if full_file_name.split("\\")[-1].split("_")[2][0] == "D" else 0
         elif full_file_name.split("\\")[-1].startswith("jointangle"):
-            y_label_dhc = 1 if full_file_name.split("\\")[-1].split("angle")[1][0].upper() == "D" else 0
+            y_label_dhc = 1 if full_file_name.split("\\")[-1].split("angle")[1][0] == "D" else 0
         else:
-            y_label_dhc = 1 if full_file_name.split("\\")[-1].split("_")[0][0].upper() == "D" else 0
+            y_label_dhc = 1 if full_file_name.split("\\")[-1].split("_")[0][0] == "D" else 0
     else:
-        y_label_dhc = 1 if full_file_name.split("\\")[-1].split("_")[1][0].upper() == "D" else 0
-    y_index = df_y.index[df_y["ID"] == args.fn.upper().split("-")[0]]
+        y_label_dhc = 1 if full_file_name.split("\\")[-1].split("_")[1][0] == "D" else 0
+    y_index = df_y.index[df_y["ID"] == args.fn.split("-")[0]]
     #Raises an exception
     if len(y_index) == 0:
         #raise FileExistsError
-        print(args.fn.upper().split("-")[0] + " not an entry in 'nsaa_6mw_info.xlsx' for " + full_file_name + ", skipping...")
+        print(args.fn.split("-")[0] + " not an entry in 'nsaa_6mw_info.xlsx' for " + full_file_name + ", skipping...")
         sys.exit()
     y_label_overall = df_y.loc[y_index, "NSAA"].values[0]
     try:
@@ -591,14 +609,14 @@ for i, inner_models in enumerate(models):
         #'output_type' contains one of 'acts', 'indiv', or 'dhc'`
         output_type = None
         for model in inner_inner_models:
-            if model:
-                output_type = model.split("_")[3]
+            output_type = model.split("_")[3]
         preds = []
         y_label_dhc, y_label_overall, y_label_acts = (None,)*3
         #For each measurement type (i.e. for every model name, e.g. 'jointAngle' or 'AD')
         ft_concat_data = [[] for i in range(5)]
         data_entered = False
         for k, full_file_name in enumerate(full_file_names):
+            print(f"Assessing {full_file_name} on actual model {inner_inner_models[k]}")
             #If the argument is set then, for each of the file types given, concatenate the data together
             #and if it's the last file type in the sequence of given file types, reduce the dimensions of the sequences
             #to the value given by the argument
@@ -706,6 +724,8 @@ for i, inner_models in enumerate(models):
             if not args.new_subject:
                 output_strs.append(str("True 'Overall NSAA Score' = " + str(y_label_overall)))
             output_strs.append(str("Predicted 'Overall NSAA Score' = " + str(int(round(float(np.mean(preds)), 0)))))
+            output_strs.append(str("Absolute difference between true and predicted' = " +
+                                   str(abs(y_label_overall - int(round(float(np.mean(preds)), 0))))))
         elif output_type == "dhc":
             true_label = "D" if y_label_dhc == 1 else "HC"
             pred_label = "D" if max(set(list(preds)), key=list(preds).count) == 1 else "HC"
@@ -763,7 +783,8 @@ if not args.file_num and not args.new_subject:
     plt.title("Plot of true overall NSAA scores against predicted overall NSAA scores")
     plt.xlabel("True overall NSAA scores")
     plt.ylabel("Predicted overall NSAA scores")
-    graphs_path = "..\\..\\documentation\\Graphs\\Model_predictor_" + args.dir + "_" + args.ft + "_" + args.fn if args.batch \
+    graphs_path = "..\\..\\documentation\\Graphs\\Model_predictor_" + args.dir + "_" + args.ft + "_" + args.fn \
+        if args.batch and not args.mps \
         else "..\\documentation\\Graphs\\Model_predictor_" + args.dir + "_" + args.ft + "_" + args.fn
     plt.savefig(graphs_path)
     plt.gcf().set_size_inches(10, 10)
@@ -844,6 +865,8 @@ if not args.new_subject:
     #Writes the single-line DataFrame to a new .csv file if it doesn't exist or, if it does exist, appends it to the end
     #of the existing one
     model_pred_path = "..\\" + model_pred_path if args.batch else model_pred_path
+    if args.mps:
+        model_pred_path = f"..\\documentation\\model_predictions\\model_predictions_mps{args.mps}.csv"
     if not os.path.exists(model_pred_path):
         with open(model_pred_path, 'w', newline='') as file:
             output_strs_df.to_csv(file, header=header)
@@ -859,7 +882,7 @@ else:
 
     #Gets the ID of the row we are fetching in the table. If 'fn' is a different version of a subject that exists in
     #the table (e.g. 'fn'=D4V2), then we retrieve the subject's previous version's info (e.g. the 'D4' row).
-    id = args.fn.split("-")[0][:-2] if "V2" in args.fn else args.fn.split("-")[0]
+    id = args.fn.split("-")[0][:-2] if "v2" in args.fn else args.fn.split("-")[0]
     df_row = df.loc[df["ID"] == id]
 
     #Gets the overall score, individual scores, and D/HC classification of the 'comparison' entry in the table if one

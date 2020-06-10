@@ -256,7 +256,7 @@ def preprocessing(dir, ft):
             print("Second arg ('ft') must be a name of a sub-subdirectory within source dir and must be one of \'AD\',"
                   "\'JA', or \'DC\' (unless dir is give as 'NSAA', where 'ft' can be a measurement name).")
             sys.exit()
-    elif dir == "6MW-matFiles" or dir == "NMB":
+    elif dir == "6MW-matFiles" or dir == "NMB" or dir == "6MW":
         if ft == "AD":
             source_dir = local_dir + "\\output_files\\" + dir + "\\AD\\"
         elif ft in raw_measurements:
