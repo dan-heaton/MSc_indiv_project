@@ -113,6 +113,8 @@ parser.add_argument("--no_nsaa_flag", type=bool, nargs="?", const=True, default=
 parser.add_argument("--mps", type=str, nargs="?", const=True, default=False,
                     help="Specify this if wish to use model directories that begin with the name of the model "
                          "prediction set it's used for (e.g. 'MPS1_velocity_D3v1_overall').")
+parser.add_argument("--extra_str", type=str, nargs="?", const=True, default=False,
+                    help="Add extra strings to the model predictions .csv name.")
 args = parser.parse_args()
 
 
@@ -427,7 +429,7 @@ for sd in search_dirs:
 if args.mps:
     dirs = [args.dir, *[d for d in args.add_dir.split(",")]] if args.add_dir else [args.dir]
     model_str = f"MPS{args.mps}_{args.ft}_{args.fn}"
-    models = [[[model]] for model in os.listdir(model_dir) if model_str in model]
+    models = [[[model] for model in os.listdir(model_dir) if model_str in model]]
 
 
 #If the '--final_models' optional argument is set, maps the description names of the models to their true names
@@ -451,7 +453,7 @@ model_shape = pd.read_excel(model_shapes_path)
 
 
 if args.mps:
-    sequence_lengths = [[[60]] for inner_model in models]
+    sequence_lengths = [[[60] for inner_model in models for inner_inner_model in inner_model]]
 elif args.add_dir:
     sequence_lengths = [[[model_shape.loc[(model_shape["dir"] == model.split("_")[0].split(",")[0]) &
                                           (model_shape["ft"] == model.split("_")[1]) &
@@ -592,6 +594,10 @@ def combine_preds(output_strs):
     average_pred = round((acts_sum_pred + overall_pred) / 2)
 
     output_strs.append("Aggregated predicted 'Overall NSAA Score' = " + str(average_pred))
+
+    overall_true = int([out_str for out_str in output_strs if "True 'Overall NSAA Score'" in out_str][0].split(" = ")[1])
+    output_strs.append("Aggregated absolute difference between true and predicted' = " + str(abs(average_pred - overall_true)))
+
 
     return output_strs
 
@@ -866,7 +872,11 @@ if not args.new_subject:
     #of the existing one
     model_pred_path = "..\\" + model_pred_path if args.batch else model_pred_path
     if args.mps:
-        model_pred_path = f"..\\documentation\\model_predictions\\model_predictions_mps{args.mps}.csv"
+        if args.extra_str:
+            model_pred_path = f"..\\documentation\\model_predictions\\model_predictions_mps{args.mps}" \
+                              f"{args.extra_str}.csv"
+        else:
+            model_pred_path = f"..\\documentation\\model_predictions\\model_predictions_mps{args.mps}.csv"
     if not os.path.exists(model_pred_path):
         with open(model_pred_path, 'w', newline='') as file:
             output_strs_df.to_csv(file, header=header)

@@ -33,21 +33,47 @@ rnn_fixed_args = f"--seq_len=600 --seq_overlap=0.9 --discard_prop=0.9 --epochs=1
 #   #   #   #   #   New MPS to Run  #   #   #   #   #
 
 
-def add_predictions_metadata(mps):
+def add_predictions_metadata(mps, aggregated=False):
     model_pred_path = f"..\\documentation\\model_predictions\\model_predictions_mps{mps}.csv"
     df = pd.read_csv(model_pred_path)
-    overall_avg_abs_diffs = round(np.mean(df.iloc[:, 8].values), 2)
 
-    for measure in measurements:
-        # Selects the rows where the measurement in question is tested
-        measure_df = df.loc[df["Measurements tested"] == f"['{measure}']"]
-        # Gets the average absolute difference between true and pred for measurement in question
-        avg_abs_diffs = round(np.mean(measure_df.iloc[:, 8].values), 2)
-        df = df.append({"Short file name": f"Average absolute difference between true and predicted ({measure})",
-                        "Source dir": avg_abs_diffs}, ignore_index=True)
+    if not aggregated:
+        overall_avg_abs_diffs = round(np.mean(df.iloc[:, 8].values), 2)
+        for measure in measurements:
+            # Selects the rows where the measurement in question is tested
+            measure_df = df.loc[df["Measurements tested"] == f"['{measure}']"]
+            # Gets the average absolute difference between true and pred for measurement in question
+            avg_abs_diffs = round(np.mean(measure_df.iloc[:, 8].values), 2)
+            df = df.append({"Short file name": f"Average absolute difference between true and predicted ({measure})",
+                            "Source dir": avg_abs_diffs}, ignore_index=True)
 
-    df = df.append({"Short file name": f"Average absolute difference between true and predicted (overall)",
-                    "Source dir": overall_avg_abs_diffs}, ignore_index=True)
+        df = df.append({"Short file name": f"Average absolute difference between true and predicted (overall)",
+                        "Source dir": overall_avg_abs_diffs}, ignore_index=True)
+
+    else:
+        overall_avg_abs_diffs = round(np.mean(df.iloc[:, 11].values), 2)
+        overall_aggregate_avg_abs_diffs = round(np.mean(df.iloc[:, 13].values), 2)
+        for measure in measurements:
+            # Selects the rows where the measurement in question is tested
+            measure_df = df.loc[df["Measurements tested"] == f"['{measure}']"]
+            # Gets the average absolute difference between true and pred for measurement in question
+            avg_abs_diffs = round(np.mean(measure_df.iloc[:, 11].values), 2)
+            df = df.append({"Short file name": f"Average absolute difference between true and predicted ({measure})",
+                            "Source dir": avg_abs_diffs}, ignore_index=True)
+
+        df = df.append({"Short file name": f"Average absolute difference between true and predicted (overall)",
+                        "Source dir": overall_avg_abs_diffs}, ignore_index=True)
+        for measure in measurements:
+            # Selects the rows where the measurement in question is tested
+            measure_df = df.loc[df["Measurements tested"] == f"['{measure}']"]
+            # Gets the average absolute difference between true and pred for measurement in question
+            avg_abs_diffs = round(np.mean(measure_df.iloc[:, 13].values), 2)
+            df = df.append({"Short file name": f"Average aggregate absolute difference between true and predicted ({measure})",
+                            "Source dir": avg_abs_diffs}, ignore_index=True)
+
+        df = df.append({"Short file name": f"Average aggregate absolute difference between true and predicted (overall)",
+                        "Source dir": overall_aggregate_avg_abs_diffs}, ignore_index=True)
+
     print("Writing predictions metadata...")
     df.to_csv(model_pred_path, index=False)
 
@@ -69,7 +95,7 @@ def mps_zero(measures, leave_out_subjects):
             os.system(f"python model_predictor.py 6MW {measure} {leave_out_subject} "
                       f"--no_testset --batch --mps=0")
 
-    add_predictions_metadata(0)
+    add_predictions_metadata("0")
 
 
 def mps_zerofive(measures, leave_out_subjects):
@@ -86,9 +112,9 @@ def mps_zerofive(measures, leave_out_subjects):
     for measure in measures:
         for leave_out_subject in leave_out_subjects:
             os.system(f"python model_predictor.py 6MW {measure} {leave_out_subject} "
-                      f"--no_testset --batch --mps=0")
+                      f"--no_testset --batch --mps=0 --combine_preds --extra_str=-5")
 
-    add_predictions_metadata(0.5)
+    add_predictions_metadata("0-5", aggregated=True)
 
 
 def mps_one(measures, leave_out_subjects):
