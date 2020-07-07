@@ -33,13 +33,17 @@ rnn_fixed_args = f"--seq_len=600 --seq_overlap=0.9 --discard_prop=0.9 --epochs=1
 #   #   #   #   #   New MPS to Run  #   #   #   #   #
 
 
-def add_predictions_metadata(mps, aggregated=False):
+def add_predictions_metadata(mps, aggregated=False, measures=None):
+
+    if measures is None:
+        measures = measurements
+
     model_pred_path = f"..\\documentation\\model_predictions\\model_predictions_mps{mps}.csv"
     df = pd.read_csv(model_pred_path)
 
     if not aggregated:
         overall_avg_abs_diffs = round(np.mean(df.iloc[:, 8].values), 2)
-        for measure in measurements:
+        for measure in measures:
             # Selects the rows where the measurement in question is tested
             measure_df = df.loc[df["Measurements tested"] == f"['{measure}']"]
             # Gets the average absolute difference between true and pred for measurement in question
@@ -51,19 +55,25 @@ def add_predictions_metadata(mps, aggregated=False):
                         "Source dir": overall_avg_abs_diffs}, ignore_index=True)
 
     else:
-        overall_avg_abs_diffs = round(np.mean(df.iloc[:, 11].values), 2)
+        try:
+            overall_avg_abs_diffs = round(np.mean(df.iloc[:, 11].values), 2)
+        except TypeError:
+            overall_avg_abs_diffs = round(np.mean(df.iloc[:, 8].values), 2)
         overall_aggregate_avg_abs_diffs = round(np.mean(df.iloc[:, 13].values), 2)
-        for measure in measurements:
+        for measure in measures:
             # Selects the rows where the measurement in question is tested
             measure_df = df.loc[df["Measurements tested"] == f"['{measure}']"]
             # Gets the average absolute difference between true and pred for measurement in question
-            avg_abs_diffs = round(np.mean(measure_df.iloc[:, 11].values), 2)
+            try:
+                avg_abs_diffs = round(np.mean(measure_df.iloc[:, 11].values), 2)
+            except TypeError:
+                avg_abs_diffs = round(np.mean(measure_df.iloc[:, 8].values), 2)
             df = df.append({"Short file name": f"Average absolute difference between true and predicted ({measure})",
                             "Source dir": avg_abs_diffs}, ignore_index=True)
 
         df = df.append({"Short file name": f"Average absolute difference between true and predicted (overall)",
                         "Source dir": overall_avg_abs_diffs}, ignore_index=True)
-        for measure in measurements:
+        for measure in measures:
             # Selects the rows where the measurement in question is tested
             measure_df = df.loc[df["Measurements tested"] == f"['{measure}']"]
             # Gets the average absolute difference between true and pred for measurement in question
@@ -137,6 +147,155 @@ def mps_one(measures, leave_out_subjects):
 
 def mps_onefive(measures, leave_out_subjects):
     """
+        Same as MPS one except using the non-combined files rather than the combined files (so x20 the files
+        but x20 fewer max lines per file, i.e. 10k rather than 200k). Note: still assessing on combined files
+    """
+
+    leave_out_subjects = [los for los in leave_out_subjects if "v1" in los]
+
+    for measure in measures:
+        for leave_out_subject in leave_out_subjects:
+            os.system(f"python rnn.py NMB {measure} all overall {rnn_fixed_args.split(' --combined')[0]} "
+                      f"--leave_out={leave_out_subject},{','.join(hc_subjects_leave_out)} "
+                      f"--model_path=MPS1-5_{measure}_{leave_out_subject}_overall "
+                      f"--leave_out_version=v2,v3 "
+                      f"--max_lines_per_file=10000")
+
+    for measure in measures:
+        for leave_out_subject in [los for los in leave_out_subjects if "v1" in los]:
+            os.system(f"python model_predictor.py NMB {measure} {leave_out_subject} "
+                      f"--leave_out_version=v2,v3 --no_testset --batch --mps=1-5 --use_combined")
+
+    add_predictions_metadata("1-5")
+
+
+
+
+def mps_onesevenfive(leave_out_subjects):
+    """
+        Same as MPS onefive except with using double max lines per file but balancing down; also only
+        using the joinAngle measurement for the time being (to compare with the jointAngle from previous MPS which
+        was the best measurement)
+    """
+
+    leave_out_subjects = [los for los in leave_out_subjects if "v1" in los]
+
+    for leave_out_subject in leave_out_subjects:
+        os.system(f"python rnn.py NMB jointAngle all overall {rnn_fixed_args.split(' --combined')[0]} "
+                  f"--leave_out={leave_out_subject},{','.join(hc_subjects_leave_out)} "
+                  f"--model_path=MPS1-75_jointAngle_{leave_out_subject}_overall "
+                  f"--leave_out_version=v2,v3 --balance=down "
+                  f"--max_lines_per_file=20000")
+
+    for leave_out_subject in [los for los in leave_out_subjects if "v1" in los]:
+        os.system(f"python model_predictor.py NMB jointAngle {leave_out_subject} "
+                  f"--leave_out_version=v2,v3 --no_testset --batch --mps=1-75 --use_combined")
+
+    add_predictions_metadata("1-75")
+
+
+
+def mps_two(leave_out_subjects):
+    """
+        Builds the same models as MPS1.5 except for acts output type and then assessing jointAngle specific
+        measurement on combined predictions
+    """
+
+    leave_out_subjects = [los for los in leave_out_subjects if "v1" in los]
+
+    for leave_out_subject in leave_out_subjects:
+        os.system(f"python rnn.py NMB jointAngle all acts {rnn_fixed_args.split(' --combined')[0]} "
+                  f"--leave_out={leave_out_subject},{','.join(hc_subjects_leave_out)} "
+                  f"--model_path=MPS2_jointAngle_{leave_out_subject}_acts "
+                  f"--leave_out_version=v2,v3 "
+                  f"--max_lines_per_file=10000")
+
+    for leave_out_subject in [los for los in leave_out_subjects if "v1" in los]:
+        os.system(f"python model_predictor.py NMB jointAngle {leave_out_subject} "
+                  f"--leave_out_version=v2,v3 --no_testset --batch --mps=1-5,2 --use_combined --combine_preds")
+
+    add_predictions_metadata("1-5,2", measures=["jointAngle"], aggregated=True)
+
+
+
+def mps_three(measures, leave_out_subjects):
+    """
+        Builds a single models for each measurement with non of the 'v1' files left out and also using all the HC
+        subjects now (but still not using any of the v2 or v3 files and not using some of the HC files) and assess these
+        models on v2 and v3 files (i.e. so will be familiar with the subjects themselves but not their new version files)
+    """
+
+    for measure in measures:
+        os.system(f"python rnn.py NMB {measure} all overall {rnn_fixed_args.split(' --combined')[0]} "
+                  f"--model_path=MPS3_{measure}_all_overall "
+                  f"--leave_out_version=v2,v3 "
+                  f"--max_lines_per_file=10000")
+
+    for measure in measures:
+        for leave_out_subject in [los for los in leave_out_subjects if "v1" not in los]:
+            os.system(f"python model_predictor.py NMB {measure} {leave_out_subject} "
+                      f"--no_testset --batch --mps=3 --use_combined --use_all")
+
+    add_predictions_metadata("3", measures=measures)
+
+
+
+def mps_four(leave_out_subjects):
+    """
+        Same as MPS three except only using jointAngle data and leaving out each of the subjects, one by one in turn
+        (i.e. doing over ALL subjects in 'subjects', including the HC left out subjects and also 'v2' and 'v3'), using
+        half the number of max lines per file (5k down from 10k), and assessing on combined files for each
+        of the above subjects
+    """
+
+    """
+    for leave_out_subject in leave_out_subjects:
+            os.system(f"python rnn.py NMB jointAngle all overall {rnn_fixed_args.split(' --combined')[0]} "
+                      f"--leave_out={leave_out_subject} "
+                      f"--model_path=MPS4_jointAngle_{leave_out_subject}_overall "
+                      f"--max_lines_per_file=5000")
+    """
+
+    for leave_out_subject in leave_out_subjects:
+        os.system(f"python model_predictor.py NMB jointAngle {leave_out_subject} "
+                  f"--no_testset --batch --mps=4 --use_combined")
+
+    add_predictions_metadata("4", measures=["jointAngle"])
+
+
+
+def mps_five(measures, leave_out_subjects, out_types):
+    """
+        Similar MPS4 but with the addition of NSAA data along with NMB data (reducing max 10k to 5k lines) and testing
+        over each measurement and output type (as the addition of a different input data type necessitates this), but
+        otherwise keeping the same as MPS4 (with testing over every subject)
+    """
+
+    for measure in measures:
+        for leave_out_subject in leave_out_subjects:
+            for output_type in out_types:
+                os.system(f"python rnn.py NSAA,NMB {measure} all {output_type} {rnn_fixed_args.split(' --combined')[0]} "
+                          f"--leave_out={leave_out_subject} "
+                          f"--model_path=MPS5_{measure}_{leave_out_subject}_{output_type} "
+                          f"--max_lines_per_file=5000")
+
+    for measure in measures:
+        for leave_out_subject in leave_out_subjects:
+            os.system(f"python model_predictor.py NMB {measure} {leave_out_subject} "
+                      f"--no_testset --batch --mps=5 --use_combined --add_dir=NSAA --combine_preds")
+
+
+
+
+
+
+
+
+
+
+
+def mps_oneeightfive(measures, leave_out_subjects):
+    """
         Same as MPS one except with 1/4 lines per file as MPS 1 (might be able to avoid overtraining the RNNs this way)
     """
 
@@ -151,7 +310,7 @@ def mps_onefive(measures, leave_out_subjects):
                       f"--leave_out_version=v2,v3 --no_testset --batch --mps=1")
 
 
-def mps_two(leave_out_subjects):
+def mps_onenine(leave_out_subjects):
     """
         Same as MPS 1, except builds the models only for the 'sensorMagneticField' meeasurement type and for the
         'acts' output type, and predicting subjects via models built in both MPS 1 and MPS 2 (i.e. wish to see how
@@ -167,20 +326,7 @@ def mps_two(leave_out_subjects):
         os.system(f"python model_predictor.py NMB sensorMagneticField {leave_out_subject} "
                   f"--leave_out_version=v2,v3 --combine_preds --no_testset --batch  --mps=1,2")
 
-
-def mps_three(leave_out_subjects):
-    """
-        Builds no new models, but instead evaluates all the non-version-1 files on models that had the subject
-        left-out of the training set (i.e. same as 'model_predictor.py' in 'mps_one()' but for v2 and v3) and only
-        for the sensorMagneticField, which will have been determined to be the best in 'mps_one()'
-    """
-
-    for leave_out_subject in [los for los in leave_out_subjects if "v1" not in los]:
-        os.system(f"python model_predictor.py NMB sensorMagneticField {leave_out_subject} "
-                  f"--combine_preds --no_testset --batch --mps=3")
-
-
-def mps_four(leave_out_subjects, out_types):
+def mps_four_old(leave_out_subjects, out_types):
     """
         Compared with 'mps_one()', builds the same models as before but only used the sensorMagneticField measurement
         (which is determined to be the best measurement to use) and added in all version files (not just 'v1'),
@@ -197,7 +343,7 @@ def mps_four(leave_out_subjects, out_types):
                   f"--combine_preds --no_testset --batch --mps=4")
 
 
-def mps_five(leave_out_subjects, out_types):
+def mps_five_old(leave_out_subjects, out_types):
     """
         Addition of NSAA data along with NMB data (reducing max 100k to 50k lines), but otherwise keeping the same
         as the 'mps_three()'
@@ -218,12 +364,15 @@ def mps_five(leave_out_subjects, out_types):
 
 
 #mps_zero(measurements, subjects_6mw)
-mps_zerofive(measurements, subjects_6mw)
-
+#mps_zerofive(measurements, subjects_6mw)
 #mps_one(measurements, subjects)
 #mps_onefive(measurements, subjects)
+#mps_onesevenfive(subjects)
+#mps_two(subjects)
+#mps_three(measurements, subjects)
+mps_four(subjects)
 
-
+#add_predictions_metadata("1")
 
 
 

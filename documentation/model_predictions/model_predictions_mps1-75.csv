@@ -1,0 +1,26 @@
+Unnamed: 0,Short file name,Source dir,Model trained dir(s),Measurements tested,		 ------ NMB Predictions ------ ,True 'Overall NSAA Score',Predicted 'Overall NSAA Score',Absolute difference between true and predicted'
+,"D2v1 (no testset) (leave out version = v2,v3)",NMB,,['jointAngle'],		 ------ NMB Predictions ------ ,15.0,24.0,9.0
+,"D3v1 (no testset) (leave out version = v2,v3)",NMB,,['jointAngle'],		 ------ NMB Predictions ------ ,19.0,27.0,8.0
+,"D4v1 (no testset) (leave out version = v2,v3)",NMB,,['jointAngle'],		 ------ NMB Predictions ------ ,20.0,25.0,5.0
+,"D5v1 (no testset) (leave out version = v2,v3)",NMB,,['jointAngle'],		 ------ NMB Predictions ------ ,34.0,27.0,7.0
+,"D6v1 (no testset) (leave out version = v2,v3)",NMB,,['jointAngle'],		 ------ NMB Predictions ------ ,30.0,27.0,3.0
+,"D7v1 (no testset) (leave out version = v2,v3)",NMB,,['jointAngle'],		 ------ NMB Predictions ------ ,26.0,28.0,2.0
+,"D9v1 (no testset) (leave out version = v2,v3)",NMB,,['jointAngle'],		 ------ NMB Predictions ------ ,22.0,23.0,1.0
+,"D11v1 (no testset) (leave out version = v2,v3)",NMB,,['jointAngle'],		 ------ NMB Predictions ------ ,27.0,30.0,3.0
+,"D12v1 (no testset) (leave out version = v2,v3)",NMB,,['jointAngle'],		 ------ NMB Predictions ------ ,18.0,26.0,8.0
+,"D14v1 (no testset) (leave out version = v2,v3)",NMB,,['jointAngle'],		 ------ NMB Predictions ------ ,28.0,25.0,3.0
+,"D15v1 (no testset) (leave out version = v2,v3)",NMB,,['jointAngle'],		 ------ NMB Predictions ------ ,28.0,23.0,5.0
+,"D16v1 (no testset) (leave out version = v2,v3)",NMB,,['jointAngle'],		 ------ NMB Predictions ------ ,23.0,26.0,3.0
+,"D17v1 (no testset) (leave out version = v2,v3)",NMB,,['jointAngle'],		 ------ NMB Predictions ------ ,33.0,25.0,8.0
+,"D18v1 (no testset) (leave out version = v2,v3)",NMB,,['jointAngle'],		 ------ NMB Predictions ------ ,24.0,21.0,3.0
+,"D19v1 (no testset) (leave out version = v2,v3)",NMB,,['jointAngle'],		 ------ NMB Predictions ------ ,24.0,26.0,2.0
+,"D20v1 (no testset) (leave out version = v2,v3)",NMB,,['jointAngle'],		 ------ NMB Predictions ------ ,29.0,23.0,6.0
+,"D21v1 (no testset) (leave out version = v2,v3)",NMB,,['jointAngle'],		 ------ NMB Predictions ------ ,28.0,30.0,2.0
+,"HC3v1 (no testset) (leave out version = v2,v3)",NMB,,['jointAngle'],		 ------ NMB Predictions ------ ,34.0,30.0,4.0
+,"HC4v1 (no testset) (leave out version = v2,v3)",NMB,,['jointAngle'],		 ------ NMB Predictions ------ ,34.0,26.0,8.0
+,"HC5v1 (no testset) (leave out version = v2,v3)",NMB,,['jointAngle'],		 ------ NMB Predictions ------ ,34.0,29.0,5.0
+,Average absolute difference between true and predicted (jointAngle),4.75,,,,,,
+,Average absolute difference between true and predicted (sensorMagneticField),,,,,,,
+,Average absolute difference between true and predicted (velocity),,,,,,,
+,Average absolute difference between true and predicted (angularVelocity),,,,,,,
+,Average absolute difference between true and predicted (overall),4.75,,,,,,

@@ -115,6 +115,12 @@ parser.add_argument("--mps", type=str, nargs="?", const=True, default=False,
                          "prediction set it's used for (e.g. 'MPS1_velocity_D3v1_overall').")
 parser.add_argument("--extra_str", type=str, nargs="?", const=True, default=False,
                     help="Add extra strings to the model predictions .csv name.")
+parser.add_argument("--use_combined", type=str, nargs="?", const=True, default=False,
+                    help="Specify this if wish to grab the files to be assessed from a 'combined' subdirectory "
+                         "rather than the base file directory.")
+parser.add_argument("--use_all", type=bool, nargs="?", const=True, default=False,
+                    help="Specify this if using alongside 'mps' optional argument to select a model that was trained "
+                         "on all subjects in a list of subjects and thus has '_all_' in the directory name.")
 args = parser.parse_args()
 
 
@@ -199,6 +205,12 @@ for ft in args.ft.split(","):
               "\'JA', or \'DC\' (unless dir is give as 'NSAA', where 'ft' can be a measurement name), and each part "
               "must be separated by a comma for each measurement to use in the ensemble.")
         sys.exit()
+
+# Specifically assess using the files within the 'combined' subdirectories if the optional argument is provided
+if args.use_combined:
+    for i in range(len(sds)):
+        sds[i] += "combined\\"
+
 
 #Adds a dash to the beginning of the 'fn' argument input if the '--handle_dash' optional argument is set
 if args.handle_dash:
@@ -425,11 +437,14 @@ for sd in search_dirs:
     models.append(inner_models)
 
 
-
+# Overwrites the methodology of the previous section if the 'mps' optional argument is set
 if args.mps:
     dirs = [args.dir, *[d for d in args.add_dir.split(",")]] if args.add_dir else [args.dir]
-    model_str = f"MPS{args.mps}_{args.ft}_{args.fn}"
-    models = [[[model] for model in os.listdir(model_dir) if model_str in model]]
+    if not args.use_all:
+        model_strs = [f"MPS{mps}_{args.ft}_{args.fn}" for mps in args.mps.split(",")]
+    else:
+        model_strs = [f"MPS{mps}_{args.ft}_all" for mps in args.mps.split(",")]
+    models = [[[model] for model in os.listdir(model_dir) if any(model_str in model for model_str in model_strs)]]
 
 
 #If the '--final_models' optional argument is set, maps the description names of the models to their true names

@@ -328,7 +328,8 @@ def preprocessing(dir, ft):
         for lo_n in lo_names:
             file_names = [fn for fn in file_names if lo_n.split("v")[0] not in fn]
 
-    #Removes any file that contains in the name the optional argument '--leave_out_version'
+    #Removes any file that contains in the name the optional argument '--leave_out_version' (or part of it, as
+    #split by commas)
     if args.leave_out_version:
         lovs = args.leave_out_version.split(",")
         file_names = [fn for fn in file_names if all(lov not in fn for lov in lovs)]
@@ -387,6 +388,11 @@ def preprocessing(dir, ft):
     # Removes any files that will be used as the training set from files representing now-ambulatory patients
     ambulatory = ["D4v3", "D10v2", "D22v1"]
     file_names = [fn for fn in file_names if all(amb not in fn for amb in ambulatory)]
+
+    # Ensures that, if 'combined' arg is not set but there is a 'combined' subdirectory in the list of
+    # file names then don't attempt to use this to extract .csv data from
+    if not args.combined:
+        file_names = [fn for fn in file_names if fn != "combined"]
 
     #For each file name that we are dealing with (all files names in 'source_dir' if 'fn' is 'all, else a single
     #file name), adds 'y' labels based on what type of model output we are training for and divide up both 'x' and 'y'
