@@ -22,6 +22,7 @@ results_path = doc_path + "RNN Results.xlsx"
 nsaa_6mw_path = doc_path + "nsaa_6mw_info.xlsx"
 model_shapes_path = doc_path + "model_shapes.xlsx"
 nsaa_subtasks_path = doc_path + "nsaa_17subtasks_matfiles.csv"
+matfiles_descriptions_path = doc_path + "matfiles_descriptions.csv"
 
 #Types of files that are used to train models on
 file_types = ["AD", "position", "velocity", "acceleration", "angularVelocity", "angularAcceleration",

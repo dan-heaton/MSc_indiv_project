@@ -126,7 +126,10 @@ parser.add_argument("--max_lines_per_file", type=int, nargs="?", const=True, def
                          "limit the amount of raw data we have to hold in memory at any one time.")
 parser.add_argument("--model_path", type=str, nargs="?", const=True, default=False,
                     help="Set this to the name of the directory to creat within 'output_files/rnn_models/', as "
-                         "opposed to using all the arguments provided")
+                         "opposed to using all the arguments provided.")
+parser.add_argument("--inner_nsaa", type=bool, nargs="?", const=True, default=False,
+                    help="Set this if we wish to only use the files within the NSAA subdirectory of the NMB directory "
+                         "(i.e. the files from the NMB directory that are recognised as specifically being NSAA).")
 args = parser.parse_args()
 
 #If no optional argument given for '--seq_len', defaults to seq_len = 10, i.e. defaults to splitting files into
@@ -265,6 +268,9 @@ def preprocessing(dir, ft):
             print("Second arg ('ft') must be a name of a sub-subdirectory within source dir and must be one of \'AD\',"
                   "\'JA', or \'DC\' (unless dir is give as 'NSAA', where 'ft' can be a measurement name).")
             sys.exit()
+        # If this is set, attempt to source files from an inner 'NSAA' subdirectory
+        if args.inner_nsaa:
+            source_dir += "NSAA\\"
     else:
         print("Second arg ('ft') must be a name of a sub-subdirectory within source dir and must be one of \'AD\',"
               "\'JA', or \'DC\' (unless dir is give as 'NSAA', where 'ft' can be a measurement name).")
@@ -924,7 +930,6 @@ class RNN(object):
                     iteration += 1
             self.saver.save(sess, model_path)
             sys.exit()
-        print("\n\n")
 
 
 

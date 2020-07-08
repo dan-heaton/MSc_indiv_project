@@ -121,6 +121,9 @@ parser.add_argument("--use_combined", type=str, nargs="?", const=True, default=F
 parser.add_argument("--use_all", type=bool, nargs="?", const=True, default=False,
                     help="Specify this if using alongside 'mps' optional argument to select a model that was trained "
                          "on all subjects in a list of subjects and thus has '_all_' in the directory name.")
+parser.add_argument("--inner_nsaa", type=bool, nargs="?", const=True, default=False,
+                    help="Set this if we wish to only use the files within the NSAA subdirectory of the NMB directory "
+                         "(i.e. the files from the NMB directory that are recognised as specifically being NSAA).")
 args = parser.parse_args()
 
 
@@ -211,6 +214,10 @@ if args.use_combined:
     for i in range(len(sds)):
         sds[i] += "combined\\"
 
+# Specifically assess using the files within the 'NSAA' subdirectories if the optional argument is provided
+if args.inner_nsaa:
+    for i in range(len(sds)):
+        sds[i] += "NSAA\\"
 
 #Adds a dash to the beginning of the 'fn' argument input if the '--handle_dash' optional argument is set
 if args.handle_dash:

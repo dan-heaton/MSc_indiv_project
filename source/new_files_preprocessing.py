@@ -1,10 +1,11 @@
 import os
 import sys
+import shutil
 
 import pandas as pd
 import numpy as np
 
-from settings import local_dir, joint_labels, sensor_labels, segment_labels
+from settings import local_dir, joint_labels, sensor_labels, segment_labels, matfiles_descriptions_path
 
 
 
@@ -248,13 +249,13 @@ def mps_four(leave_out_subjects):
         of the above subjects
     """
 
-    """
+
     for leave_out_subject in leave_out_subjects:
             os.system(f"python rnn.py NMB jointAngle all overall {rnn_fixed_args.split(' --combined')[0]} "
                       f"--leave_out={leave_out_subject} "
                       f"--model_path=MPS4_jointAngle_{leave_out_subject}_overall "
                       f"--max_lines_per_file=5000")
-    """
+
 
     for leave_out_subject in leave_out_subjects:
         os.system(f"python model_predictor.py NMB jointAngle {leave_out_subject} "
@@ -264,7 +265,33 @@ def mps_four(leave_out_subjects):
 
 
 
-def mps_five(measures, leave_out_subjects, out_types):
+def mps_five(measures, leave_out_subjects):
+    """
+        Same as MPS three except only using NSAA files (but using all the lines per file since we don't use as many now)
+        and over multiple measures
+    """
+
+
+    for measure in measures:
+        for leave_out_subject in leave_out_subjects:
+                os.system(f"python rnn.py NMB {measure} all overall {rnn_fixed_args.split} "
+                          f"--leave_out={leave_out_subject} "
+                          f"--model_path=MPS5_{measure}_{leave_out_subject}_overall "
+                          f"--inner_nsaa")
+
+    for measure in measures:
+        for leave_out_subject in leave_out_subjects:
+            os.system(f"python model_predictor.py NMB {measure} {leave_out_subject} "
+                      f"--no_testset --batch --mps=5 --inner_nsaa")
+
+    add_predictions_metadata("5", measures=measures)
+
+
+
+
+
+
+def mps_five_old(measures, leave_out_subjects, out_types):
     """
         Similar MPS4 but with the addition of NSAA data along with NMB data (reducing max 10k to 5k lines) and testing
         over each measurement and output type (as the addition of a different input data type necessitates this), but
@@ -370,10 +397,9 @@ def mps_five_old(leave_out_subjects, out_types):
 #mps_onesevenfive(subjects)
 #mps_two(subjects)
 #mps_three(measurements, subjects)
-mps_four(subjects)
+#mps_four(subjects)
 
 #add_predictions_metadata("1")
-
 
 
 
@@ -416,3 +442,27 @@ def combine_files(measures):
             new_file_name = f"{measurement_dir}\\combined\\{usv}-allfiles_{measure}.csv"
             print(f"Writing '{new_file_name}'...")
             df.to_csv(new_file_name)
+
+
+
+def create_nmb_nsaa_dir():
+    # Gets the list of the file names in the NMB directory that correspond to NSAA activity files
+    df = pd.read_csv(f"..{matfiles_descriptions_path}", delimiter=";")
+    df['Description'] = df['Description'].str.lower()
+    filtered_df = df[df["Description"].str.contains("nsaa|north", na=False)]
+    nsaa_file_names = filtered_df["File Name"].tolist()
+    nsaa_file_names_partial = ["-".join(fn.split(".")[0].split("-")[:2]) for fn in nsaa_file_names]
+
+    # Creates the NSAA subdirectory if it doesn't exist already
+    nsaa_dir = f"{source_dir}NSAA\\"
+    if not os.path.exists(nsaa_dir):
+        os.mkdir(nsaa_dir)
+
+    # Finds any matching files in the 'NMB' directory and copies them to an inner 'NSAA' directory
+    for fn in os.listdir(source_dir):
+        if any(nsaa_fn in fn for nsaa_fn in nsaa_file_names_partial):
+            shutil.copy(src=f"{source_dir}{fn}", dst=f"{nsaa_dir}{fn}")
+
+
+
+create_nmb_nsaa_dir()
